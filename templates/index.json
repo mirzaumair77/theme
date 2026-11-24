@@ -281,8 +281,11 @@
               "name": "t:names.product_review_stars",
               "disabled": true,
               "settings": {
+                "enable_ratings": true,
                 "stars_style": "shaded",
                 "show_number": true,
+                "hide_review_text": false,
+                "hide_separator": false,
                 "text_color": "",
                 "type_preset": "paragraph",
                 "width": "100%",
@@ -2524,6 +2527,7 @@
         "text_PkA6Ra",
         "ai_gen_block_e952a09_FMLn7P"
       ],
+      "disabled": true,
       "name": "Email Signup",
       "settings": {
         "content_direction": "column",
