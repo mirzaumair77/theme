@@ -278,7 +278,7 @@
 
   .sticky-add-to-cart__variant {
     color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
-    font-size: var(--font-paragraph-small--size);
+    font-size: 14px;
     margin-top: var(--margin-3xs);
   }
 
@@ -287,9 +287,13 @@
   }
 
   .sticky-add-to-cart__button {
+    background-color: #212121;
+    color: #FFF;
     height: var(--height-buy-buttons);
     position: relative;
   }
+
+  
 
   /* Mobile adjustments */
   @media screen and (max-width: 749px) {
@@ -325,7 +329,7 @@
     }
 
     .sticky-add-to-cart__price {
-      font-size: var(--font-paragraph-small--size);
+      font-size: 14px;
     }
 
     .sticky-add-to-cart__button {
@@ -338,6 +342,13 @@
 
     sticky-add-to-cart:not([data-variant-available='true']) .sticky-add-to-cart__button {
       width: auto;
+    }
+
+    /* Shopify Inbox's launcher lives in a fixed theme-drawer dialog at --layer-sticky. Keep the
+       shown bar above that launcher, but below any open drawer or open chat panel. */
+    body:has(shopify-chat:defined):not(:has(.theme-drawer__dialog[open]))
+      .sticky-add-to-cart__bar[data-stuck='true'] {
+      z-index: calc(var(--layer-sticky) + 1);
     }
   }
 
@@ -438,6 +449,17 @@
     },
     {
       "type": "range",
+      "id": "details_width",
+      "label": "t:settings.product_details_width",
+      "info": "t:info.product_details_width",
+      "min": 0,
+      "max": 600,
+      "step": 8,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
       "id": "gap",
       "label": "t:settings.gap",
       "min": 0,
@@ -448,9 +470,21 @@
     },
     {
       "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "t:settings.show_breadcrumbs",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "enable_sticky_add_to_cart",
       "label": "t:settings.enable_sticky_add_to_cart",
       "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "title_accent_text",
+      "label": "t:settings.product_title_accent_text",
+      "info": "t:info.product_title_accent_text"
     },
     {
       "type": "color",

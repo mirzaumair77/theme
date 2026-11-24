@@ -313,6 +313,36 @@
     "blog_post_description": "Απόσπασμα από το περιεχόμενο της ανάρτησης στο ιστολόγιό σας"
   },
   "products": {
+    "size_guide": {
+      "match": "Δάχτυλο {{ circumference }} mm αντιστοιχεί στο μέγεθος {{ size }}.",
+      "select_size": "Επιλογή μεγέθους {{ size }}",
+      "out_of_range": "Εισαγάγετε τιμή μεταξύ {{ min }} και {{ max }} mm.",
+      "size_selected": "Επιλέχθηκε το μέγεθος {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} άτοκες δόσεις των {{ amount }} με {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Διαδρομή πλοήγησης",
+      "home": "Αρχική"
+    },
+    "variant_group": {
+      "layout": "Προβολή",
+      "grid": "Πλέγμα",
+      "list": "Λίστα",
+      "finishes": {
+        "one": "{{ count }} φινίρισμα"
+      },
+      "current": "Προβάλλεται τώρα"
+    },
+    "add_ons": {
+      "add_to_cart": "Προσθήκη του {{ title }} στο καλάθι",
+      "added_to_cart": "Το {{ title }} προστέθηκε στο καλάθι",
+      "add": "Προσθήκη του {{ title }} στην παραγγελία σας",
+      "price_addition": "+{{ price }}",
+      "previous": "Προηγούμενα προϊόντα",
+      "next": "Επόμενα προϊόντα"
+    },
     "product": {
       "add_to_cart": "Προσθήκη στο καλάθι",
       "added_to_cart": "Προστέθηκε στο καλάθι",

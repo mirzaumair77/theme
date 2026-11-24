@@ -336,6 +336,36 @@
     "blog_post_description": "Et utdrag av blogginnleggets innhold"
   },
   "products": {
+    "size_guide": {
+      "match": "En finger på {{ circumference }} mm passer til {{ size }}.",
+      "select_size": "Velg størrelse {{ size }}",
+      "out_of_range": "Skriv inn et mål mellom {{ min }} og {{ max }} mm.",
+      "size_selected": "Størrelse {{ size }} er valgt"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} rentefrie avdrag på {{ amount }} med {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Brødsmulesti",
+      "home": "Hjem"
+    },
+    "variant_group": {
+      "layout": "Visning",
+      "grid": "Rutenett",
+      "list": "Liste",
+      "finishes": {
+        "one": "{{ count }} finish"
+      },
+      "current": "Vises nå"
+    },
+    "add_ons": {
+      "add_to_cart": "Legg {{ title }} i handlekurven",
+      "added_to_cart": "{{ title }} er lagt i handlekurven",
+      "add": "Legg {{ title }} til i bestillingen",
+      "price_addition": "+{{ price }}",
+      "previous": "Forrige produkter",
+      "next": "Neste produkter"
+    },
     "product": {
       "add_to_cart": "Legg i handlekurv",
       "adding_to_cart": "Legger til ...",

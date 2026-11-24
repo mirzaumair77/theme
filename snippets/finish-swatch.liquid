@@ -1,0 +1,56 @@
+{%- doc -%}
+  Renders the swatch for a finish (metal) option value. A two-tone value such as
+  "Sterling Silver + 14K Yellow Gold" splits the circle: main finish on the left, accent on
+  the right. A merchant swatch image always wins; values without swatch data get a metallic
+  fill matched from their name.
+
+  @param {string} name - The option value name.
+  @param {object} [swatch] - The option value's swatch object.
+  @param {object} [variant_image] - Variant image passed through to the standard swatch.
+
+  @example
+  {% render 'finish-swatch', name: value.name, swatch: value.swatch, variant_image: image %}
+{%- enddoc -%}
+
+{%- liquid
+  assign finish_parts = name | replace: ' & ', ' + ' | split: '+'
+  assign is_two_tone = false
+  if finish_parts.size > 1 and swatch.image == blank
+    assign is_two_tone = true
+  endif
+-%}
+
+{%- if is_two_tone -%}
+  {%- capture finish_main -%}{%- render 'finish-swatch-background', name: finish_parts.first -%}{%- endcapture -%}
+  {%- capture finish_accent -%}{%- render 'finish-swatch-background', name: finish_parts.last -%}{%- endcapture -%}
+  <span
+    class="swatch swatch--unscaled swatch--two-tone"
+    style="--swatch-background: {{ finish_accent }}; --finish-swatch-main: {{ finish_main }};"
+  ></span>
+{%- elsif swatch.image or swatch.color -%}
+  {%- render 'swatch', swatch: swatch, variant_image: variant_image, mode: 'unscaled' -%}
+{%- else -%}
+  {%- capture finish_fill -%}{%- render 'finish-swatch-background', name: name -%}{%- endcapture -%}
+  <span
+    class="swatch swatch--unscaled"
+    style="--swatch-background: {{ finish_fill }};"
+  ></span>
+{%- endif -%}
+
+{% render 'swatch-styles' %}
+
+{% stylesheet %}
+  .swatch--two-tone {
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      left: 0; /* stylelint-disable-line csstools/use-logical -- the main finish is always on the left */
+      width: 50%;
+      background: var(--finish-swatch-main);
+    }
+  }
+{% endstylesheet %}

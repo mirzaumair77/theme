@@ -1,0 +1,93 @@
+{% comment %}
+  Section contract.
+  Render-only section for the Section Rendering API. Turns a Selleasy add-on offer
+  (product handle + chosen variant) into card data rendered by Liquid, so prices use
+  the storefront's money format and currency, and swatches use the product's real
+  Color option swatch data. Consumed by `add-ons.js` (Need a chain?, Complete the look).
+  It is not meant to be added to templates.
+  @example
+  <!-- GET /products/{handle}?variant={id}&section_id=section-rendering-add-on-card -->
+{% endcomment %}
+
+{%- liquid
+  assign card_product = product | default: closest.product
+  assign card_variant = card_product.selected_or_first_available_variant
+  assign card_image = card_variant.featured_image | default: card_product.featured_image
+
+  assign card_color_option = nil
+  for card_option in card_product.options_with_values
+    assign card_option_key = card_option.name | downcase | strip
+    if card_option_key == 'color' or card_option_key == 'colour'
+      assign card_color_option = card_option
+      break
+    endif
+  endfor
+-%}
+
+{%- if card_product != blank -%}
+  <div
+    class="add-on-card-source"
+    data-add-on-card
+    data-product-id="{{ card_product.id }}"
+    data-variant-id="{{ card_variant.id }}"
+    data-title="{{ card_product.title | escape }}"
+    data-price="{{ card_variant.price | money_without_trailing_zeros | strip_html | escape }}"
+    data-url="{{ card_variant.url | default: card_product.url }}"
+  >
+    <template data-add-on-image>
+      {%- if card_image != blank -%}
+        {{
+          card_image
+          | image_url: width: 480
+          | image_tag:
+            widths: '160, 240, 320, 480',
+            sizes: '(min-width: 750px) 160px, 40vw',
+            loading: 'lazy',
+            alt: card_product.title,
+            class: 'add-on-card__image'
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'add-on-card__image add-on-card__image--placeholder' }}
+      {%- endif -%}
+    </template>
+
+    {%- if card_color_option -%}
+      <template data-add-on-swatches>
+        {%- comment -%}
+          Each swatch carries the variant for its color combined with the card variant's other
+          options; `add-ons.js` swaps the card to that variant on click.
+        {%- endcomment -%}
+        {%- for color_value in card_color_option.values -%}
+          <button
+            type="button"
+            class="add-on-card__swatch button-unstyled{% if color_value.selected %} add-on-card__swatch--selected{% endif %}"
+            aria-pressed="{{ color_value.selected }}"
+            {% if color_value.variant %}
+              data-variant-id="{{ color_value.variant.id }}"
+            {% else %}
+              disabled
+            {% endif %}
+            on:click="/selectSwatch"
+          >
+            {%- render 'swatch',
+              swatch: color_value.swatch,
+              variant_image: color_value.variant.featured_media,
+              mode: 'unscaled',
+              label: color_value.name
+            -%}
+          </button>
+        {%- endfor -%}
+      </template>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:names.add_on_card_rendering",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": []
+}
+{% endschema %}

@@ -313,6 +313,36 @@
     "blog_post_description": "เนื้อหาบางส่วนจากเนื้อหาของบล็อกโพสต์"
   },
   "products": {
+    "size_guide": {
+      "match": "นิ้วขนาด {{ circumference }} มม. ตรงกับไซซ์ {{ size }}",
+      "select_size": "เลือกไซซ์ {{ size }}",
+      "out_of_range": "กรอกขนาดระหว่าง {{ min }} ถึง {{ max }} มม.",
+      "size_selected": "เลือกไซซ์ {{ size }} แล้ว"
+    },
+    "shop_pay_installments": {
+      "message_html": "ผ่อน {{ installments }} งวด ไม่มีดอกเบี้ย งวดละ {{ amount }} กับ {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "เส้นทางนำทาง",
+      "home": "หน้าแรก"
+    },
+    "variant_group": {
+      "layout": "การแสดงผล",
+      "grid": "ตาราง",
+      "list": "รายการ",
+      "finishes": {
+        "one": "{{ count }} แบบผิวงาน"
+      },
+      "current": "กำลังดูอยู่"
+    },
+    "add_ons": {
+      "add_to_cart": "เพิ่ม {{ title }} ลงในตะกร้า",
+      "added_to_cart": "เพิ่ม {{ title }} ลงในตะกร้าแล้ว",
+      "add": "เพิ่ม {{ title }} ในคำสั่งซื้อ",
+      "price_addition": "+{{ price }}",
+      "previous": "สินค้าก่อนหน้า",
+      "next": "สินค้าถัดไป"
+    },
     "product": {
       "add_to_cart": "เพิ่มลงในตะกร้าสินค้า",
       "added_to_cart": "เพิ่มลงในตะกร้าสินค้าแล้ว",

@@ -325,6 +325,36 @@
     "blog_post_description": "Úryvek z obsahu vašeho blogového příspěvku"
   },
   "products": {
+    "size_guide": {
+      "match": "Prstu s obvodem {{ circumference }} mm odpovídá velikost {{ size }}.",
+      "select_size": "Vybrat velikost {{ size }}",
+      "out_of_range": "Zadejte hodnotu mezi {{ min }} a {{ max }} mm.",
+      "size_selected": "Vybrána velikost {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} bezúročné splátky po {{ amount }} se službou {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Drobečková navigace",
+      "home": "Domů"
+    },
+    "variant_group": {
+      "layout": "Zobrazení",
+      "grid": "Mřížka",
+      "list": "Seznam",
+      "finishes": {
+        "one": "{{ count }} povrchová úprava"
+      },
+      "current": "Právě prohlížíte"
+    },
+    "add_ons": {
+      "add_to_cart": "Přidat {{ title }} do košíku",
+      "added_to_cart": "{{ title }} přidáno do košíku",
+      "add": "Přidat {{ title }} do objednávky",
+      "price_addition": "+{{ price }}",
+      "previous": "Předchozí produkty",
+      "next": "Další produkty"
+    },
     "product": {
       "add_to_cart": "Přidat do košíku",
       "adding_to_cart": "Přidávání do košíku...",

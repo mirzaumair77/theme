@@ -325,6 +325,36 @@
     "blog_post_description": "Odlomek vsebine vaše objave v spletnem dnevniku"
   },
   "products": {
+    "size_guide": {
+      "match": "Prstu z obsegom {{ circumference }} mm ustreza velikost {{ size }}.",
+      "select_size": "Izberi velikost {{ size }}",
+      "out_of_range": "Vnesite mero med {{ min }} in {{ max }} mm.",
+      "size_selected": "Izbrana velikost {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} obroki brez obresti po {{ amount }} z {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Drobtinice",
+      "home": "Domov"
+    },
+    "variant_group": {
+      "layout": "Prikaz",
+      "grid": "Mreža",
+      "list": "Seznam",
+      "finishes": {
+        "one": "{{ count }} zaključna obdelava"
+      },
+      "current": "Trenutno si ogledujete"
+    },
+    "add_ons": {
+      "add_to_cart": "Dodaj {{ title }} v košarico",
+      "added_to_cart": "{{ title }} je dodan v košarico",
+      "add": "Dodaj {{ title }} v naročilo",
+      "price_addition": "+{{ price }}",
+      "previous": "Prejšnji izdelki",
+      "next": "Naslednji izdelki"
+    },
     "product": {
       "add_to_cart": "Dodaj v košarico",
       "added_to_cart": "Dodano v košarico",

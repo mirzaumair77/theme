@@ -313,6 +313,36 @@
     "blog_post_description": "Ein Auszug aus dem Inhalt deines Blog-Beitrags"
   },
   "products": {
+    "size_guide": {
+      "match": "Ein Finger mit {{ circumference }} mm entspricht Größe {{ size }}.",
+      "select_size": "Größe {{ size }} auswählen",
+      "out_of_range": "Gib einen Wert zwischen {{ min }} und {{ max }} mm ein.",
+      "size_selected": "Größe {{ size }} ausgewählt"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} zinsfreie Raten à {{ amount }} mit {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Breadcrumb-Navigation",
+      "home": "Startseite"
+    },
+    "variant_group": {
+      "layout": "Ansicht",
+      "grid": "Raster",
+      "list": "Liste",
+      "finishes": {
+        "one": "{{ count }} Oberfläche"
+      },
+      "current": "Wird gerade angesehen"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} in den Warenkorb legen",
+      "added_to_cart": "{{ title }} wurde in den Warenkorb gelegt",
+      "add": "{{ title }} zur Bestellung hinzufügen",
+      "price_addition": "+{{ price }}",
+      "previous": "Vorherige Produkte",
+      "next": "Nächste Produkte"
+    },
     "product": {
       "add_to_cart": "In den Warenkorb legen",
       "added_to_cart": "Zum Warenkorb hinzugefügt",

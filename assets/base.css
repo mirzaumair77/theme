@@ -12,6 +12,12 @@ body {
   font-variation-settings: 'slnt' 0;
 }
 
+/* POWR app embed injects this wrapper as a body child; it only carries a <style> rule,
+   which still applies while the wrapper is removed from layout. */
+#powrIframeLoader {
+  display: none !important;
+}
+
 :root {
   --hover-transition-duration: 0.25s;
   --hover-transition-timing: ease-out;
@@ -30,6 +36,10 @@ html {
   html:has(.page-wrapper) body {
     height: 100dvh;
     overflow: hidden;
+    /* `clip` can't be scrolled programmatically, so fragment jumps (e.g. #contact_form after a
+       newsletter submit) scroll only .page-wrapper instead of shifting the locked root and
+       exposing blank space. `hidden` stays as the fallback where `clip` is unsupported. */
+    overflow: clip;
   }
 }
 

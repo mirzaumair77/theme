@@ -1,7 +1,7 @@
 import { Component } from '@theme/component';
 import { ThemeEvents, QuantitySelectorUpdateEvent } from '@theme/events';
 import { morph } from '@theme/morph';
-import { onAnimationEnd } from '@theme/utilities';
+import { onAnimationEnd, mediaQueryLarge, isMobileBreakpoint } from '@theme/utilities';
 import { StandardEvents, ProductSelectEvent, CartLinesUpdateEvent, CartErrorEvent } from '@shopify/events';
 
 /**
@@ -35,7 +35,9 @@ import { StandardEvents, ProductSelectEvent, CartLinesUpdateEvent, CartErrorEven
 
 /**
  * A custom element that manages a sticky add-to-cart bar.
- * Shows when the main buy buttons scroll out of view.
+ * Desktop: shows once the main buy buttons scroll above the viewport.
+ * Mobile: shows whenever the main buy buttons are out of view (before or after them),
+ * so the buy box stays reachable while scrolling the product page.
  *
  * @extends {Component<StickyAddToCartRefs>}
  */
@@ -69,6 +71,9 @@ class StickyAddToCartComponent extends Component {
   /** @type {boolean} */
   #hiddenByBottom = false;
 
+  /** @type {HTMLElement | null} */
+  #buyButtonsBlock = null;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -81,6 +86,7 @@ class StickyAddToCartComponent extends Component {
     document.addEventListener(StandardEvents.cartLinesUpdate, this.#handleCartAddComplete, { signal });
     document.addEventListener(StandardEvents.cartError, this.#handleCartAddComplete, { signal });
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#handleQuantityUpdate, { signal });
+    mediaQueryLarge.addEventListener('change', this.#handleBreakpointChange, { signal });
 
     this.#getInitialQuantity();
 
@@ -111,8 +117,9 @@ class StickyAddToCartComponent extends Component {
     const productForm = this.#getProductForm();
     if (!productForm) return;
 
-    const buyButtonsBlock = productForm.closest('.buy-buttons-block');
+    const buyButtonsBlock = /** @type {HTMLElement | null} */ (productForm.closest('.buy-buttons-block'));
     if (!buyButtonsBlock) return;
+    this.#buyButtonsBlock = buyButtonsBlock;
 
     // In themes migrated from 2.0, the footer element doesn't exist
     const footer = document.querySelector('footer') ?? document.querySelector('[class*="footer-group"]');
@@ -123,15 +130,13 @@ class StickyAddToCartComponent extends Component {
       const [entry] = entries;
       if (!entry) return;
 
-      // Only show sticky bar if buy buttons have been scrolled past (above viewport)
+      // Desktop: only show once buy buttons are scrolled past (above viewport).
+      // Mobile: also show while buy buttons are not yet reached (below viewport).
       if (!entry.isIntersecting && !this.#isStuck) {
-        // Check if the element is above the viewport (scrolled past) or below (not yet reached)
-        const rect = entry.target.getBoundingClientRect();
-        if (rect.bottom < 0 || rect.top < 0) {
+        if (this.#shouldShowFor(entry.target.getBoundingClientRect())) {
           if (this.#isChatActive()) return;
           this.#showStickyBar();
         }
-        // If rect.top >= 0, element is below viewport - don't show sticky bar yet
       } else if (entry.isIntersecting && this.#isStuck) {
         this.#hiddenByBottom = false;
         this.#hideStickyBar();
@@ -150,8 +155,8 @@ class StickyAddToCartComponent extends Component {
         } else if (!entry.isIntersecting && this.#hiddenByBottom) {
           // Footer out of view - check if we should show sticky bar again
           const rect = buyButtonsBlock.getBoundingClientRect();
-          // Only show if buy buttons are above the viewport (scrolled past)
-          if (rect.bottom < 0 || rect.top < 0) {
+          // Only show if buy buttons are out of view (see #shouldShowFor)
+          if (this.#shouldShowFor(rect)) {
             this.#hiddenByBottom = false;
             if (!this.#isChatActive()) {
               this.#showStickyBar();
@@ -336,6 +341,36 @@ class StickyAddToCartComponent extends Component {
 
   // Helper methods
   /**
+   * Whether the bar should show for the main buy buttons' position.
+   * Above the viewport (scrolled past) applies to all breakpoints; below the viewport
+   * (not yet reached) applies on mobile only.
+   * @param {DOMRect} rect - Bounding rect of the main buy buttons block
+   * @returns {boolean}
+   */
+  #shouldShowFor(rect) {
+    if (rect.bottom < 0 || rect.top < 0) return true;
+    return isMobileBreakpoint() && rect.top >= window.innerHeight;
+  }
+
+  /**
+   * Re-evaluates visibility when crossing the mobile/desktop breakpoint,
+   * since the "not yet reached" rule only applies on mobile.
+   */
+  #handleBreakpointChange = () => {
+    if (!this.#buyButtonsBlock || this.#hiddenByBottom) return;
+
+    const rect = this.#buyButtonsBlock.getBoundingClientRect();
+    const inView = rect.bottom > 0 && rect.top < window.innerHeight;
+    const shouldShow = !inView && this.#shouldShowFor(rect) && !this.#isChatActive();
+
+    if (shouldShow && !this.#isStuck) {
+      this.#showStickyBar();
+    } else if (!shouldShow && this.#isStuck) {
+      this.#hideStickyBar();
+    }
+  };
+
+  /**
    * Checks whether the Shopify Chat is active on the page.
    * When active, the sticky bar must stay hidden to avoid overlapping the chat UI.
    *
@@ -349,6 +384,9 @@ class StickyAddToCartComponent extends Component {
    * @returns {boolean}
    */
   #isChatActive() {
+    // Mobile: the bar is the persistent buy box, so it takes priority over the chat launcher
+    // (see the mobile z-index rule in product-information.liquid).
+    if (isMobileBreakpoint()) return false;
     if (!customElements.get('shopify-chat')) return false;
     return Boolean(document.querySelector('shopify-chat'));
   }

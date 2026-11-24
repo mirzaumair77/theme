@@ -1,0 +1,389 @@
+{%- doc -%}
+  Style owner for the product page design spec (title, subtitle, price, review,
+  description, add to cart, trust icons, customer quote, Complete the look and
+  accordions) in the product information section's details column. Always rendered
+  by product-information-content; every rule is scoped to `.product-information`.
+
+  Also loads the font faces the spec needs beyond the theme's own: the heading font
+  at weight 500 (quote text) and Inter 500 (quote rating).
+
+  @example
+  {% render 'product-design-styles' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign heading_font_medium = settings.type_heading_font | font_modify: 'weight', '500'
+-%}
+
+{%- if heading_font_medium -%}
+  {%- style -%}
+    {{ heading_font_medium | font_face: font_display: 'swap' }}
+  {%- endstyle -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .product-information {
+    --product-design-ink: #121212;
+    --product-design-ink-soft: #2A2A2A;
+    --product-design-rule: #e5e5e5;
+    --product-design-quote-background: #efeae1;
+    --product-design-look-background: #f7f5f0;
+    --product-design-star-empty: #d6d0c6;
+
+    /* The spec's sizes set the hierarchy; this scales them together per breakpoint */
+    --product-design-type-scale: 1.15;
+
+    @media screen and (min-width: 750px) {
+      --product-design-type-scale: 1.25;
+    }
+  }
+
+  #web-pixels-manager-sandbox-container,
+  ._mobileStickyCartContainar_11yhm_365,
+  .mu_sticky_descktop {
+    display: none !important;
+  }
+
+  /* Title */
+  .product-information .product-details h1 {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-heading--family);
+    font-size: 24px;
+    line-height: 28.8px;
+    font-weight: 400;
+  }
+
+  /* Custom title text (e.g. ™): 10px Poppins, top-aligned with the title's capitals */
+  .product-information .product-details h1 .product-title-accent {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 20px;
+    letter-spacing: -0.4px;
+  }
+
+  /* Metal */
+  .product-information .product-details variant-title-component,
+  .product-information .product-details variant-title-component > * {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale));
+    line-height: 1.2;
+    font-weight: 400;
+  }
+
+  /* Price */
+  .product-information .product-details product-price.text-block,
+  .product-information .product-details product-price.text-block .price {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(18px * var(--product-design-type-scale));
+    line-height: 1.2;
+    font-weight: 500;
+  }
+
+  /* Review */
+  .product-information .product-details .rating-wrapper .rating-count,
+  .product-information .product-details .rating-text__value,
+  .product-information .product-details .rating-text__count {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale));
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.033px;
+  }
+
+  .product-information .product-details .rating-wrapper--text {
+    --rating-text-color: var(--product-design-ink-soft);
+  }
+
+  .product-information .product-details .rating-text__stars-track {
+    color: var(--product-design-star-empty);
+  }
+
+  .product-information .product-details .rating-text__count-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* Divider to description is a single space; the column gap is the double space */
+  .product-information .product-details > .group-block > .group-block-content > .divider + .text-block {
+    margin-block-start: -12px;
+  }
+
+  /* Description */
+  .product-information .product-details rte-formatter.text-block:not(.details-content *),
+  .product-information .product-details rte-formatter.text-block:not(.details-content *) > * {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(9px * var(--product-design-type-scale));
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* Option labels ("Finish:", "US Size:") and the selected finish name */
+  .product-information .product-details .variant-picker--inline .variant-option--buttons legend {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale));
+    font-weight: 700;
+  }
+
+  .product-information .product-details .variant-picker--inline .variant-option__selected-value {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale));
+    font-weight: 400;
+  }
+
+  /* Pickers with a size row: option values line up in one column */
+  .product-information
+    .product-details
+    .variant-picker--inline:has(.variant-option--buttons:not(.variant-option--swatches)) {
+    --variant-inline-size-button: 2.5rem;
+
+    @media screen and (min-width: 750px) {
+      --variant-inline-size-button: 2.25rem;
+    }
+
+    .variant-option--buttons legend {
+      min-width: 4.75em;
+      min-height: var(--variant-inline-size-button);
+    }
+
+    .variant-option + .variant-option {
+      margin-block-start: 16px;
+    }
+  }
+
+  /* Size circles, at most 8 per row: 1px #7C7C7C, or 2px #2A2A2A when selected */
+  .product-information .product-details .variant-picker--inline .variant-option--buttons:not(.variant-option--swatches) {
+    .variant-option__values {
+      gap: 6px;
+      max-width: calc(8 * var(--variant-inline-size-button) + 7 * 6px);
+    }
+
+    .variant-option__button-label {
+      --variant-strikethrough-color: #7c7c7c;
+
+      border: 0;
+      background-color: transparent;
+      color: #7c7c7c;
+      font-family: var(--font-body--family);
+      font-size: calc(10px * var(--product-design-type-scale));
+      font-weight: 400;
+
+      &::before {
+        inset: 0;
+        border: 1px solid #7c7c7c;
+      }
+
+      &::after {
+        inset: 0;
+      }
+
+      &:has([data-option-available='false']):not(:has(:checked))::after {
+        display: none;
+      }
+
+      &:hover,
+      &:has(:checked),
+      &:has(:checked):hover,
+      &:has([data-option-available='false']):has(:checked) {
+        background-color: transparent;
+        color: var(--product-design-ink-soft);
+        font-weight: 400;
+      }
+
+      &:hover::before {
+        border-color: var(--product-design-ink-soft);
+      }
+
+      &:has(:checked)::before,
+      &:has(:checked)::after {
+        border: 2px solid var(--product-design-ink-soft);
+      }
+    }
+  }
+
+  /* Single space between the size guide link and Add to Bag */
+  .product-information .product-details .size-guide + * {
+    margin-block-start: -12px;
+  }
+
+  .product-information .product-details .add-to-cart-button {
+    height: auto;
+    padding-block: 17px;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    border-radius: 0;
+    background: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale));
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* White label and icon, except while the theme's "added" animation hides them */
+  .product-information .product-details .add-to-cart-button:not([data-added='true']) {
+    color: #fff;
+  }
+
+  /* Arrow matches the label's cap height (native 12:8 icon) */
+  .product-information .product-details .add-to-cart-button .add-to-cart-icon--arrow {
+    width: 1.08em;
+    height: 0.72em;
+  }
+
+  .product-information .product-details .add-to-cart-button .add-to-cart-icon--arrow svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Text with icon block: the bordered row replaces the trust row's divider blocks */
+  .product-information
+    .product-details
+    .group-block-content:has(> .group-block > .group-block-content > .group-block > .group-block-content > .icon-block)
+    > .divider {
+    display: none;
+  }
+
+  .product-information
+    .product-details
+    .group-block-content.layout-panel-flex--row:has(> .group-block > .group-block-content > .icon-block) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    align-self: stretch;
+    padding: 16px 0;
+    border-block-start: 1px solid var(--product-design-rule);
+    border-block-end: 1px solid var(--product-design-rule);
+
+    .text-block,
+    .text-block > * {
+      color: var(--product-design-ink-soft);
+      font-family: var(--font-body--family);
+      font-size: 11px;
+      line-height: normal;
+      font-weight: 400;
+    }
+
+    /* Mobile: 2 x 2 grid (two badges per row) */
+    @media screen and (max-width: 749px) {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px 0;
+
+      > .group-block {
+        width: 100%;
+      }
+    }
+  }
+
+  /* Customer quote */
+  .product-information .product-details .group-block[class*='__customer_quote'] {
+    padding: 16px 14px;
+    background: var(--product-design-quote-background);
+
+    > .group-block-content {
+      row-gap: 4px;
+    }
+
+    .text-block[class*='__quote_stars'],
+    .text-block[class*='__quote_stars'] > * {
+      color: var(--product-design-ink-soft);
+      font-family: var(--font-inter, var(--font-body--family));      
+      font-size: 14px;
+      line-height: 16.8px;
+      letter-spacing: 0.84px;
+      font-weight: 500;
+    }
+
+    .text-block[class*='__quote_text'],
+    .text-block[class*='__quote_text'] > * {
+      color: var(--product-design-ink-soft);
+      text-align: center;
+      font-family: var(--font-heading--family);
+      font-size: 14px;
+      line-height: 18.2px;
+      letter-spacing: -0.28px;
+      font-weight: 500;
+    }
+
+    .text-block[class*='__quote_author'],
+    .text-block[class*='__quote_author'] > * {
+      color: var(--product-design-ink);
+      font-family: var(--font-body--family);
+      font-size: 11px;
+      line-height: normal;
+      font-weight: 400;
+    }
+  }
+
+  .product-information .product-details .complete-the-look__heading {
+    color: var(--product-design-ink-soft);
+    text-align: center;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    line-height: 19.6px;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  /* Accordion content; titles, icons, and dividers live in accordion-styles */
+  .product-information .product-details .accordion .details-content .text-block,
+  .product-information .product-details .accordion .details-content .text-block * {
+    color: var(--product-design-ink-soft);
+    font-family: var(--font-body--family);
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .product-information .product-details .accordion .details-content .text-block * {
+    font-size: 11.25px;
+    line-height: 15.75px;
+  }
+
+  .product-information .product-details .accordion .details-content .text-block strong {
+    font-weight: 600;
+  }
+
+  .product-information .product-details .accordion .details-content .text-block > * + * {
+    padding-block-start: 12px;
+  }
+  
+  .product-information .product-details accordion-custom:not(:has(.details-content > *)) {
+    display: none;
+  }
+
+  .product-information .product-details .accordion.accordion--dividers .details-content {
+    padding-block-end: 22.5px;
+  }
+
+  @media screen and (min-width: 750px) {
+    /* Title */
+    .product-information .product-details h1 {
+      font-size: 30px;
+      line-height: 36px;
+    }
+
+    /* Add to cart + accelerated checkout: square, 54px tall, 8px apart */
+    .product-information .product-details .product-form-buttons {
+      --height-buy-buttons: 54px;
+      --style-border-radius-buttons-primary: 0;
+      --style-border-radius-buttons-secondary: 0;
+
+      gap: 8px;
+    }
+    
+    .product-information .product-details .group-block[class*='__customer_quote'] {
+      padding: 16px;
+    }
+  }
+{% endstylesheet %}

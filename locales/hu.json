@@ -336,6 +336,36 @@
     "blog_post_description": "Összefoglaló a blogbejegyzésed tartalmáról"
   },
   "products": {
+    "size_guide": {
+      "match": "A {{ circumference }} mm-es ujjhoz a(z) {{ size }} méret illik.",
+      "select_size": "{{ size }} méret kiválasztása",
+      "out_of_range": "Adjon meg {{ min }} és {{ max }} mm közötti értéket.",
+      "size_selected": "{{ size }} méret kiválasztva"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} kamatmentes részlet, egyenként {{ amount }}, {{ brand }} szolgáltatással"
+    },
+    "breadcrumbs": {
+      "label": "Morzsamenü",
+      "home": "Kezdőlap"
+    },
+    "variant_group": {
+      "layout": "Nézet",
+      "grid": "Rács",
+      "list": "Lista",
+      "finishes": {
+        "one": "{{ count }} felületkezelés"
+      },
+      "current": "Jelenleg megtekintett"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} kosárba helyezése",
+      "added_to_cart": "{{ title }} a kosárba került",
+      "add": "{{ title }} hozzáadása a rendeléshez",
+      "price_addition": "+{{ price }}",
+      "previous": "Előző termékek",
+      "next": "Következő termékek"
+    },
     "product": {
       "add_to_cart": "Hozzáadás a kosárhoz",
       "adding_to_cart": "Hozzáadás…",

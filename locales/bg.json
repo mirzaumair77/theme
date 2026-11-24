@@ -313,6 +313,36 @@
     "blog_post_description": "Откъс от съдържанието на Вашата публикация в блога"
   },
   "products": {
+    "size_guide": {
+      "match": "Пръст с обиколка {{ circumference }} mm отговаря на размер {{ size }}.",
+      "select_size": "Избор на размер {{ size }}",
+      "out_of_range": "Въведете стойност между {{ min }} и {{ max }} mm.",
+      "size_selected": "Избран е размер {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} безлихвени вноски от {{ amount }} с {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Навигационна пътека",
+      "home": "Начало"
+    },
+    "variant_group": {
+      "layout": "Изглед",
+      "grid": "Мрежа",
+      "list": "Списък",
+      "finishes": {
+        "one": "{{ count }} покритие"
+      },
+      "current": "Разглеждате в момента"
+    },
+    "add_ons": {
+      "add_to_cart": "Добавете {{ title }} в количката",
+      "added_to_cart": "{{ title }} е добавен в количката",
+      "add": "Добавете {{ title }} към поръчката си",
+      "price_addition": "+{{ price }}",
+      "previous": "Предишни продукти",
+      "next": "Следващи продукти"
+    },
     "product": {
       "add_to_cart": "Добавяне към количката",
       "adding_to_cart": "Добавяне...",

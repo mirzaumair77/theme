@@ -133,7 +133,7 @@
     },
     "email_signup": {
       "label": "Email",
-      "placeholder": "Email address",
+      "placeholder": "Email Address",
       "success": "Thanks for subscribing!"
     },
     "filter": "Filter",
@@ -163,6 +163,8 @@
     }
   },
   "content": {
+    "mega_menu_shop_now": "Shop now",
+    "drawer_search_placeholder": "Search for a product",
     "cancel": "Cancel",
     "discount": "Discount",
     "account_title": "Account",
@@ -355,6 +357,19 @@
     "blog_post_description": "An excerpt of your blog post's content"
   },
   "products": {
+    "size_guide": {
+      "match": "A {{ circumference }} mm finger matches a {{ size }}.",
+      "select_size": "Select size {{ size }}",
+      "out_of_range": "Enter a measurement between {{ min }} and {{ max }} mm.",
+      "size_selected": "Size {{ size }} selected"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} interest-free installments of {{ amount }} with {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Breadcrumb",
+      "home": "Home"
+    },
     "product": {
       "add_to_cart": "Add to cart",
       "adding_to_cart": "Adding...",
@@ -370,6 +385,24 @@
       "in_cart": "in cart",
       "default_title": "Default Title",
       "sticky_add_to_cart": "Quick add to cart bar"
+    },
+    "variant_group": {
+      "layout": "Display",
+      "grid": "Grid",
+      "list": "List",
+      "finishes": {
+        "one": "{{ count }} finish",
+        "other": "{{ count }} finishes"
+      },
+      "current": "Currently viewing"
+    },
+    "add_ons": {
+      "add_to_cart": "Add {{ title }} to cart",
+      "added_to_cart": "{{ title }} added to cart",
+      "add": "Add {{ title }} to your order",
+      "price_addition": "+{{ price }}",
+      "previous": "Previous products",
+      "next": "Next products"
     }
   }
 }

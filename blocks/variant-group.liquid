@@ -71,6 +71,7 @@
   endif
 
   assign current_title = current_entry.title.value | default: current_product.title
+  assign original_title = current_product.title
   assign current_image = current_entry.featured_image.value | default: current_product.featured_image
 
   # Render only with siblings to choose from (always in the editor so the block stays selectable).
@@ -145,7 +146,7 @@
     >
       {%- render 'variant-group-item',
         item_product: current_product,
-        item_title: current_title,
+        item_title: original_title,
         item_image: current_image,
         is_current: true,
         selected_color: selected_color,
@@ -170,7 +171,8 @@
           assign rendered_ids = rendered_ids | append: entry_product.id | append: ','
           assign position = position | plus: 1
 
-          assign entry_title = entry.title.value | default: entry_product.title
+          # Item cards always show the product's original title, matching the current item.
+          assign entry_title = entry_product.title
           assign entry_image = entry.featured_image.value | default: entry_product.featured_image
 
           assign is_extra = false

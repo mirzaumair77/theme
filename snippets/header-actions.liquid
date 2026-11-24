@@ -7,10 +7,26 @@
   @param {block} [block] - The block object, used for Shopify editor attributes.
   @param {string} [display_style] - Controls display mode for header actions: 'icon' or 'text'.
   @param {string} [customer_account_menu] - The menu handle passed to the shopify-account component.
+  @param {boolean} [show_account] - Set to false to leave out the account link. Shown when omitted.
+  @param {boolean} [show_profile_badge] - In text style, show the account as its profile icon instead of text.
+  @param {boolean} [show_cart_icon] - In text style, show the cart as its icon instead of text.
 
   @example
-  {% render 'header-actions', section: section %}
+  {% render 'header-actions', section: section, display_style: 'text', show_cart_icon: true %}
 {% enddoc %}
+
+{% liquid
+  # Icon toggles reuse the icon-style markup for that action only
+  assign account_display_style = display_style
+  if display_style == 'text' and show_profile_badge
+    assign account_display_style = 'icon'
+  endif
+
+  assign cart_display_style = display_style
+  if display_style == 'text' and show_cart_icon
+    assign cart_display_style = 'icon'
+  endif
+%}
 
 <script
   type="module"
@@ -20,18 +36,18 @@
 
 {% capture cart_icon %}
   <cart-icon
-    class="header-actions__cart-icon{% if display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
+    class="header-actions__cart-icon{% if cart_display_style == 'text' %} header-actions__cart-icon--text{% endif %}{% unless cart == empty %} header-actions__cart-icon--has-cart{% endunless %}"
     data-testid="cart-icon"
   >
-    <span class="{% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
+    <span class="{% if cart_display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
       {{ 'content.cart_title' | t }}
     </span>
 
     <span
-      class="svg-wrapper {% if display_style != 'icon' %}desktop:hidden{% endif %}"
+      class="svg-wrapper header-icon {% if cart_display_style != 'icon' %}desktop:hidden{% endif %}"
       aria-hidden="true"
     >
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      {{ 'icon-header-cart.svg' | inline_asset_content }}
     </span>
 
     {% render 'cart-bubble', limit: 100 %}
@@ -39,22 +55,9 @@
 {% endcapture %}
 
 {% capture account_icon %}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="17"
-    viewBox="0 0 15 17"
-    fill="none"
-    slot="signed-out-avatar"
-    class="account-button__icon"
-  >
-    <path
-      stroke="currentColor"
-      stroke-linejoin="round"
-      stroke-width="var(--icon-stroke-width)"
-      d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
-    />
-  </svg>
+  <span class="svg-wrapper header-icon account-button__icon">
+    {{- 'icon-header-account.svg' | inline_asset_content -}}
+  </span>
 {% endcapture %}
 
 <header-actions
@@ -63,7 +66,7 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
-  {% if shop.customer_accounts_enabled %}
+  {% if shop.customer_accounts_enabled and show_account != false %}
     {% liquid
       assign account_actions_style = ''
       if display_style == 'text' and section
@@ -83,7 +86,7 @@
       endif
     %}
     <div
-      class="account-button header-actions__action{% if display_style == 'text' %} account-button--text{% endif %} color-custom-popover"
+      class="account-button header-actions__action{% if account_display_style == 'text' %} account-button--text{% endif %} color-custom-popover"
     >
       <shopify-account
         menu="{{ customer_account_menu }}"
@@ -96,14 +99,14 @@
         {% else %}
           <span
             slot="signed-out-avatar"
-            class="account-button__text header-actions__text-style {% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}"
+            class="account-button__text header-actions__text-style {% if account_display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}"
           >
             {{ 'content.account_title' | t }}
           </span>
 
           <span
             slot="signed-out-avatar"
-            class="{% if display_style != 'icon' %}desktop:hidden{% endif %}"
+            class="account-button__icon-slot{% if account_display_style != 'icon' %} desktop:hidden{% endif %}"
             aria-hidden="true"
           >
             {{ account_icon }}
@@ -115,7 +118,7 @@
 
   {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
     <button
-      class="header-actions__action button-unstyled{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="header-actions__action button-unstyled{% if cart_display_style == 'text' %} header-actions__text-style{% endif %}"
       on:click="#cart-drawer/toggle"
       aria-haspopup="dialog"
       aria-expanded="false"
@@ -129,7 +132,7 @@
   {% else %}
     <a
       href="{{ routes.cart_url }}"
-      class="header-actions__action action__cart{% if display_style == 'text' %} header-actions__text-style{% endif %}"
+      class="header-actions__action action__cart{% if cart_display_style == 'text' %} header-actions__text-style{% endif %}"
       aria-label="{{ 'accessibility.cart' | t }}"
       aria-describedby="cart-bubble-text"
     >
@@ -155,6 +158,29 @@
   .account-button {
     /* Remove the background color from the color scheme, we want to inherit the color of the header */
     background: transparent;
+  }
+
+  /* Center the account icon in a box the size of the search and cart buttons, rather
+     than letting the inline slot sit it on the text baseline */
+  .account-button shopify-account {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .account-button__icon-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--button-size);
+    height: var(--button-size);
+    line-height: 0;
+  }
+
+  .account-button__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .account-button__icon,
@@ -217,9 +243,9 @@
   }
 
   @media screen and (min-width: 750px) {
-    .header-actions--text {
+    /* .header-actions--text {
       gap: var(--gap-xl);
-    }
+    } */
 
     .header-actions__text-style {
       font-size: var(--header-actions-font-size);
@@ -237,19 +263,38 @@
     margin-inline-start: calc(var(--gap-md) * -1);
   }
 
+  /* The cart trigger is a .button-unstyled, which sets overflow: hidden (base.css). The
+     button keeps its 24px box; let the cart bubble (and the touch-target ::after) extend past it. */
+  .header-actions__action:has(> .header-actions__cart-icon) {
+    overflow: visible;
+  }
+
   .header-actions__cart-icon {
     --cart-bubble-size: 20px;
     --cart-bubble-top: 4.5px;
     --cart-bubble-right: 2.5px;
 
+    /* A box (not the default inline custom element) so the absolutely positioned
+       bubble anchors to the icon itself on every breakpoint */
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .header-actions__cart-icon .cart-bubble {
     position: absolute;
+    z-index: var(--layer-flat);
     width: var(--cart-bubble-size, 20px);
     top: var(--cart-bubble-top);
     inset-inline-end: var(--cart-bubble-right);
+    pointer-events: none;
+  }
+
+  /* Empty cart: no bubble at all. The count is announced through header-actions' live region.
+     (The text-utilities header intentionally keeps an outlined "0" box; see sections/header.liquid.) */
+  .header-actions__cart-icon:not(.header-actions__cart-icon--text) .cart-bubble.visually-hidden {
+    display: none;
   }
 
   @media screen and (min-width: 750px) {

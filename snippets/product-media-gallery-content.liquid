@@ -56,11 +56,10 @@
   if block_settings.slideshow_controls_style != block_settings.slideshow_mobile_controls_style
     assign slideshow_controls_class = 'mobile:hidden'
 
-    if block_settings.slideshow_mobile_controls_style != 'hint'
+    if block_settings.slideshow_mobile_controls_style != 'hint' and block_settings.slideshow_mobile_controls_style != 'arrows'
       assign render_mobile_slideshow_controls = true
     endif
   endif
-
   assign slideshow_controls_style = block_settings.slideshow_controls_style
   # Use a counter instead of dots when there are many images to avoid cropping/overflow.
   if slideshow_controls_style == 'dots' and selected_product.media.size > 15
@@ -138,8 +137,22 @@
     assign needs_both_sizes = true
   endif
 
+  # Grid 2: when the images left to pair are odd, the final image spans both columns
+  # (CSS owns the layout in product-media-gallery-content-styles; this only sizes it).
+  assign full_width_last_media = false
+  if media_presentation == 'grid' and block_settings.media_columns == 'two' and sorted_media.size > 1
+    assign paired_media_count = sorted_media.size
+    if block_settings.large_first_image
+      assign paired_media_count = paired_media_count | minus: 1
+    endif
+    assign unpaired_media = paired_media_count | modulo: 2
+    if unpaired_media == 1
+      assign full_width_last_media = true
+    endif
+  endif
+
   # Calculate sizes using utility snippet
-  if needs_both_sizes
+  if needs_both_sizes or full_width_last_media
     # Calculate sizes for single column (first image)
     capture sizes_single
       render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_first_image: true, is_single_column: true, needs_both_sizes: true
@@ -365,9 +378,23 @@
     data-presentation="{{ media_presentation }}"
     {{ block_shopify_attributes }}
   >
+    {%- comment -%} Tag-driven badge, printed on the first media only (each copy is cleared after use). {%- endcomment -%}
+    {%- capture slide_badge -%}{% render 'gallery-badge', product: selected_product %}{%- endcapture -%}
+    {%- assign grid_badge = slide_badge -%}
+
+    {%- comment -%} Mobile zoom hint on each slide; CSS shows it on zoomable images only. Tapping the slide opens the zoom dialog. {%- endcomment -%}
+    {%- capture zoom_icon -%}
+      {%- if block_settings.mobile_zoom_icon == 'show' -%}
+        <span class="media-gallery__zoom-icon" aria-hidden="true">{{- 'icon-zoom-mobile.svg' | inline_asset_content -}}</span>
+      {%- endif -%}
+    {%- endcapture -%}
+
     {% capture slides %}
       {% for media in sorted_media %}
         {% capture children %}
+          {{- slide_badge -}}
+          {%- assign slide_badge = '' -%}
+          {{- zoom_icon -}}
           {%- liquid
               if needs_both_sizes and forloop.first
                 assign media_sizes = sizes_single
@@ -378,10 +405,10 @@
           {% if block_settings.aspect_ratio != 'adapt' and block_settings.constrain_to_viewport %}
             <div
               class="product-media-constraint-wrapper">
-              {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
+              {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, loading: 'lazy' -%}
             </div>
           {% else %}
-            {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
+            {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, loading: 'lazy' -%}
           {% endif %}
         {% endcapture %}
         {% capture class %}
@@ -439,11 +466,16 @@
       {% endcapture %}
     {% endif %}
 
-    {% if render_slideshow_arrows %}
-      {% capture slideshow_arrows %}
+    {%- capture slideshow_arrows -%}
+      {%- if render_slideshow_arrows -%}
         {% render 'slideshow-arrows', class: 'mobile:hidden', icon_style: block_settings.icons_style %}
-      {% endcapture %}
-    {% endif %}
+      {%- endif -%}
+      {% render 'product-media-gallery-mobile-arrows',
+        mobile_controls_style: block_settings.slideshow_mobile_controls_style,
+        icons_style: block_settings.icons_style,
+        media_count: sorted_media.size
+      %}
+    {%- endcapture -%}
 
     {% render 'slideshow',
       ref: 'slideshow',
@@ -484,8 +516,12 @@
                 {% endif %}
               ></button>
             {%- endif -%}
+            {{- grid_badge -}}
+            {%- assign grid_badge = '' -%}
             {%- liquid
               if needs_both_sizes and forloop.first
+                assign media_sizes = sizes_single
+              elsif full_width_last_media and forloop.last
                 assign media_sizes = sizes_single
               else
                 assign media_sizes = sizes
@@ -493,10 +529,10 @@
             -%}
             {% if block_settings.aspect_ratio != 'adapt' and block_settings.constrain_to_viewport %}
               <div class="product-media-constraint-wrapper">
-                {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
+                {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, loading: 'lazy' -%}
               </div>
             {% else %}
-              {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first -%}
+              {%- render 'product-media', media: media, sizes: media_sizes, is_main_product_media: forloop.first, loading: 'lazy' -%}
             {% endif %}
           </li>
         {% endfor %}
@@ -653,6 +689,63 @@
 {% render 'product-media-gallery-content-styles' %}
 
 {% stylesheet %}
+  /* Merchant badge on the first gallery media (product tag `gallery:BADGE NAME`) */
+  .media-gallery__badge {
+    position: absolute;
+    inset-block-start: 20px;
+    inset-inline-start: 20px;
+    z-index: 1;
+    padding: 4px 12px;
+    background-color: rgb(0 0 0 / 0.5);
+    color: var(--White, #fff);
+    font-family: Inter, var(--font-body--family);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    pointer-events: none;
+  }
+
+  /* Mobile gallery is exactly 400px tall: each slide is fixed at 400px and its media fills it using the
+     gallery's object-fit setting, so nothing overflows. The desktop grid and the zoom dialog are unaffected. */
+  @media screen and (max-width: 749px) {
+    media-gallery slideshow-slide.product-media-container {
+      height: 400px;
+      max-height: 400px;
+      aspect-ratio: auto;
+      overflow: hidden;
+    }
+
+    media-gallery slideshow-slide.product-media-container :is(.product-media, deferred-media, product-model) {
+      height: 100%;
+      aspect-ratio: auto;
+    }
+
+    media-gallery slideshow-slide.product-media-container :is(img, video, iframe, model-viewer) {
+      width: 100%;
+      height: 100%;
+      object-fit: var(--product-media-fit, cover);
+    }
+  }
+
+  /* Mobile zoom hint (block setting "Zoom icon on mobile"); taps fall through to the slide's zoom action */
+  .media-gallery__zoom-icon {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .product-media-container--image.product-media-container--zoomable .media-gallery__zoom-icon {
+      position: absolute;
+      inset-block-start: 12px;
+      inset-inline-end: 12px;
+      z-index: 1;
+      display: flex;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+    }
+  }
+
   .dialog-thumbnails-list-container {
     position: fixed;
     width: 100%;
@@ -1059,6 +1152,58 @@
   .media-gallery--carousel slideshow-arrows .slideshow-control {
     padding-inline: 0 var(--padding-md);
     opacity: 1;
+  }
+
+  /* Mobile "Arrows" pagination: always visible (no hover on touch), one per side */
+  .media-gallery__mobile-arrows .slideshow-control {
+    opacity: 1;
+    animation: none;
+  }
+
+  /* ---------------------------------------------------------------
+     Custom slider arrow icon
+     Paste the SVG into --slider-arrow-icon as a data URI (keep it on one line,
+     use single quotes inside the SVG, and replace every # with %23).
+     The SVG should point to the NEXT direction; "previous" is mirrored below.
+     The icon is drawn as a mask, so it takes the button's text colour.
+     --------------------------------------------------------------- */
+  media-gallery {
+    --slider-arrow-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='17' viewBox='0 0 9 17' fill='none'%3E%3Cpath d='M0.5 16.5L8.5 8.5L0.5 0.5' stroke-linecap='round' stroke-linejoin='round' stroke='black'/%3E%3C/svg%3E");
+    --slider-arrow-size: 20px;
+  }
+
+  media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control svg {
+    display: none;
+  }
+
+  media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control::before {
+    content: '';
+    display: block;
+    flex-shrink: 0;
+    width: var(--slider-arrow-size);
+    height: var(--slider-arrow-size);
+    background-color: currentcolor;
+    mask: var(--slider-arrow-icon) center / contain no-repeat;
+  }
+
+  /* media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control--previous::before {
+    transform: scaleX(-1);
+  } */
+
+  /* RTL: next points left, previous points right */
+  [dir='rtl'] media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control::before {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control--previous::before {
+    transform: none;
+  }
+
+  /* Disabled arrow (first/last slide). Follows the attribute the slideshow JS toggles,
+     so it updates live as you navigate. !important is needed to beat the theme's
+     opacity: 1 rules and the hover fade-in animation. */
+  media-gallery :is(slideshow-arrows, .media-gallery__mobile-arrows) .slideshow-control:is(:disabled, [aria-disabled='true']) {
+    opacity: 0.6 !important;
   }
 
   /* The end-side padding reads as edge spacing only through the previous control's

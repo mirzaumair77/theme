@@ -336,6 +336,36 @@
     "blog_post_description": "Một đoạn trích nội dung bài viết blog của bạn"
   },
   "products": {
+    "size_guide": {
+      "match": "Ngón tay {{ circumference }} mm phù hợp với cỡ {{ size }}.",
+      "select_size": "Chọn cỡ {{ size }}",
+      "out_of_range": "Nhập số đo từ {{ min }} đến {{ max }} mm.",
+      "size_selected": "Đã chọn cỡ {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} kỳ trả góp không lãi suất, mỗi kỳ {{ amount }} với {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Đường dẫn",
+      "home": "Trang chủ"
+    },
+    "variant_group": {
+      "layout": "Hiển thị",
+      "grid": "Lưới",
+      "list": "Danh sách",
+      "finishes": {
+        "one": "{{ count }} lớp hoàn thiện"
+      },
+      "current": "Đang xem"
+    },
+    "add_ons": {
+      "add_to_cart": "Thêm {{ title }} vào giỏ hàng",
+      "added_to_cart": "Đã thêm {{ title }} vào giỏ hàng",
+      "add": "Thêm {{ title }} vào đơn hàng",
+      "price_addition": "+{{ price }}",
+      "previous": "Sản phẩm trước",
+      "next": "Sản phẩm tiếp theo"
+    },
     "product": {
       "add_to_cart": "Thêm vào giỏ hàng",
       "adding_to_cart": "Đang thêm...",

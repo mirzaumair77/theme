@@ -25,6 +25,17 @@
       /* First child spans 2 columns */
       grid-column: span 2;
     }
+
+    /* Grid 2: when the images left to pair are odd, the final image spans both columns
+       instead of sitting alone at half width. Even counts keep the plain two-column rows. */
+    .media-gallery--two-column:not(.media-gallery--large-first-image)
+      .media-gallery__grid
+      > .product-media-container:last-child:nth-child(odd),
+    .media-gallery--two-column.media-gallery--large-first-image
+      .media-gallery__grid
+      > .product-media-container:last-child:nth-child(even) {
+      grid-column: span 2;
+    }
   }
 
   media-gallery:where(.media-gallery--grid) .media-gallery__grid {

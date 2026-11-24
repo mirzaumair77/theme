@@ -97,7 +97,7 @@
         }
       ],
       "default": "arrow",
-      "visible_if": "{{ block.settings.media_presentation == 'carousel' }}"
+      "visible_if": "{{ block.settings.media_presentation == 'carousel' or block.settings.slideshow_mobile_controls_style == 'arrows' }}"
     },
     {
       "type": "select",
@@ -139,6 +139,10 @@
         {
           "value": "thumbnails",
           "label": "t:options.thumbnails"
+        },
+        {
+          "value": "arrows",
+          "label": "t:options.arrows"
         }
       ]
     },
@@ -263,6 +267,23 @@
       "id": "zoom",
       "label": "t:settings.enable_zoom",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "mobile_zoom_icon",
+      "label": "t:settings.mobile_zoom_icon",
+      "options": [
+        {
+          "value": "show",
+          "label": "t:options.show"
+        },
+        {
+          "value": "hide",
+          "label": "t:options.hide"
+        }
+      ],
+      "default": "hide",
+      "visible_if": "{{ block.settings.zoom }}"
     },
     {
       "type": "checkbox",

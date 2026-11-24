@@ -1,6 +1,10 @@
 {%- doc -%}
   Renders a default variant picker, used to display the variant picker in the variants block.
 
+  Optional block settings read here:
+  - `layout`: 'stacked' (default) or 'inline' (label, controls and selected value share a row).
+  - `option_labels`: one `Option name: Display label` pair per line, e.g. `Color: Finish`.
+
   @param {object} product_resource - The product object.
   @param {object} [block] - The block object
   @param {object} section - The section object.
@@ -8,6 +12,15 @@
 {%- enddoc -%}
 
 {% assign block_settings = block.settings %}
+
+{% liquid
+  assign is_inline_layout = false
+  if block_settings.layout == 'inline'
+    assign is_inline_layout = true
+  endif
+
+  assign option_label_lines = block_settings.option_labels | newline_to_br | split: '<br />'
+%}
 
 {% liquid
   # Custom styling applies to:
@@ -29,7 +42,7 @@
     {% render 'variant-button-custom-styles', block_settings: block_settings, block_id: block.id %}
   {% endif %}
   <variant-picker
-    class="variant-picker spacing-style variant-picker--{{ block_settings.alignment }}{% if has_custom_variant_buttons %} variant-picker--custom-{{ block.id }}{% endif %}"
+    class="variant-picker spacing-style variant-picker--{{ block_settings.alignment }}{% if is_inline_layout %} variant-picker--inline{% endif %}{% if has_custom_variant_buttons %} variant-picker--custom-{{ block.id }}{% endif %}"
     style="
       {% render 'spacing-style', settings: block_settings %}
        {% if block_settings.option_label_text_color != blank %}
@@ -43,6 +56,9 @@
     data-product-title="{{ product_resource.title | escape }}"
     data-block-id="{{ block.id }}"
     data-product-url="{{ product_resource.url }}"
+    {% if block_settings.default_size != blank %}
+      data-default-size="{{ block_settings.default_size | strip | escape }}"
+    {% endif %}
     ref="mainVariantPicker"
     {% if product.id == product_resource.id %}
       data-template-product-match="true"
@@ -55,6 +71,28 @@
     <form class="variant-picker__form">
       {%- for product_option in product_resource.options_with_values -%}
         {%- liquid
+          # Display label: merchant override from `option_labels`, otherwise the option name.
+          assign option_label = product_option.name
+          assign option_name_key = product_option.name | downcase | strip
+          for option_label_line in option_label_lines
+            assign option_label_pair = option_label_line | split: ':'
+            if option_label_pair.size < 2
+              continue
+            endif
+            assign option_label_name = option_label_pair.first | downcase | strip
+            if option_label_name == option_name_key
+              assign option_label = option_label_pair.last | strip
+              break
+            endif
+          endfor
+
+          # Values render in the product's admin order (product_option.values).
+          assign ordered_option_values = product_option.values
+          assign is_finish_option = false
+          if option_name_key == 'color' or option_name_key == 'colour' or option_name_key == 'finish' or option_name_key == 'metal'
+            assign is_finish_option = true
+          endif
+
           assign swatch_count = product_option.values | map: 'swatch' | compact | size
           assign variant_style = block_settings.variant_style
 
@@ -64,6 +102,11 @@
             else
               assign variant_style = 'swatch'
             endif
+          endif
+
+          # Every finish shows as a circle, including a single preselected finish.
+          if is_finish_option
+            assign variant_style = 'swatch'
           endif
 
           if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
@@ -78,7 +121,7 @@
             class="variant-option"
             data-testid="variant-option-single"
           >
-            {{- product_option.name | escape -}}
+            {{- option_label | escape -}}
             <span
               class="variant-option__swatch-value"
               data-testid="variant-option-single-value"
@@ -94,12 +137,14 @@
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}
-              {%- if variant_style == 'swatch' -%}
+              {{ option_label | escape -}}
+              {%- if variant_style == 'swatch' and is_inline_layout == false -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
             </legend>
-            {%- for product_option_value in product_option.values -%}
+            {%- comment -%} Layout-neutral (display: contents) except in the inline layout. {%- endcomment -%}
+            <div class="variant-option__values">
+            {%- for product_option_value in ordered_option_values -%}
               {% if product_option_value.size > longest_value and option_id_attribute %}
                 {% assign longest_value = product_option_value.size %}
               {% endif %}
@@ -143,11 +188,19 @@
                     endif
                   %}
 
-                  {% render 'swatch',
-                    swatch: product_option_value.swatch,
-                    variant_image: featured_media,
-                    mode: 'unscaled'
-                  %}
+                  {% if is_finish_option %}
+                    {% render 'finish-swatch',
+                      name: product_option_value.name,
+                      swatch: product_option_value.swatch,
+                      variant_image: featured_media
+                    %}
+                  {% else %}
+                    {% render 'swatch',
+                      swatch: product_option_value.swatch,
+                      variant_image: featured_media,
+                      mode: 'unscaled'
+                    %}
+                  {% endif %}
                 {% else %}
                   {% if product_option_value.available == true %}
                     <span
@@ -165,6 +218,16 @@
                 {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
             {%- endfor -%}
+            {%- if is_inline_layout and variant_style == 'swatch' -%}
+              {%- comment -%} Visual echo of the checked radio; its own label already names it for assistive tech. {%- endcomment -%}
+              <span
+                class="variant-option__selected-value"
+                aria-hidden="true"
+              >
+                {{- product_option.selected_value | escape -}}
+              </span>
+            {%- endif -%}
+            </div>
             {% if option_id_attribute %}
               {% style %}
                 [data-option-id="{{ fieldset_id }}"] {
@@ -190,7 +253,7 @@
           %}
 
           <div class="variant-option variant-option--dropdowns">
-            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ product_option.name | escape }}</label>
+            <label for="Option-{{ block.id }}-{{ forloop.index0 }}">{{ option_label | escape }}</label>
             <div
               class="variant-option__select-wrapper"
               style="

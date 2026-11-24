@@ -1,0 +1,81 @@
+{%- doc -%}
+  Outputs an escaped product title with each listed term wrapped in
+  `.product-title-accent`. Matching ignores letter case and keeps the title's original
+  characters. Longer terms match first, so `TM` is not broken up by a shorter `T`.
+
+  @param {string} title - The product title.
+  @param {string} terms - Text to style, one value per line.
+
+  @example
+  {% render 'product-title-accent', title: product.title, terms: section.settings.title_accent_text %}
+{%- enddoc -%}
+
+{%- liquid
+  # The mask mirrors the title character by character, with matched characters replaced by a marker.
+  assign marker = '␟'
+  assign title_lower = title | downcase
+  assign title_mask = title_lower
+  assign term_lines = terms | newline_to_br | split: '<br />'
+
+  assign longest_term = 0
+  for term_line in term_lines
+    assign term = term_line | strip_newlines | strip
+    if term.size > longest_term
+      assign longest_term = term.size
+    endif
+  endfor
+
+  if longest_term > 0 and title_lower.size == title.size
+    for term_length in (1..longest_term) reversed
+      for term_line in term_lines
+        assign term = term_line | strip_newlines | strip | downcase
+        if term.size != term_length
+          continue
+        endif
+
+        assign term_mask = ''
+        for position in (1..term_length)
+          assign term_mask = term_mask | append: marker
+        endfor
+        assign title_mask = title_mask | replace: term, term_mask
+      endfor
+    endfor
+  endif
+
+  assign segment = ''
+  assign in_accent = false
+  assign last_index = title.size | minus: 1
+-%}
+
+{%- if title_mask contains marker -%}
+  {%- for index in (0..last_index) -%}
+    {%- liquid
+      assign character = title | slice: index
+      assign mask_character = title_mask | slice: index
+      assign is_accent = false
+      if mask_character == marker
+        assign is_accent = true
+      endif
+
+      if is_accent != in_accent and segment != ''
+        if in_accent
+          echo '<span class="product-title-accent">' | append: segment | append: '</span>'
+        else
+          echo segment
+        endif
+        assign segment = ''
+      endif
+
+      assign in_accent = is_accent
+      assign escaped_character = character | escape
+      assign segment = segment | append: escaped_character
+    -%}
+  {%- endfor -%}
+  {%- if in_accent -%}
+    <span class="product-title-accent">{{ segment }}</span>
+  {%- else -%}
+    {{- segment -}}
+  {%- endif -%}
+{%- else -%}
+  {{- title | escape -}}
+{%- endif -%}

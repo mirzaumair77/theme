@@ -313,6 +313,36 @@
     "blog_post_description": "Cuplikan dari konten postingan blog Anda"
   },
   "products": {
+    "size_guide": {
+      "match": "Jari {{ circumference }} mm cocok dengan ukuran {{ size }}.",
+      "select_size": "Pilih ukuran {{ size }}",
+      "out_of_range": "Masukkan ukuran antara {{ min }} dan {{ max }} mm.",
+      "size_selected": "Ukuran {{ size }} dipilih"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} cicilan tanpa bunga sebesar {{ amount }} dengan {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Breadcrumb",
+      "home": "Beranda"
+    },
+    "variant_group": {
+      "layout": "Tampilan",
+      "grid": "Kisi",
+      "list": "Daftar",
+      "finishes": {
+        "one": "{{ count }} hasil akhir"
+      },
+      "current": "Sedang dilihat"
+    },
+    "add_ons": {
+      "add_to_cart": "Tambahkan {{ title }} ke keranjang",
+      "added_to_cart": "{{ title }} ditambahkan ke keranjang",
+      "add": "Tambahkan {{ title }} ke pesanan Anda",
+      "price_addition": "+{{ price }}",
+      "previous": "Produk sebelumnya",
+      "next": "Produk berikutnya"
+    },
     "product": {
       "add_to_cart": "Tambahkan ke keranjang",
       "added_to_cart": "Ditambahkan ke keranjang",

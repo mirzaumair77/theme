@@ -1,0 +1,45 @@
+{%- doc -%}
+  Renders a menu link title. Titles containing "Shop All" (any letter case) get a
+  trailing arrow icon, so the mega menu and drawer mark catch-all links the same way.
+
+  @param {string} title - The link title from Shopify Navigation.
+  @param {string} [class] - Classes for the title text span.
+
+  @example
+  {% render 'menu-link-title', title: link.title, class: 'wrap-text' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign title_lower = title | downcase
+  assign has_arrow = false
+  if title_lower contains 'shop all' or title_lower contains 'shop now'
+    assign has_arrow = true
+  endif
+-%}
+<span class="menu-link-title{% if class != blank %} {{ class }}{% endif %}">
+  {{- title | escape -}}
+  {%- if has_arrow -%}
+    <span class="svg-wrapper menu-link-title__arrow">{{ 'icon-menu-arrow.svg' | inline_asset_content }}</span>
+  {%- endif -%}
+</span>
+
+{% stylesheet %}
+  /* Native 12:9 arrow, sized with the link text (12 x 9px at 16px) */
+  .menu-link-title__arrow {
+    display: inline-flex;
+    width: 0.75em;
+    height: 0.5625em;
+    margin-inline-start: 0.3em;
+    vertical-align: 0.1em;
+
+    /* Doubled class outranks drawer-wide icon sizing */
+    &.svg-wrapper svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  [dir='rtl'] .menu-link-title__arrow svg {
+    transform: scaleX(-1);
+  }
+{% endstylesheet %}

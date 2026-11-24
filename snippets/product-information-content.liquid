@@ -59,6 +59,11 @@
     assign product_grid_class = product_grid_class | append: ' product-information--media-left'
   endif
 
+  # Fixed details width (desktop): the media column takes the remaining space.
+  if settings.details_width > 0 and settings.equal_columns == false and product_has_media
+    assign product_grid_class = product_grid_class | append: ' product-information__grid--fixed-details'
+  endif
+
   if settings.equal_columns
     assign product_grid_class = product_grid_class | append: ' product-information__grid--half'
 
@@ -87,13 +92,17 @@
 ></div>
 <div
   class="product-information section section--{{ content_width }} spacing-style{% if settings.background_color != blank %} color-custom-{{ section_id }}{% endif %} relative"
-  style="{% render 'spacing-style', settings: settings %} --gap: {{ settings.gap }}px;"
+  style="{% render 'spacing-style', settings: settings %} --gap: {{ settings.gap }}px;{% if settings.details_width > 0 %} --product-details-width: {{ settings.details_width }}px;{% endif %}"
   data-testid="product-information"
 >
   {% if settings.desktop_media_position == 'left' and product_has_media and request.page_type == 'product' %}
     {% assign product_href = '#ProductInformation-' | append: section_id %}
     {% render 'skip-to-content-link', href: product_href, text: 'accessibility.skip_to_product_info' %}
   {% endif %}
+  {% render 'product-design-styles' %}
+  {%- if settings.show_breadcrumbs -%}
+    {% render 'breadcrumbs', product: product %}
+  {%- endif -%}
   <product-component
     class="{{ product_grid_class }}"
     data-product-grid-content
@@ -308,16 +317,32 @@
     }
   }
 
-  .product-information__grid--limit-details .product-details > .group-block {
-    --details-max-width: var(--sidebar-width);
-    max-width: var(--details-max-width);
+  /* Fixed details width ("Product details width" setting): the details content is exactly that
+     width; the column adds the half-gap padding. Capped at half the viewport on small desktops. */
+  @media screen and (min-width: 750px) {
+    .product-information__grid.product-information__grid--fixed-details {
+      --product-details-column: min(calc(var(--product-details-width) + var(--gap, 0px) / 2), 50vw);
+
+      &.product-information--media-left {
+        grid-template-columns: minmax(0, 1fr) var(--product-details-column);
+      }
+
+      &.product-information--media-right {
+        grid-template-columns: var(--product-details-column) minmax(0, 1fr);
+      }
+    }
   }
 
+  .product-information__grid--limit-details .product-details > .group-block {
+    --details-max-width: 432px;
+    max-width: var(--details-max-width);
+  }
+/* 
   @media screen and (min-width: 1600px) {
     .product-information__grid--limit-details .product-details > .group-block {
       --details-max-width: 32rem;
     }
-  }
+  } */
 
   /* If the header is sticky, make product details content stick underneath the header */
   body:has(#header-group #header-component[data-sticky-state='active']) .product-details.sticky-content--desktop {

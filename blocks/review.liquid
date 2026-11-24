@@ -2,6 +2,8 @@
 
 {% liquid
   assign block_settings = block.settings
+  # The page's own product (product template only), captured before `product` is reassigned below.
+  assign page_product = product
   assign product = closest.product
   assign rating = product.metafields.reviews.rating.value.rating
   assign scale_max = product.metafields.reviews.rating.value.scale_max
@@ -13,6 +15,13 @@
     assign scale_max = product.metafields.reviews.rating.value.scale_max | default: 5
     assign rating_count = product.metafields.reviews.rating_count | default: 3
   endif
+
+  # Only link the count to the Reviews Widget for the main product on a product page,
+  # so product cards (which have their own overlay link) keep their normal behaviour.
+  assign scroll_to_reviews = false
+  if request.page_type == 'product' and page_product != blank and product.id == page_product.id
+    assign scroll_to_reviews = true
+  endif
 -%}
 
 {% if block_settings.text_color != blank %}
@@ -22,11 +31,85 @@
       --star-fill-color-rgb: {{ block_settings.text_color.rgb }};
       --color: {{ block_settings.text_color }};
       --color-rgb: {{ block_settings.text_color.rgb }};
+      --rating-text-color: {{ block_settings.text_color }};
     }
   {% endstyle %}
 {% endif %}
 
-{%- if rating != blank -%}
+{%- comment -%} "Enable ratings" off hides the stars and review text; the block stays selectable in the editor sidebar. {%- endcomment -%}
+{%- if block_settings.enable_ratings == false -%}
+  {%- assign rating = blank -%}
+{%- endif -%}
+
+{%- if rating != blank and block_settings.stars_style == 'text' -%}
+  {%- liquid
+    assign rating_scale = scale_max | default: 5
+    assign rating_fill = rating | times: 100.0 | divided_by: rating_scale
+    if rating_fill > 100
+      assign rating_fill = 100
+    endif
+    capture rating_star_glyphs
+      for star in (1..rating_scale)
+        echo '★'
+      endfor
+    endcapture
+  -%}
+  <div
+    class="rating-wrapper rating-wrapper--text rating-wrapper-{{ block.id }} justify-{{ block_settings.alignment }} size-style"
+    style="{% render 'size-style', settings: block_settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <span
+      class="rating-text__stars"
+      role="img"
+      aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
+      style="--rating-fill: {{ rating_fill }}%;"
+    >
+      <span
+        class="rating-text__stars-track"
+        aria-hidden="true"
+      >
+        {{- rating_star_glyphs -}}
+      </span>
+      <span
+        class="rating-text__stars-fill"
+        aria-hidden="true"
+      >
+        {{- rating_star_glyphs -}}
+      </span>
+    </span>
+    <span
+      class="rating-text__value"
+      aria-hidden="true"
+    >
+      {{- rating | times: 1.0 | round: 1 -}}
+    </span>
+    {%- if block_settings.show_number -%}
+      <span class="rating-text__count">
+        (
+        {%- if scroll_to_reviews -%}
+          <review-scroll-link
+            ><a
+              href="#reviews"
+              class="rating-text__count-link"
+              aria-label="{{ rating_count }} {{ 'content.reviews' | t | escape }}"
+              ><span class="rating-text__count-number">{{ rating_count }}</span></a
+            ></review-scroll-link
+          >
+        {%- else -%}
+          <span class="rating-text__count-number">{{ rating_count }}</span>
+        {%- endif -%}
+        {%- if block_settings.hide_review_text -%}
+          <span class="visually-hidden"> {{ 'content.reviews' | t }}</span>
+        {%- else %} {{ 'content.reviews' | t }}{% endif -%}
+        )
+      </span>
+    {%- endif -%}
+  </div>
+  {%- if scroll_to_reviews and block_settings.show_number -%}
+    <script src="{{ 'review-scroll-link.js' | asset_url }}" type="module"></script>
+  {%- endif -%}
+{%- elsif rating != blank -%}
   {% liquid
     assign star_count_rating = scale_max
     assign decimal_rating = 0
@@ -69,7 +152,7 @@
     </svg>
     <div
       class="rating"
-      style="--star-size: calc(var(--font-{{ block_settings.type_preset }}--size) * 1.1);"
+      style="--star-size: 12px;"
       aria-label="{{ 'accessibility.rating' | t: rating: rating }}"
     >
       {% if block_settings.stars_style == 'single' %}
@@ -103,12 +186,11 @@
         {%- if block_settings.stars_style == 'single' -%}
           <span aria-hidden="true">{{- rating | round: 1 }}</span>
         {%- endif -%}
-        {%- if block_settings.stars_style == 'single' and block_settings.show_number -%}
+        {%- if block_settings.stars_style == 'single' and block_settings.show_number and block_settings.hide_separator == false -%}
           <span class="rating-count-separator">|</span>
         {%- endif -%}
         {%- if block_settings.show_number -%}
-          {{- rating_count }}
-          {{ 'content.reviews' | t }}
+          ({{- rating_count }}{%- if block_settings.hide_review_text == false %} {{ 'content.reviews' | t }}{% endif -%})
         {%- endif -%}
       </p>
     {%- endif -%}
@@ -161,6 +243,61 @@
   .filled-star {
     fill: var(--star-fill-color);
   }
+
+  /* "Star characters" style: ★★★★★ 5.0 (53) */
+  .rating-wrapper--text {
+    --rating-text-color: var(--Black, #2a2a2a);
+
+    gap: 8px;
+    color: var(--rating-text-color);
+    font-family: var(--font-body--family);
+    line-height: 13.2px;
+    font-weight: 500;
+  }
+
+  .rating-text__stars {
+    position: relative;
+    display: inline-block;
+    font-size: 14px;
+    letter-spacing: 0.84px;
+    white-space: nowrap;
+  }
+
+  /* Unfilled stars sit underneath; the filled copy is clipped to the rating, so partial ratings show part-stars */
+  .rating-text__stars-track {
+    color: color-mix(in srgb, currentcolor 20%, transparent);
+  }
+
+  .rating-text__stars-fill {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    width: var(--rating-fill, 100%);
+    overflow: hidden;
+  }
+
+  .rating-text__value,
+  .rating-text__count {
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  /* Review count jumps to the Reviews Widget app block */
+  .rating-text__count-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  .rating-text__count-link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .rating-text__count-link:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid currentcolor;
+    outline-offset: 2px;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -177,10 +314,21 @@
       "content": "t:content.app_required_for_ratings"
     },
     {
+      "type": "checkbox",
+      "id": "enable_ratings",
+      "label": "t:settings.enable_ratings",
+      "default": true
+    },
+    {
       "type": "select",
       "id": "stars_style",
       "label": "t:settings.style",
+      "visible_if": "{{ block.settings.enable_ratings }}",
       "options": [
+        {
+          "value": "text",
+          "label": "t:options.star_characters"
+        },
         {
           "value": "outline",
           "label": "t:options.outline"
@@ -200,13 +348,29 @@
       "type": "checkbox",
       "id": "show_number",
       "label": "t:settings.review_count",
-      "default": true
+      "default": true,
+      "visible_if": "{{ block.settings.enable_ratings }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_review_text",
+      "label": "Hide review text",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_ratings and block.settings.show_number }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_separator",
+      "label": "Hide separator",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_ratings and block.settings.stars_style == 'single' }}"
     },
     {
       "type": "color",
       "id": "text_color",
       "label": "t:settings.text_color",
-      "placeholder": "t:settings.default"
+      "placeholder": "t:settings.default",
+      "visible_if": "{{ block.settings.enable_ratings }}"
     },
     {
       "type": "header",

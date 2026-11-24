@@ -250,6 +250,22 @@ class ProductFormComponent extends Component {
     return /** @type {HTMLInputElement | null} */ (this.querySelector('input[name="id"]'))?.value;
   }
 
+  /**
+   * Writes the variant ID into the live `input[name="id"]` the form submits. Queried at write
+   * time rather than read from `refs.variantId`: refs only start tracking DOM changes once the
+   * browser is idle, so an input replaced before then (by an app or a re-render) would leave the
+   * ref pointing at a detached copy and the form would submit the previous variant.
+   * Dispatches `change` so apps that track the variant input stay in sync.
+   * @param {string} id
+   */
+  #setVariantId(id) {
+    for (const input of this.querySelectorAll('form input[name="id"]')) {
+      if (!(input instanceof HTMLInputElement) || input.value === id) continue;
+      input.value = id;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
   async #refreshCart() {
     /** @type {import('@theme/component-cart-items').CartItemsComponent | null} */
     const cartItemsComponent = document.querySelector('cart-items-component');
@@ -437,6 +453,7 @@ class ProductFormComponent extends Component {
 
     const itemCount = Number(formData.get('quantity')) || Number(this.dataset.quantityDefault);
     const deferredEventPromise = CartLinesUpdateEvent.createPromise();
+    const addOnLines = this.#getAddOnLines(formData);
 
     this.dispatchEvent(
       new CartLinesUpdateEvent({
@@ -447,6 +464,7 @@ class ProductFormComponent extends Component {
             merchandiseId: /** @type {string} */ (formData.get('id')),
             quantity: itemCount,
           },
+          ...addOnLines.map((line) => ({ merchandiseId: String(line.id), quantity: line.quantity })),
         ],
         promise: deferredEventPromise.promise,
       })
@@ -454,14 +472,28 @@ class ProductFormComponent extends Component {
 
     const fetchCfg = fetchConfig('javascript', { body: formData });
 
-    fetch(Theme.routes.cart_add_url, {
-      ...fetchCfg,
-      headers: {
-        ...fetchCfg.headers,
-        Accept: 'text/html',
-      },
-    })
-      .then((response) => response.json())
+    /** @returns {Promise<any>} The product alone, as submitted by the form. */
+    const addProduct = () =>
+      fetch(Theme.routes.cart_add_url, {
+        ...fetchCfg,
+        headers: {
+          ...fetchCfg.headers,
+          Accept: 'text/html',
+        },
+      }).then((response) => response.json());
+
+    const request =
+      addOnLines.length === 0
+        ? addProduct()
+        : this.#addWithAddOns(formData, itemCount, addOnLines).then((response) => {
+            if (!response.status) return response;
+            // An add-on line was rejected (e.g. sold out), which fails the whole request:
+            // still add the product the shopper asked for.
+            console.warn('[product-form] Add-on could not be added:', response.description || response.message);
+            return addProduct();
+          });
+
+    request
       .then(async (response) => {
         if (response.status) {
           this.dispatchEvent(
@@ -583,6 +615,78 @@ class ProductFormComponent extends Component {
       });
   }
 
+  /**
+   * Cart lines from add-on components on this product page (elements marked `data-cart-add-on`
+   * exposing `getCartLines()`, e.g. "Need a chain?"). They are added in the same request as
+   * the product, so both reach the cart together.
+   * @param {FormData} [formData] - The product's form data; file uploads can't be sent with add-ons.
+   * @returns {Array<{ id: number, quantity: number, properties?: Record<string, string> }>}
+   */
+  #getAddOnLines(formData) {
+    if (this.closest('product-card, quick-add-component, quick-add-dialog, dialog')) return [];
+    if (formData && [...formData.values()].some((value) => typeof value !== 'string')) return [];
+
+    const section = this.closest('.shopify-section');
+    if (!section) return [];
+
+    /** @type {Array<{ id: number, quantity: number, properties?: Record<string, string> }>} */
+    const lines = [];
+
+    for (const element of section.querySelectorAll('[data-cart-add-on]')) {
+      const getCartLines = /** @type {any} */ (element).getCartLines;
+      if (typeof getCartLines !== 'function') continue;
+
+      try {
+        for (const line of getCartLines.call(element) ?? []) {
+          if (Number(line?.id) > 0 && Number(line?.quantity) > 0) lines.push(line);
+        }
+      } catch (error) {
+        console.warn('[product-form] Add-on lines unavailable:', error);
+      }
+    }
+
+    return lines;
+  }
+
+  /**
+   * Adds the product and its add-on lines in one JSON `cart/add` request.
+   * @param {FormData} formData
+   * @param {number} quantity
+   * @param {Array<{ id: number, quantity: number, properties?: Record<string, string> }>} addOnLines
+   * @returns {Promise<any>} The parsed cart/add response.
+   */
+  async #addWithAddOns(formData, quantity, addOnLines) {
+    /** @type {{ id: number, quantity: number, selling_plan?: number, properties?: Record<string, string> }} */
+    const item = { id: Number(formData.get('id')), quantity };
+    /** @type {Record<string, string>} */
+    const properties = {};
+
+    for (const [key, value] of formData) {
+      if (typeof value !== 'string') continue;
+
+      const property = key.match(/^properties\[(.+)\]$/)?.[1];
+      if (property) properties[property] = value;
+      else if (key === 'selling_plan' && value) item.selling_plan = Number(value);
+    }
+
+    if (Object.keys(properties).length > 0) item.properties = properties;
+
+    const sectionValues = formData.getAll('sections');
+    const sections = sectionValues[sectionValues.length - 1];
+
+    const response = await fetch(Theme.routes.cart_add_url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ items: [item, ...addOnLines], ...(sections ? { sections } : {}) }),
+    });
+
+    return response.json();
+  }
+
   /** @param {Array<{variantId: string, quantity: number}>} items */
   #processBatchAddToCart(items) {
     if (items.length === 0) return;
@@ -615,10 +719,13 @@ class ProductFormComponent extends Component {
     );
 
     const payload = {
-      items: items.map((item) => ({
-        id: Number(item.variantId),
-        quantity: item.quantity,
-      })),
+      items: [
+        ...items.map((item) => ({
+          id: Number(item.variantId),
+          quantity: item.quantity,
+        })),
+        ...this.#getAddOnLines(),
+      ],
       sections: cartItemComponentsSectionIds.join(','),
     };
 
@@ -784,6 +891,14 @@ class ProductFormComponent extends Component {
     // resolved variant id.
     this.#pendingVariantChange = event.promise;
 
+    // Sync the chosen variant immediately from the clicked option (its data-variant-id already
+    // combines it with the other selected options); the server response below confirms it.
+    const sourceProductId = event.target instanceof HTMLElement ? event.target.dataset.productId : undefined;
+    const intendedVariantId = event.detail?.variantId;
+    if (intendedVariantId && (!sourceProductId || sourceProductId === this.dataset.productId)) {
+      this.#setVariantId(String(intendedVariantId));
+    }
+
     try {
       const { detail } = await event.promise;
       if (!detail?.html) return;
@@ -797,8 +912,7 @@ class ProductFormComponent extends Component {
         return;
       }
 
-      const { variantId } = this.refs;
-      variantId.value = resource?.id ?? '';
+      this.#setVariantId(String(resource?.id ?? ''));
 
       const { addToCartButtonContainer: currentAddToCartButtonContainer, acceleratedCheckoutButtonContainer } =
         this.refs;

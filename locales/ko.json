@@ -313,6 +313,36 @@
     "blog_post_description": "블로그 게시물 콘텐츠의 요약"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }}mm 손가락에는 {{ size }} 사이즈가 맞습니다.",
+      "select_size": "{{ size }} 사이즈 선택",
+      "out_of_range": "{{ min }}~{{ max }}mm 사이의 값을 입력하세요.",
+      "size_selected": "{{ size }} 사이즈를 선택했습니다"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ brand }}로 {{ amount }}씩 {{ installments }}회 무이자 할부"
+    },
+    "breadcrumbs": {
+      "label": "이동 경로",
+      "home": "홈"
+    },
+    "variant_group": {
+      "layout": "보기",
+      "grid": "그리드",
+      "list": "목록",
+      "finishes": {
+        "one": "마감 {{ count }}종"
+      },
+      "current": "현재 보고 있는 상품"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} 장바구니에 추가",
+      "added_to_cart": "{{ title }}이(가) 장바구니에 추가되었습니다",
+      "add": "주문에 {{ title }} 추가",
+      "price_addition": "+{{ price }}",
+      "previous": "이전 상품",
+      "next": "다음 상품"
+    },
     "product": {
       "add_to_cart": "카트에 추가",
       "added_to_cart": "카트에 추가됨",

@@ -313,6 +313,36 @@
     "blog_post_description": "Et uddrag fra dit blogopslag"
   },
   "products": {
+    "size_guide": {
+      "match": "En finger på {{ circumference }} mm passer til {{ size }}.",
+      "select_size": "Vælg størrelse {{ size }}",
+      "out_of_range": "Angiv et mål mellem {{ min }} og {{ max }} mm.",
+      "size_selected": "Størrelse {{ size }} er valgt"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} rentefrie afdrag på {{ amount }} med {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Brødkrumme",
+      "home": "Forside"
+    },
+    "variant_group": {
+      "layout": "Visning",
+      "grid": "Gitter",
+      "list": "Liste",
+      "finishes": {
+        "one": "{{ count }} finish"
+      },
+      "current": "Vises nu"
+    },
+    "add_ons": {
+      "add_to_cart": "Læg {{ title }} i kurven",
+      "added_to_cart": "{{ title }} er lagt i kurven",
+      "add": "Føj {{ title }} til din ordre",
+      "price_addition": "+{{ price }}",
+      "previous": "Forrige produkter",
+      "next": "Næste produkter"
+    },
     "product": {
       "add_to_cart": "Læg i indkøbskurven",
       "added_to_cart": "Lagt i indkøbskurv",

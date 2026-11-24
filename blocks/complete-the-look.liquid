@@ -1,0 +1,524 @@
+{%- doc -%}
+  "Complete the look" (PDP).
+
+  Custom front end for the product recommendations configured in the Selleasy app.
+  Selleasy renders its add-on widget into the hidden `.lb-widget-<type>` container below and
+  remains the data source and purchase path. Each card links to its product; the bag button
+  adds or removes the product from the add-ons Selleasy puts in the cart with the main product.
+  Card image, title, swatches and price are rendered by Liquid from the offer's variant.
+  Choosing a color swatch switches the card (image, price, link) to that color's variant, and
+  the bag button then adds that variant.
+
+  Use this block instead of (not alongside) the Selleasy app block of the same widget type.
+
+  @example
+  {% content_for 'block', type: 'complete-the-look', id: 'complete-the-look' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign widget_type = block.settings.selleasy_widget | default: 'pac'
+  assign heading_id = 'CompleteTheLook-' | append: block.id
+-%}
+
+<script
+  src="{{ 'add-ons.js' | asset_url }}"
+  type="module"
+></script>
+
+{% render 'swatch-styles' %}
+
+<complete-the-look-component
+  class="complete-the-look spacing-style"
+  style="{% render 'spacing-style', settings: block.settings %}{% if block.settings.background_color != blank %} --complete-the-look-background: {{ block.settings.background_color }};{% endif %}"
+  data-widget-type="{{ widget_type }}"
+  data-add-label="{{ 'products.add_ons.add_to_cart' | t: title: '[title]' | escape }}"
+  data-added-label="{{ 'products.add_ons.added_to_cart' | t: title: '[title]' | escape }}"
+  data-money-format="{{ shop.money_format | strip_html | escape }}"
+  data-currency="{{ cart.currency.iso_code }}"
+  {% unless request.design_mode %}
+    hidden
+  {% endunless %}
+  {{ block.shopify_attributes }}
+>
+  <div class="complete-the-look__panel">
+    <div class="complete-the-look__header">
+      <h2
+        class="complete-the-look__heading"
+        id="{{ heading_id }}"
+      >
+        {{ block.settings.heading | escape }}
+      </h2>
+
+      <div class="complete-the-look__nav">
+        <button
+          type="button"
+          class="complete-the-look__arrow complete-the-look__arrow--previous button-unstyled"
+          aria-label="{{ 'products.add_ons.previous' | t }}"
+          ref="previous"
+        >
+          <span
+            class="svg-wrapper"
+            aria-hidden="true"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 17 10"
+              fill="none"
+            >
+              <path d="M-4.76837e-07 4.85938L16 4.85938M11.3333 0.359375L16 4.85938L11.3333 9.35938" stroke="currentColor"/>
+            </svg>
+          </span>
+        </button>
+        <button
+          type="button"
+          class="complete-the-look__arrow button-unstyled"
+          aria-label="{{ 'products.add_ons.next' | t }}"
+          ref="next"
+        >
+          <span
+            class="svg-wrapper"
+            aria-hidden="true"
+          >
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 17 10"
+              fill="none"
+            >
+              <g transform="matrix(-1 0 0 -1 17 10)">
+                <path d="M16.7207 4.85938L0.720703 4.85938M5.38737 0.359375L0.720703 4.85938L5.38737 9.35938" stroke="currentColor"/>
+              </g>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    {%- comment -%} Swiper container (viewport) and wrapper (track); the arrows above drive it. {%- endcomment -%}
+    <div
+      class="complete-the-look__viewport"
+      ref="viewport"
+    >
+      <ul
+        class="complete-the-look__track list-unstyled"
+        role="list"
+        aria-labelledby="{{ heading_id }}"
+        ref="track"
+      ></ul>
+    </div>
+
+    <p
+      class="visually-hidden"
+      role="status"
+      ref="status"
+    ></p>
+
+    <template ref="cardTemplate">
+      <li class="complete-the-look__card">
+        <div class="complete-the-look__media-wrap">
+          <a
+            class="complete-the-look__media"
+            data-card-link
+            data-card-media
+            tabindex="-1"
+            aria-hidden="true"
+          ></a>
+          <button
+            type="button"
+            class="complete-the-look__add button-unstyled"
+            data-card-add
+            on:click="/addToCart"
+          >
+            <span
+              class="svg-wrapper complete-the-look__add-icon"
+              aria-hidden="true"
+            >
+              {{- 'icon-add-to-cart-v2.svg' | inline_asset_content -}}
+            </span>
+            <span
+              class="svg-wrapper complete-the-look__added-icon"
+              aria-hidden="true"
+            >
+              {{- 'icon-checkmark.svg' | inline_asset_content -}}
+            </span>
+          </button>
+        </div>
+        <a
+          class="complete-the-look__title"
+          data-card-link
+          data-card-title
+        ></a>
+        <div class="complete-the-look__wrapper">
+          <div
+            class="complete-the-look__swatches"
+            data-card-swatches
+          ></div>
+          <span
+            class="complete-the-look__price"
+            data-card-price
+          ></span>
+        </div>
+      </li>
+    </template>
+  </div>
+
+  {%- comment -%} Selleasy mounts its widget here; it stays the data source for these products. {%- endcomment -%}
+  <div
+    class="lb-widget-{{ widget_type }} complete-the-look__source"
+    ref="source"
+    hidden
+  ></div>
+</complete-the-look-component>
+
+{% stylesheet %}
+  .complete-the-look {
+    --complete-the-look-card-width: 9.5rem;
+
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .complete-the-look__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 20px 12px;
+    background-color: var(--complete-the-look-background, rgb(var(--color-foreground-rgb) / var(--opacity-5)));
+  }
+
+  .complete-the-look[hidden] {
+    display: none;
+  }
+
+  .complete-the-look__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .complete-the-look__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    color: var(--product-design-ink);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    font-style: italic;
+    overflow-wrap: anywhere;
+  }
+
+  .complete-the-look__nav {
+    display: flex;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+
+  .complete-the-look__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: 16px;
+    color: var(--color-foreground);
+    cursor: pointer;
+
+    &:disabled,
+    &.complete-the-look__arrow--disabled {
+      opacity: var(--opacity-30);
+      cursor: default;
+    }
+
+    &.complete-the-look__arrow--locked {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: calc(var(--focus-outline-width) * -1);
+    }
+
+    .svg-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  /* icon-arrow points to the inline end; mirror it for "previous" and for RTL */
+  .complete-the-look__arrow--previous .svg-wrapper {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .complete-the-look__arrow .svg-wrapper {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .complete-the-look__arrow--previous .svg-wrapper {
+    transform: none;
+  }
+
+  .complete-the-look__viewport {
+    margin-inline: -12px;
+    padding-inline: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Before Swiper initialises (or if it cannot load) the track is a native scroller */
+  .complete-the-look__track {
+    display: flex;
+    gap: var(--gap-sm);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  /* Swiper sizes the slides once ready */
+  .complete-the-look--ready .complete-the-look__track {
+    gap: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+    transition-property: transform;
+  }
+
+  /* Swiper sets each slide's width inline; a fixed flex-basis would override it */
+  .complete-the-look--ready .complete-the-look__card {
+    flex: 0 0 auto;
+  }
+
+  .complete-the-look__added-icon,
+  .complete-the-look__add[data-added='true'] .complete-the-look__add-icon {
+    display: none;
+  }
+
+  .complete-the-look__add[data-added='true'] .complete-the-look__added-icon {
+    display: inline-flex;
+  }
+
+  .complete-the-look__card {
+    display: flex;
+    flex: 0 0 var(--complete-the-look-card-width);
+    flex-direction: column;
+    gap: var(--gap-xs);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .complete-the-look__media-wrap {
+    position: relative;
+  }
+
+  .complete-the-look__media {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background-color: var(--color-background);
+  }
+
+  .complete-the-look__media .add-on-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .complete-the-look__add {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background-color: var(--complete-the-look-background);
+    border-radius: 8px 0 0 0;
+    color: var(--color-foreground);
+    cursor: pointer;
+
+    .svg-wrapper {
+      width: 14px;
+      height: auto;
+    }
+
+    &[aria-busy='true'] {
+      opacity: var(--opacity-60);
+      cursor: progress;
+    }
+
+    &[data-added='true'] {
+      background-color: var(--color-foreground);
+      color: var(--color-background);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid var(--color-foreground);
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .complete-the-look__title {
+    color: #2a2a2a;
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+    text-transform: capitalize;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .complete-the-look__wrapper {
+    margin-block-start: auto;
+  }
+
+  .complete-the-look__swatches {
+    padding-block-end: 2px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-2xs);
+
+    .swatch {
+      --variant-picker-swatch-width: 16px;
+      --variant-picker-swatch-height: 16px;
+    }
+  }
+
+  .add-on-card__swatch {
+    display: inline-flex;
+    border-radius: 50%;
+  }
+
+  .add-on-card__swatch--selected {
+    outline: var(--style-border-width) solid var(--color-foreground);
+    outline-offset: 1px;
+  }
+
+  /* Swatches are buttons that switch the card's variant; out-rank `.button-unstyled` */
+  .complete-the-look__swatches .add-on-card__swatch {
+    display: inline-flex;
+    border-radius: 50%;
+    overflow: visible;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid var(--color-foreground);
+      outline-offset: var(--focus-outline-offset);
+    }
+
+    &:disabled {
+      opacity: var(--opacity-30);
+      cursor: default;
+    }
+  }
+
+  .complete-the-look__price {
+    font-family: var(--font-body--family);
+    color: #2a2a2a;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 500;
+  }
+
+  @media screen and (min-width: 750px) {
+    .complete-the-look {
+      --complete-the-look-card-width: 8.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .complete-the-look__add {
+      transition: background-color var(--animation-speed) var(--animation-easing),
+        color var(--animation-speed) var(--animation-easing);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.complete_the_look",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Complete the look"
+    },
+    {
+      "type": "select",
+      "id": "selleasy_widget",
+      "label": "t:settings.selleasy_widget",
+      "info": "t:info.selleasy_widget",
+      "options": [
+        {
+          "value": "pal",
+          "label": "t:options.selleasy_add_on_list"
+        },
+        {
+          "value": "pac",
+          "label": "t:options.selleasy_add_on_carousel"
+        },
+        {
+          "value": "pag",
+          "label": "t:options.selleasy_add_on_grid"
+        }
+      ],
+      "default": "pac"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "alpha": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.complete_the_look",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

@@ -319,6 +319,36 @@
     "blog_post_description": "Izvadak sadržaja vašeg bloga"
   },
   "products": {
+    "size_guide": {
+      "match": "Prstu od {{ circumference }} mm odgovara veličina {{ size }}.",
+      "select_size": "Odaberi veličinu {{ size }}",
+      "out_of_range": "Unesite mjeru između {{ min }} i {{ max }} mm.",
+      "size_selected": "Odabrana je veličina {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} beskamatne rate od {{ amount }} uz {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Navigacijski put",
+      "home": "Početna"
+    },
+    "variant_group": {
+      "layout": "Prikaz",
+      "grid": "Rešetka",
+      "list": "Popis",
+      "finishes": {
+        "one": "{{ count }} završna obrada"
+      },
+      "current": "Trenutačno pregledavate"
+    },
+    "add_ons": {
+      "add_to_cart": "Dodaj {{ title }} u košaricu",
+      "added_to_cart": "{{ title }} dodano je u košaricu",
+      "add": "Dodaj {{ title }} u narudžbu",
+      "price_addition": "+{{ price }}",
+      "previous": "Prethodni proizvodi",
+      "next": "Sljedeći proizvodi"
+    },
     "product": {
       "add_to_cart": "Dodaj u košaricu",
       "added_to_cart": "Dodano u košaricu",

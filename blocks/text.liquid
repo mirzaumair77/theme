@@ -1,6 +1,28 @@
 
 
-{% render 'text', block: block %}
+{%- liquid
+  # Product title only: wraps the section's custom text at render time. Product data is untouched.
+  assign styled_text = blank
+  assign title_accent_terms = section.settings.title_accent_text | strip
+  assign accent_product = closest.product
+  assign text_html = block.settings.text | append: ''
+
+  if title_accent_terms != blank and accent_product != blank and text_html contains '<h1'
+    assign raw_title = accent_product.title
+    assign escaped_title = raw_title | escape
+    capture styled_title
+      render 'product-title-accent', title: raw_title, terms: title_accent_terms
+    endcapture
+
+    if text_html contains raw_title
+      assign styled_text = text_html | replace_first: raw_title, styled_title
+    elsif text_html contains escaped_title
+      assign styled_text = text_html | replace_first: escaped_title, styled_title
+    endif
+  endif
+-%}
+
+{% render 'text', block: block, styled_text: styled_text %}
 
 {% schema %}
 {

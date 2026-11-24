@@ -92,30 +92,34 @@
   }
 
   deferred-media .deferred-media__poster-icon {
+    width: var(--button-size);
+    height: var(--button-size);
     position: absolute;
     top: 50%;
     left: 50%; /* stylelint-disable-line csstools/use-logical -- centring pair with a physical translate(-50%) */
     transform: translate(-50%, -50%);
+    background-color: #efeae166;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    @media screen and (min-width: 750px) {
+      width: 66px;
+      height: 66px;
+    }
   }
 
   deferred-media .deferred-media__poster-icon svg {
-    width: var(--button-size);
-    height: var(--button-size);
-    color: var(--color-white);
+    width: 28px;
+    height: 28px;
+    color: #F7F5F0;
     filter: drop-shadow(var(--shadow-button));
 
     &:hover {
       color: rgb(var(--color-white-rgb) / var(--opacity-80));
     }
 
-    @media screen and (min-width: 750px) {
-      width: 4rem;
-      height: 4rem;
-    }
   }
 
   deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__poster-button ~ video) {

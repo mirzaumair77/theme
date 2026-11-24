@@ -1,0 +1,47 @@
+{%- doc -%}
+  Product subtitle from the product's `custom.subtitle` metafield, shown under the
+  product title. Renders nothing when the metafield is empty. The metafield is read
+  in code so the block works whether or not a metafield definition exists.
+
+  @example
+  {% content_for 'block', type: 'product-subtitle', id: 'product_subtitle' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign subtitle = closest.product.metafields.custom.subtitle | metafield_text | strip
+-%}
+
+{%- if subtitle != blank -%}
+  <p
+    class="product-subtitle"
+    {{ block.shopify_attributes }}
+  >
+    {{- subtitle | escape -}}
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .product-subtitle {
+    min-width: 0;
+    margin: 0;
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 14px;
+    line-height: 16.8px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.product_subtitle",
+  "tag": null,
+  "presets": [
+    {
+      "name": "t:names.product_subtitle",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

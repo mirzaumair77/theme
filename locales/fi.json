@@ -313,6 +313,36 @@
     "blog_post_description": "Ote blogipostauksesi sisällöstä"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} mm:n sormeen sopii koko {{ size }}.",
+      "select_size": "Valitse koko {{ size }}",
+      "out_of_range": "Anna mitta väliltä {{ min }}–{{ max }} mm.",
+      "size_selected": "Koko {{ size }} valittu"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} korotonta erää à {{ amount }} palvelulla {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Murupolku",
+      "home": "Etusivu"
+    },
+    "variant_group": {
+      "layout": "Näkymä",
+      "grid": "Ruudukko",
+      "list": "Luettelo",
+      "finishes": {
+        "one": "{{ count }} viimeistely"
+      },
+      "current": "Katselet nyt"
+    },
+    "add_ons": {
+      "add_to_cart": "Lisää {{ title }} ostoskoriin",
+      "added_to_cart": "{{ title }} lisättiin ostoskoriin",
+      "add": "Lisää {{ title }} tilaukseesi",
+      "price_addition": "+{{ price }}",
+      "previous": "Edelliset tuotteet",
+      "next": "Seuraavat tuotteet"
+    },
     "product": {
       "add_to_cart": "Lisää ostoskoriin",
       "added_to_cart": "Lisätty ostoskoriin",

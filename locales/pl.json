@@ -350,6 +350,36 @@
     "blog_post_description": "Fragment Twojego posta na blogu"
   },
   "products": {
+    "size_guide": {
+      "match": "Palcowi o obwodzie {{ circumference }} mm odpowiada rozmiar {{ size }}.",
+      "select_size": "Wybierz rozmiar {{ size }}",
+      "out_of_range": "Wpisz wartość od {{ min }} do {{ max }} mm.",
+      "size_selected": "Wybrano rozmiar {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} nieoprocentowane raty po {{ amount }} z {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Ścieżka nawigacji",
+      "home": "Strona główna"
+    },
+    "variant_group": {
+      "layout": "Widok",
+      "grid": "Siatka",
+      "list": "Lista",
+      "finishes": {
+        "one": "{{ count }} wykończenie"
+      },
+      "current": "Obecnie oglądasz"
+    },
+    "add_ons": {
+      "add_to_cart": "Dodaj {{ title }} do koszyka",
+      "added_to_cart": "Dodano {{ title }} do koszyka",
+      "add": "Dodaj {{ title }} do zamówienia",
+      "price_addition": "+{{ price }}",
+      "previous": "Poprzednie produkty",
+      "next": "Następne produkty"
+    },
     "product": {
       "add_to_cart": "Dodaj do koszyka",
       "adding_to_cart": "Trwa dodawanie...",

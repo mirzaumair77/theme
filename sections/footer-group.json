@@ -11,6 +11,71 @@
   "type": "footer",
   "name": "Footer",
   "sections": {
+    "jose_balli_footer_Brdm6i": {
+      "type": "jose-balli-footer",
+      "blocks": {
+        "menu_qLNURM": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "shop",
+            "instagram_link": "",
+            "facebook_link": "",
+            "tiktok_link": ""
+          }
+        },
+        "menu_iHBxLg": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "help",
+            "instagram_link": "",
+            "facebook_link": "",
+            "tiktok_link": ""
+          }
+        },
+        "menu_XCMfmh": {
+          "type": "menu",
+          "settings": {
+            "heading": "Resources",
+            "menu": "resources",
+            "instagram_link": "",
+            "facebook_link": "",
+            "tiktok_link": ""
+          }
+        },
+        "menu_social": {
+          "type": "menu",
+          "settings": {
+            "heading": "Social",
+            "menu": "",
+            "instagram_link": "https://www.instagram.com/joseballijewelry/",
+            "facebook_link": "https://www.facebook.com/JoseBalliJewelry/",
+            "tiktok_link": "https://www.tiktok.com/@joseballijewelry"
+          }
+        }
+      },
+      "block_order": [
+        "menu_qLNURM",
+        "menu_iHBxLg",
+        "menu_XCMfmh",
+        "menu_social"
+      ],
+      "name": "Jose Balli footer",
+      "settings": {
+        "newsletter_heading": "Enjoy 10% off",
+        "newsletter_text": "on your first order",
+        "button_label": "Next step",
+        "logo": "shopify://shop_images/joseballi-new-orleans__logo.png",
+        "logo_width": 255,
+        "copyright": "",
+        "legal_menu": "legals",
+        "padding_top": 40,
+        "padding_bottom": 40,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
     "section_TVAi9a": {
       "type": "section",
       "blocks": {
@@ -48,6 +113,7 @@
         "ai_gen_block_f591a1a_bh3xRL",
         "payment_icons_3mbJVd"
       ],
+      "disabled": true,
       "name": "t:names.custom_section",
       "settings": {
         "content_direction": "column",
@@ -152,6 +218,7 @@
         "footer_policy_list_eU7R9k",
         "social_links_8VgL4h"
       ],
+      "disabled": true,
       "custom_css": [
         "/* Target your footer menu UL */.footer-utilities {display: grid; grid-template-columns: 1fr 1fr; /* 2 equal columns */ gap: 10px 40px; /* row gap | column gap, adjust as needed */ list-style: none; /* optional: remove bullets */ padding: 0; margin: 0;}",
         " /* Ensure links look tidy */.footer-utilities {margin: 0;}",
@@ -188,6 +255,7 @@
     }
   },
   "order": [
+    "jose_balli_footer_Brdm6i",
     "section_TVAi9a",
     "17864806660a5b9a0b"
   ]

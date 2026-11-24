@@ -12,6 +12,17 @@
   assign scoped_class = block.settings.style_class | append: '--' | append: block.id
   assign class = 'add-to-cart-button ' | append: block.settings.style_class | append: ' ' | append: scoped_class
   assign id = 'BuyButtons-ProductSubmitButton-' | append: block.id
+
+  # The custom label replaces only the purchasable state; sold out / unavailable keep their text.
+  assign button_text = add_to_cart_text
+  if can_add_to_cart and block.settings.label != blank
+    assign button_text = block.settings.label
+  endif
+
+  assign show_icon = can_add_to_cart
+  if block.settings.icon == 'none'
+    assign show_icon = false
+  endif
 %}
 {% render 'button-custom-styles', block_settings: block.settings, block_id: block.id %}
 {% render 'add-to-cart-button-styles' %}
@@ -25,9 +36,10 @@
     id: id,
     class: class,
     can_add_to_cart: can_add_to_cart,
-    show_icon: can_add_to_cart,
+    show_icon: show_icon,
+    icon: block.settings.icon,
     product: closest.product,
-    add_to_cart_text: add_to_cart_text,
+    add_to_cart_text: button_text,
     data_testid: 'standalone-add-to-cart'
   %}
 </span>
@@ -57,6 +69,32 @@
       ],
       "default": "button-secondary",
       "info": "t:info.edit_button_style_in_theme_settings"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:settings.add_to_cart_label",
+      "info": "t:info.add_to_cart_label"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:settings.icon",
+      "options": [
+        {
+          "value": "cart",
+          "label": "t:options.add_to_cart_icon_cart"
+        },
+        {
+          "value": "arrow",
+          "label": "t:options.add_to_cart_icon_arrow"
+        },
+        {
+          "value": "none",
+          "label": "t:options.none"
+        }
+      ],
+      "default": "cart"
     },
     {
       "type": "header",

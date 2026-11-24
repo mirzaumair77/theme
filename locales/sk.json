@@ -350,6 +350,36 @@
     "blog_post_description": "Úryvok obsahu vášho blogového príspevku"
   },
   "products": {
+    "size_guide": {
+      "match": "Prstu s obvodom {{ circumference }} mm zodpovedá veľkosť {{ size }}.",
+      "select_size": "Vybrať veľkosť {{ size }}",
+      "out_of_range": "Zadajte hodnotu od {{ min }} do {{ max }} mm.",
+      "size_selected": "Vybraná veľkosť {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} bezúročné splátky po {{ amount }} so službou {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Navigačná cesta",
+      "home": "Domov"
+    },
+    "variant_group": {
+      "layout": "Zobrazenie",
+      "grid": "Mriežka",
+      "list": "Zoznam",
+      "finishes": {
+        "one": "{{ count }} povrchová úprava"
+      },
+      "current": "Práve prezeráte"
+    },
+    "add_ons": {
+      "add_to_cart": "Pridať {{ title }} do košíka",
+      "added_to_cart": "{{ title }} bolo pridané do košíka",
+      "add": "Pridať {{ title }} do objednávky",
+      "price_addition": "+{{ price }}",
+      "previous": "Predchádzajúce produkty",
+      "next": "Ďalšie produkty"
+    },
     "product": {
       "add_to_cart": "Pridať do košíka",
       "adding_to_cart": "Pridávanie...",

@@ -5,6 +5,7 @@
 
   @param {boolean} [video_autoplay] - Whether the video should autoplay
   @param {boolean} [video_loop] - Whether the video should loop
+  @param {boolean} [video_muted] - Sets click-to-play sound. Omit to keep the default: uploaded videos muted, URL videos with sound. Autoplay is always muted.
   @param {string} [video_class] - Additional classes for the video element
   @param {string} [video_style] - Additional inline styles
   @param {object} [video_preview_image] - Preview image to show before video plays
@@ -50,6 +51,8 @@
 
       if video_autoplay
         assign video_src = video_src | append: '&autoplay=1&mute=1'
+      elsif video_muted == true
+        assign video_src = video_src | append: '&mute=1'
       endif
 
       if video_loop
@@ -69,6 +72,8 @@
 
       if video_autoplay
         assign video_src = video_src | append: '&autoplay=1&muted=1'
+      elsif video_muted == true
+        assign video_src = video_src | append: '&muted=1'
       endif
       if video_loop
         assign video_src = video_src | append: '&loop=1'
@@ -113,6 +118,8 @@
         | external_video_url: autoplay: true, loop: video_loop, muted: '1', controls: controls, api: enable_js_api
         | external_video_tag: data-video-type: 'vimeo'
       }}
+    {% elsif video_muted == false and video_autoplay != true %}
+      {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, controls: controls }}
     {% else %}
       {{ video | video_tag: image_size: '2500x', autoplay: true, loop: video_loop, muted: true, controls: controls }}
     {% endif %}
@@ -159,7 +166,10 @@
       >
         <span class="deferred-media__poster-icon icon-play hidden">
           <span class="visually-hidden">{{ 'accessibility.play_video' | t }}</span>
-          {{- 'icon-play.svg' | inline_asset_content -}}
+          {% comment %} {{- 'icon-play.svg' | inline_asset_content -}} {% endcomment %}
+          <svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 29 29" fill="none">
+            <path d="M4.02734 2.01562L24.1555 14.0925L4.02734 26.1694V2.01562Z" fill="currentColor"/>
+          </svg>
         </span>
         <span class="deferred-media__poster-icon icon-pause hidden">
           <span class="visually-hidden">{{ 'accessibility.pause_video' | t }}</span>

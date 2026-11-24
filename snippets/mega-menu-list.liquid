@@ -10,6 +10,7 @@
   @param {number} [content_aspect_ratio] - Aspect ratio for content images.
   @param {number} [image_border_radius] - Border radius for content images.
   @param {object} [section] - The section object.
+  @param {string} [images] - Mega menu image card markup for this link. When present it replaces the featured content.
 
   @example
   {% render 'mega-menu-list', parent_link: link, id: 'MegaMenuList-1', grid_columns_count: 6, menu_content_type: 'featured_products' %}
@@ -38,6 +39,11 @@
   assign eager_loading = false
   if section.index == blank
     assign eager_loading = true
+  endif
+
+  # Merchant image blocks own the feature area for this link
+  if images != blank
+    assign menu_content_type = 'images'
   endif
 
   if menu_content_type == 'collection_images'
@@ -110,6 +116,9 @@
       <a
         href="{{ link.url }}"
         class="mega-menu__link {% if link.links != blank %}mega-menu__link--parent{% endif %}"
+        {% if link.current %}
+          aria-current="page"
+        {% endif %}
       >
         {% if menu_content_type == 'collection_images' %}
           {%- capture collection_image_sizes -%}
@@ -131,9 +140,7 @@
 
           {% render 'link-featured-image', link: link, class: 'mega-menu__link-image', sizes: collection_image_sizes %}
         {% endif %}
-        <span class="wrap-text">
-          {{- link.title -}}
-        </span>
+        {% render 'menu-link-title', title: link.title, class: 'wrap-text' %}
       </a>
       {% if link.links != blank %}
         <ul
@@ -152,8 +159,11 @@
               <a
                 href="{{ childLink.url }}"
                 class="mega-menu__link"
+                {% if childLink.current %}
+                  aria-current="page"
+                {% endif %}
               >
-                <span class="wrap-text">{{- childLink.title -}}</span>
+                {% render 'menu-link-title', title: childLink.title, class: 'wrap-text' %}
               </a>
             </li>
           {% endfor %}
@@ -248,7 +258,10 @@
 
 {% style %}
   [data-menu-grid-id="{{ id }}"] {
-    {% if menu_content_type == 'collection_images' and parent_link.links.size < 5 %}
+    {% if menu_content_type == 'images' %}
+      --menu-columns-desktop: 5;
+      --menu-columns-tablet: 4;
+    {% elsif menu_content_type == 'collection_images' and parent_link.links.size < 5 %}
       --menu-columns-desktop: {{ grid_columns_count_collection_images }};
       --menu-columns-tablet: {{ grid_columns_count_tablet }};
     {% else %}
@@ -258,7 +271,10 @@
   }
 
   [data-menu-list-id="{{ id }}"] {
-    {% if menu_content_type == 'collection_images' and parent_link.links.size < 5 %}
+    {% if menu_content_type == 'images' %}
+      --menu-columns-desktop: 3;
+      --menu-columns-tablet: 2;
+    {% elsif menu_content_type == 'collection_images' and parent_link.links.size < 5 %}
       --menu-columns-desktop: {{ grid_columns_count_collection_images }};
       --menu-columns-tablet: {{ max_menu_columns_tablet }};
     {% else %}
@@ -269,6 +285,13 @@
 {% endstyle %}
 
 {% case menu_content_type %}
+  {% when 'images' %}
+    <div
+      class="mega-menu__content mega-menu__content--images"
+      style="--menu-content-columns-desktop: 2; --menu-content-columns-tablet: 2; --menu-image-border-radius: {{ image_border_radius | default: 0 }}px;"
+    >
+      {{ images }}
+    </div>
   {% when 'featured_products' %}
     {%- capture image_sizes -%}
       {%- render 'util-mega-menu-img-sizes-attr',

@@ -9,6 +9,14 @@
 {% liquid
   assign block_settings = block.settings
   assign effective_submenu_color = block_settings.background_color | default: settings.page_background_color
+
+  # Mega menu image blocks render once here. Each card is wrapped in
+  # <!--mega-menu-image:handle--> markers so the desktop loop can route it to the
+  # top-level link whose handleized title matches the block's Menu item setting.
+  capture mega_menu_images_markup
+    content_for 'blocks'
+  endcapture
+  assign mega_menu_image_chunks = mega_menu_images_markup | split: '<!--mega-menu-image:'
 %}
 
 {% case variant %}
@@ -145,10 +153,22 @@
                 class="menu-list__submenu-inner"
                 style="{% render 'submenu-font-styles', settings: block_settings %}"
               >
-                {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
+                {% liquid
+                  assign list_id = 'MegaMenuList-' | append: forloop.index
+                  assign link_image_prefix = link.title | handleize | append: '-->'
+                  assign link_images = ''
+                  for chunk in mega_menu_image_chunks
+                    assign chunk_start = chunk | slice: 0, link_image_prefix.size
+                    if chunk_start == link_image_prefix
+                      assign chunk_markup = chunk | remove_first: link_image_prefix | split: '<!--/mega-menu-image-->' | first
+                      assign link_images = link_images | append: chunk_markup
+                    endif
+                  endfor
+                  assign link_images = link_images | strip
+                %}
                 <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
                   <div
-                    class="mega-menu__grid"
+                    class="mega-menu__grid{% if link_images != blank %} mega-menu__grid--has-images{% endif %}"
                     data-menu-grid-id="{{ list_id }}"
                   >
                     {% render 'mega-menu-list',
@@ -160,7 +180,8 @@
                       grid_columns_count_collection_images: 8,
                       menu_content_type: menu_content_type,
                       content_aspect_ratio: ratio,
-                      image_border_radius: image_border_radius
+                      image_border_radius: image_border_radius,
+                      images: link_images
                     %}
                   </div>
                 </div>
@@ -223,10 +244,19 @@
     </header-menu>
 {% endcase %}
 
+{% liquid
+  # The menu design uses a 600 weight for headings and links; the global font loader
+  # only ships regular and bold, so load the semibold face of the menu font here.
+  assign menu_font_setting = 'type_' | append: block_settings.type_font_primary_link | append: '_font'
+  assign menu_font_semibold = settings[menu_font_setting] | font_modify: 'weight', '600'
+%}
 {% style %}
   .header__underlay {
     --color-submenu: rgb({{effective_submenu_color.rgb}});
   }
+  {% if menu_font_semibold %}
+    {{ menu_font_semibold | font_face: font_display: 'swap' }}
+  {% endif %}
 {% endstyle %}
 {% stylesheet %}
   .header__drawer {
@@ -400,7 +430,7 @@
   }
 
   .menu-list__link-title {
-    padding-inline: var(--gap-sm);
+    padding-inline: 15.5px;
   }
   [slot='overflow'] .menu-list__link-title {
     padding-inline: 0;
@@ -457,8 +487,8 @@
   /** mega menu **/
   .menu-list__submenu,
   .overflow-menu::part(overflow) {
-    --submenu-padding-block-start: var(--padding-3xl);
-    --submenu-padding-block-end: var(--padding-3xl);
+    --submenu-padding-block-start: var(--padding-4xl);
+    --submenu-padding-block-end: var(--padding-4xl);
 
     background-color: transparent;
   }
@@ -466,7 +496,7 @@
   .header__row[style*='--border-bottom-width: 0px'] {
     .menu-list__submenu.background-matches-parent,
     .overflow-menu.background-matches-parent::part(overflow) {
-      --submenu-padding-block-start: 0px;
+      --submenu-padding-block-start: var(--padding-4xl);
     }
   }
 
@@ -718,6 +748,8 @@
 
   .mega-menu__column {
     grid-column: span 1;
+    /* Capped at the grid track so featured product/collection grids never overflow on tablet */
+    min-width: min(200px, 100%);
   }
 
   .mega-menu__column--span-2 {
@@ -813,12 +845,204 @@
   .menu-list__list-item:not(:has([aria-expanded='true'])) > .menu-list__submenu product-component {
     display: none;
   }
+
+  /* ================================
+   * Mega menu design layer
+   * Shared menu typography tokens (also read by the header drawer), the top-level
+   * underline, heading/link hierarchy, and the image card column.
+   * ================================ */
+  .header-menu,
+  .header-drawer {
+    --menu-design-letter-spacing: 0.08em; /* 1.28px on 16px headings, 1.12px on 14px links */
+    --menu-design-heading-size: 1rem;
+    --menu-design-heading-weight: 600;
+    --menu-design-link-size: 0.875rem;
+    --menu-design-link-weight: 400;
+    --menu-design-link-line-height: 1.2;
+    --menu-design-row-gap: 12px;
+    --menu-design-link-hover-color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  /* Desktop mega menu spec; the drawer keeps the shared values above */
+  .header-menu {
+    --menu-design-heading-size: 0.6875rem;
+    --menu-design-link-size: 0.625rem;
+    --menu-design-text-color: #2a2a2a;
+    --menu-design-link-hover-color: #7c7c7c;
+  }
+
+  /* Level 1: font, size, and case come from the menu settings */
+  .header-menu .menu-list .menu-list__link {
+    --menu-top-level-font-line-height: 1.5;
+
+    /* Siblings keep full color; the underline marks the open item instead */
+    color: var(--menu-top-level-font-color);
+  }
+
+  .menu-list__list-item:not([slot='overflow']) .menu-list__link-title {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+
+      /* Matches the title's inline padding so the line spans the text only */
+      inset-inline: 15.5px;
+      inset-block-end: -0.35em;
+      height: 2px;
+      background-color: currentColor;
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform var(--animation-speed) var(--animation-easing);
+    }
+  }
+
+  .menu-list__list-item:not([slot='overflow']):is(:hover, :has([aria-expanded='true']))
+    .menu-list__link-title::after,
+  .menu-list__list-item:not([slot='overflow']) .menu-list__link[aria-current='page'] .menu-list__link-title::after,
+  .menu-list__list-item:not([slot='overflow']) .menu-list__link--active .menu-list__link-title::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-list__list-item .menu-list__link-title::after {
+      transition: none;
+    }
+  }
+
+  /* Level 2 and 3 typography */
+  .mega-menu__list .mega-menu__link {
+    font-size: var(--menu-design-link-size);
+    font-weight: var(--menu-design-link-weight);
+    line-height: var(--menu-design-link-line-height);
+    letter-spacing: var(--menu-design-letter-spacing);
+    color: var(--menu-design-text-color);
+  }
+
+  /* Hovered or current category: muted and underlined. Group titles stay solid. */
+  .mega-menu__list .mega-menu__link:not(.mega-menu__link--parent):is(:hover, [aria-current='page']) {
+    color: var(--menu-design-link-hover-color);
+
+    .menu-link-title {
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+    }
+  }
+
+  /* Arrow matches the text's cap height and a word space, and keeps its color on hover */
+  .mega-menu__link .menu-link-title__arrow {
+    width: 0.96em;
+    height: 0.72em;
+    margin-inline-start: 0.35em;
+    color: var(--menu-design-text-color);
+    vertical-align: baseline;
+  }
+
+  /* Level 2 links with children are group headings; childless level 2 links keep
+     the category link style above */
+  .mega-menu__list .mega-menu__link--parent {
+    gap: 40px;
+    font-size: var(--menu-design-heading-size);
+    font-weight: var(--menu-design-heading-weight);
+  }
+
+  /* Text and image-card menus: content-width columns 80px apart (at 1440px), with the
+     image card pinned to the end. Featured product/collection menus keep their grid. */
+  .mega-menu__grid {
+    --menu-horizontal-gap: 40px;
+    --mega-menu-image-width: min(515px, 35.7639vw); /* 515px at a 1440px viewport */
+  }
+
+  .mega-menu__content-list {
+    gap: var(--menu-vertical-gap) var(--gap-xl);
+  }
+
+  :is(.mega-menu__grid--has-images, .mega-menu__grid:not(:has(.mega-menu__content, .mega-menu__link-image))) {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--menu-horizontal-gap);
+
+    .mega-menu__list {
+      display: flex;
+      flex: 1 1 auto;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: var(--gap-2xl) var(--menu-horizontal-gap);
+      min-width: 0;
+    }
+
+    .mega-menu__column {
+      flex: 0 1 auto;
+      min-width: 200px;
+      max-width: 100%;
+    }
+
+    /* Groups long enough to wrap into CSS columns need room for them */
+    .mega-menu__column--span-2 {
+      min-width: 22rem;
+    }
+
+    .mega-menu__column--span-3 {
+      min-width: 33rem;
+    }
+
+    .mega-menu__column--span-4 {
+      min-width: 44rem;
+    }
+
+    .mega-menu__column ul {
+      column-gap: var(--menu-horizontal-gap);
+    }
+
+    .mega-menu__column > div {
+      display: flex;
+      flex-direction: column;
+      row-gap: var(--menu-design-row-gap);
+    }
+
+    .mega-menu__column > div + div {
+      margin-block-start: var(--menu-design-row-gap);
+    }
+
+    .mega-menu__column > div:has(> ul) + div {
+      margin-block-start: var(--margin-2xl);
+    }
+
+    .mega-menu__column li {
+      display: flex;
+    }
+
+    .mega-menu__column li + li {
+      margin-block-start: var(--menu-design-row-gap);
+    }
+
+    .mega-menu__link {
+      padding-block: 0;
+    }
+  }
+
+  .mega-menu__content--images {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    align-content: start;
+    flex: 0 0 var(--mega-menu-image-width);
+    gap: var(--gap-md);
+    width: var(--mega-menu-image-width);
+    min-width: 0;
+    margin-inline-start: auto;
+  }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:names.menu",
   "tag": null,
+  "blocks": [
+    {
+      "type": "_mega-menu-image"
+    }
+  ],
   "settings": [
     {
       "type": "link_list",
@@ -858,6 +1082,10 @@
         {
           "value": "0.625rem",
           "label": "10px"
+        },
+        {
+          "value": "0.6875rem",
+          "label": "11px"
         },
         {
           "value": "0.75rem",
@@ -1061,6 +1289,13 @@
       "id": "drawer_dividers",
       "label": "t:settings.dividers",
       "default": false
+    },
+    {
+      "type": "color",
+      "id": "drawer_accent_color",
+      "label": "t:settings.drawer_accent_color",
+      "info": "t:info.drawer_accent_color",
+      "default": "{{ settings.color_palette.color1 }}"
     }
   ]
 }

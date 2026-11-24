@@ -18,13 +18,22 @@ class HeaderDrawer extends Component {
     super.connectedCallback();
 
     this.addEventListener('keyup', this.#onKeyUp);
+    window.addEventListener('resize', this.#onResize);
     this.#setupAnimatedElementListeners();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('keyup', this.#onKeyUp);
+    window.removeEventListener('resize', this.#onResize);
   }
+
+  /**
+   * Keep the open drawer below the announcement bar after a resize or rotation
+   */
+  #onResize = () => {
+    if (this.isOpen) this.#updateOffsetTop();
+  };
 
   /**
    * Close the main menu drawer when the Escape key is pressed
@@ -74,6 +83,8 @@ class HeaderDrawer extends Component {
 
     summary.setAttribute('aria-expanded', 'true');
 
+    if (details === this.refs.details) this.#updateOffsetTop();
+
     this.preventInitialAccordionAnimations(details);
     requestAnimationFrame(() => {
       details.classList.add('menu-open');
@@ -101,6 +112,44 @@ class HeaderDrawer extends Component {
    */
   close() {
     this.#close(this.refs.details);
+  }
+
+  /**
+   * Starts the drawer at the top of the header so bars above it (such as the
+   * announcement bar) stay visible. Once they are scrolled away it starts at 0.
+   * The page is scroll-locked while the drawer is open, so one measurement holds.
+   */
+  #updateOffsetTop() {
+    const header = this.closest('#header-component');
+    const top = header ? Math.max(0, Math.round(header.getBoundingClientRect().top)) : 0;
+
+    this.style.setProperty('--menu-drawer-offset-top', `${top}px`);
+  }
+
+  /**
+   * Hands the drawer's search field off to the shared search modal (desktop drawer).
+   * The drawer closes first so its focus trap cannot pull focus out of the dialog.
+   */
+  openSearchModal() {
+    const searchModal = document.getElementById('search-modal');
+    if (!searchModal || !('showDialog' in searchModal) || typeof searchModal.showDialog !== 'function') return;
+
+    const showDialog = /** @type {() => void} */ (searchModal.showDialog.bind(searchModal));
+
+    if (!this.isOpen) {
+      showDialog();
+      return;
+    }
+
+    this.close();
+    onAnimationEnd(
+      this.refs.menuDrawer,
+      () => {
+        removeTrapFocus();
+        showDialog();
+      },
+      { subtree: false }
+    );
   }
 
   /**

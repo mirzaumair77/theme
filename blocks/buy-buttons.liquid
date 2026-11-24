@@ -110,7 +110,13 @@
             </div>
           {%- endif -%}
 
-          {% content_for 'block', type: 'quantity', id: 'quantity' %}
+          {%- comment -%}
+            Hidden by the "Show quantity selector" setting; products with quantity rules always keep it,
+            so minimums and increments stay enforceable. Without it the form adds the default quantity.
+          {%- endcomment -%}
+          {%- if block_settings.show_quantity_selector != false or has_quantity_rules -%}
+            {% content_for 'block', type: 'quantity', id: 'quantity' %}
+          {%- endif -%}
 
           {%- if has_quantity_rules -%}
             <div
@@ -237,6 +243,8 @@
             can_add_to_cart: can_add_to_cart,
             form_obj: form
           %}
+
+          {% content_for 'block', type: 'shop-pay-installments', id: 'shop-pay-installments' %}
         </div>
         {%- if block_settings.gift_card_form and product.gift_card? -%}
           </span>
@@ -396,6 +404,13 @@
       "id": "stacking",
       "label": "t:settings.always_stack_buttons",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity_selector",
+      "label": "t:settings.show_quantity_selector",
+      "info": "t:info.show_quantity_selector",
+      "default": true
     },
     {
       "type": "color",
@@ -637,6 +652,10 @@
         },
         "accelerated-checkout": {
           "type": "accelerated-checkout",
+          "static": true
+        },
+        "shop-pay-installments": {
+          "type": "shop-pay-installments",
           "static": true
         }
       }

@@ -1,0 +1,24 @@
+{%- doc -%}
+  Renders the product gallery badge from the first product tag formatted
+  `gallery:BADGE NAME`. Outputs nothing when the product has no such tag.
+
+  @param {product} product - The product whose tags supply the badge text.
+
+  @example
+  {% render 'gallery-badge', product: closest.product %}
+{%- enddoc -%}
+
+{%- liquid
+  assign badge_text = ''
+  for tag in product.tags
+    assign tag_prefix = tag | slice: 0, 8 | downcase
+    if tag_prefix == 'gallery:'
+      assign badge_text = tag | slice: 8, tag.size | strip
+      break
+    endif
+  endfor
+-%}
+
+{%- if badge_text != blank -%}
+  <span class="media-gallery__badge">{{ badge_text | escape }}</span>
+{%- endif -%}

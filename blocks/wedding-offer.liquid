@@ -1,0 +1,452 @@
+{%- doc -%}
+  Wedding offer callout (Pocket Square PDP): a bordered box with a heading, a
+  subheading and a small note. Content, colors, alignment, desktop/mobile padding and
+  desktop/mobile typography all come from this block's settings. Mobile values are
+  output only where they differ from desktop.
+
+  @example
+  {% content_for 'block', type: 'wedding-offer', id: 'wedding-offer' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+
+  # Desktop values are the defaults; mobile custom properties are set only when they differ.
+  capture style
+    echo '--wedding-offer-color: ' | append: s.text_color | append: ';'
+    echo '--wedding-offer-border: ' | append: s.border_color | append: ';'
+    echo '--wedding-offer-align: ' | append: s.alignment | append: ';'
+
+    assign padding = s.padding_top | append: 'px ' | append: s.padding_right | append: 'px ' | append: s.padding_bottom | append: 'px ' | append: s.padding_left | append: 'px'
+    assign padding_mobile = s.padding_top_mobile | append: 'px ' | append: s.padding_right_mobile | append: 'px ' | append: s.padding_bottom_mobile | append: 'px ' | append: s.padding_left_mobile | append: 'px'
+    echo '--wedding-offer-padding: ' | append: padding | append: ';'
+    if padding_mobile != padding
+      echo '--wedding-offer-padding-mobile: ' | append: padding_mobile | append: ';'
+    endif
+
+    for element in (1..3)
+      case element
+        when 1
+          assign name = 'heading'
+          assign font = s.heading_font
+          assign size = s.heading_size
+          assign size_mobile = s.heading_size_mobile
+          assign line_height = s.heading_line_height
+          assign line_height_mobile = s.heading_line_height_mobile
+        when 2
+          assign name = 'subheading'
+          assign font = s.subheading_font
+          assign size = s.subheading_size
+          assign size_mobile = s.subheading_size_mobile
+          assign line_height = s.subheading_line_height
+          assign line_height_mobile = s.subheading_line_height_mobile
+        else
+          assign name = 'text'
+          assign font = s.text_font
+          assign size = s.text_size
+          assign size_mobile = s.text_size_mobile
+          assign line_height = s.text_line_height
+          assign line_height_mobile = s.text_line_height_mobile
+      endcase
+
+      assign prefix = '--wedding-offer-' | append: name
+      echo prefix | append: '-font: ' | append: font.family | append: ', ' | append: font.fallback_families | append: ';'
+      echo prefix | append: '-weight: ' | append: font.weight | append: ';'
+      echo prefix | append: '-style: ' | append: font.style | append: ';'
+      echo prefix | append: '-size: ' | append: size | append: 'px;'
+      echo prefix | append: '-line-height: ' | append: line_height | append: '%;'
+      if size_mobile != size
+        echo prefix | append: '-size-mobile: ' | append: size_mobile | append: 'px;'
+      endif
+      if line_height_mobile != line_height
+        echo prefix | append: '-line-height-mobile: ' | append: line_height_mobile | append: '%;'
+      endif
+    endfor
+  endcapture
+-%}
+
+{% style %}
+  {{ s.heading_font | font_face: font_display: 'swap' }}
+  {{ s.subheading_font | font_face: font_display: 'swap' }}
+  {{ s.text_font | font_face: font_display: 'swap' }}
+{% endstyle %}
+
+<div
+  class="wedding-offer"
+  style="{{ style | strip_newlines }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if s.heading != blank -%}
+    <h3 class="wedding-offer__heading">{{ s.heading | escape }}</h3>
+  {%- endif -%}
+  {%- if s.subheading != blank -%}
+    <p class="wedding-offer__subheading">{{ s.subheading | escape | newline_to_br }}</p>
+  {%- endif -%}
+  {%- if s.text != blank -%}
+    <p class="wedding-offer__text">{{ s.text | escape | newline_to_br }}</p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .wedding-offer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    padding: var(--wedding-offer-padding);
+    border: 1px solid var(--wedding-offer-border);
+    color: var(--wedding-offer-color);
+    text-align: var(--wedding-offer-align);
+    overflow-wrap: anywhere;
+  }
+
+  .wedding-offer > * {
+    margin: 0;
+    color: inherit;
+  }
+
+  .wedding-offer__heading {
+    font-family: var(--wedding-offer-heading-font);
+    font-size: var(--wedding-offer-heading-size);
+    font-style: var(--wedding-offer-heading-style);
+    font-weight: var(--wedding-offer-heading-weight);
+    line-height: var(--wedding-offer-heading-line-height);
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
+  .wedding-offer__subheading {
+    font-family: var(--wedding-offer-subheading-font);
+    font-size: var(--wedding-offer-subheading-size);
+    font-style: var(--wedding-offer-subheading-style);
+    font-weight: var(--wedding-offer-subheading-weight);
+    line-height: var(--wedding-offer-subheading-line-height);
+  }
+
+  .wedding-offer__text {
+    font-family: var(--wedding-offer-text-font);
+    font-size: var(--wedding-offer-text-size);
+    font-style: var(--wedding-offer-text-style);
+    font-weight: var(--wedding-offer-text-weight);
+    line-height: var(--wedding-offer-text-line-height);
+  }
+
+  /* Mobile properties exist only when a mobile setting differs from desktop */
+  @media screen and (max-width: 749px) {
+    .wedding-offer {
+      padding: var(--wedding-offer-padding-mobile, var(--wedding-offer-padding));
+    }
+
+    .wedding-offer__heading {
+      font-size: var(--wedding-offer-heading-size-mobile, var(--wedding-offer-heading-size));
+      line-height: var(--wedding-offer-heading-line-height-mobile, var(--wedding-offer-heading-line-height));
+    }
+
+    .wedding-offer__subheading {
+      font-size: var(--wedding-offer-subheading-size-mobile, var(--wedding-offer-subheading-size));
+      line-height: var(--wedding-offer-subheading-line-height-mobile, var(--wedding-offer-subheading-line-height));
+    }
+
+    .wedding-offer__text {
+      font-size: var(--wedding-offer-text-size-mobile, var(--wedding-offer-text-size));
+      line-height: var(--wedding-offer-text-line-height-mobile, var(--wedding-offer-text-line-height));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.wedding_offer",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Buying for a Wedding?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "t:settings.subheading",
+      "default": "Enjoy 20% off 4 or more Metal Pocket Squares.\nMix and match designs and finishes."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "Discount applied automatically at checkout.\nPlease include your wedding date in the cart notes."
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#2A2A2A"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.border_color",
+      "default": "#2A2A2A"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding_desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding_mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.heading",
+      "info": "t:info.wedding_offer_font"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "t:settings.font",
+      "default": "lora_n6"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "t:settings.size_desktop",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "t:settings.size_mobile",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "t:settings.line_height_desktop",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height_mobile",
+      "label": "t:settings.line_height_mobile",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 120
+    },
+    {
+      "type": "header",
+      "content": "t:settings.subheading",
+      "info": "t:info.wedding_offer_font"
+    },
+    {
+      "type": "font_picker",
+      "id": "subheading_font",
+      "label": "t:settings.font",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "t:settings.size_desktop",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_mobile",
+      "label": "t:settings.size_mobile",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "subheading_line_height",
+      "label": "t:settings.line_height_desktop",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "subheading_line_height_mobile",
+      "label": "t:settings.line_height_mobile",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 140
+    },
+    {
+      "type": "header",
+      "content": "t:content.text",
+      "info": "t:info.wedding_offer_font"
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "t:settings.font",
+      "default": "poppins_i4"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "t:settings.size_desktop",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "label": "t:settings.size_mobile",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "t:settings.line_height_desktop",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "text_line_height_mobile",
+      "label": "t:settings.line_height_mobile",
+      "min": 80,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 130
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.wedding_offer",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

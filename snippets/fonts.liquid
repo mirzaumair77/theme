@@ -10,3 +10,212 @@
 {%- unless settings.type_accent_font.system? -%}
   {{ settings.type_accent_font | font_url | preload_tag: as: 'font', type: 'font/woff2', fetchpriority: 'low' }}
 {%- endunless -%}
+
+{%- style -%}
+@font-face {
+  font-family: 'Roboto';
+  src: url('{{ "font-roboto.woff2" | asset_url }}') format('woff2'),
+       url('{{ "font-roboto.woff" | asset_url }}') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Switzer';
+  src: url('{{ "switzer.woff2" | asset_url }}') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('{{ "inter.woff2" | asset_url }}') format('woff2'),
+       url('{{ "inter.woff" | asset_url }}') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('{{ "inter-italic.woff2" | asset_url }}') format('woff2'),
+       url('{{ "inter-italic.woff" | asset_url }}') format('woff');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-roboto: 'Roboto', sans-serif;
+  --font-switzer: 'Switzer', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+/* ----------------Popins------------------------- */
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-BlackItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-BlackItalic.woff' | file_url }}') format('woff');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Bold.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Bold.woff' | file_url }}') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-BoldItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-BoldItalic.woff' | file_url }}') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Italic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Italic.woff' | file_url }}') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Light.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Light.woff' | file_url }}') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Thin.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Thin.woff' | file_url }}') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Black.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Black.woff' | file_url }}') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-ExtraBold.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-ExtraBold.woff' | file_url }}') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-ExtraBoldItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-ExtraBoldItalic.woff' | file_url }}') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-ExtraLight.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-ExtraLight.woff' | file_url }}') format('woff');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-ExtraLightItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-ExtraLightItalic.woff' | file_url }}') format('woff');
+    font-weight: 200;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-LightItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-LightItalic.woff' | file_url }}') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Medium.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Medium.woff' | file_url }}') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-MediumItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-MediumItalic.woff' | file_url }}') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-Regular.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-Regular.woff' | file_url }}') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-SemiBold.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-SemiBold.woff' | file_url }}') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-SemiBoldItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-SemiBoldItalic.woff' | file_url }}') format('woff');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('{{'Poppins-ThinItalic.woff2' | file_url }}') format('woff2'),
+        url('{{'Poppins-ThinItalic.woff' | file_url }}') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* ----------------- End Popins------------------ */
+{%- endstyle -%}

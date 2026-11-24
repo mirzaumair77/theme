@@ -350,6 +350,36 @@
     "blog_post_description": "תקציר התוכן של הפוסט בבלוג שלך"
   },
   "products": {
+    "size_guide": {
+      "match": "אצבע בהיקף {{ circumference }} מ\"מ מתאימה למידה {{ size }}.",
+      "select_size": "בחירת מידה {{ size }}",
+      "out_of_range": "יש להזין מידה בין {{ min }} ל-{{ max }} מ\"מ.",
+      "size_selected": "נבחרה מידה {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} תשלומים ללא ריבית של {{ amount }} עם {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "פירורי לחם",
+      "home": "דף הבית"
+    },
+    "variant_group": {
+      "layout": "תצוגה",
+      "grid": "רשת",
+      "list": "רשימה",
+      "finishes": {
+        "one": "גימור {{ count }}"
+      },
+      "current": "בצפייה כעת"
+    },
+    "add_ons": {
+      "add_to_cart": "הוספת {{ title }} לעגלה",
+      "added_to_cart": "{{ title }} נוסף לעגלה",
+      "add": "הוספת {{ title }} להזמנה",
+      "price_addition": "+{{ price }}",
+      "previous": "המוצרים הקודמים",
+      "next": "המוצרים הבאים"
+    },
     "product": {
       "add_to_cart": "הוספה לסל",
       "adding_to_cart": "מוסיף...",

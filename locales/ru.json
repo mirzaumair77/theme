@@ -350,6 +350,36 @@
     "blog_post_description": "Фрагмент текста вашей записи в блоге"
   },
   "products": {
+    "size_guide": {
+      "match": "Пальцу с обхватом {{ circumference }} мм подходит размер {{ size }}.",
+      "select_size": "Выбрать размер {{ size }}",
+      "out_of_range": "Введите значение от {{ min }} до {{ max }} мм.",
+      "size_selected": "Выбран размер {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} беспроцентных платежа по {{ amount }} с {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Навигационная цепочка",
+      "home": "Главная"
+    },
+    "variant_group": {
+      "layout": "Вид",
+      "grid": "Сетка",
+      "list": "Список",
+      "finishes": {
+        "one": "{{ count }} отделка"
+      },
+      "current": "Сейчас просматривается"
+    },
+    "add_ons": {
+      "add_to_cart": "Добавить {{ title }} в корзину",
+      "added_to_cart": "{{ title }} добавлен в корзину",
+      "add": "Добавить {{ title }} в заказ",
+      "price_addition": "+{{ price }}",
+      "previous": "Предыдущие товары",
+      "next": "Следующие товары"
+    },
     "product": {
       "add_to_cart": "Добавить в корзину",
       "adding_to_cart": "Добавление...",

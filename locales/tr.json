@@ -336,6 +336,36 @@
     "blog_post_description": "Blog gönderinizin içeriğinden bir alıntı"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} mm parmak {{ size }} bedenine uyar.",
+      "select_size": "{{ size }} bedenini seç",
+      "out_of_range": "{{ min }} ile {{ max }} mm arasında bir ölçü girin.",
+      "size_selected": "{{ size }} bedeni seçildi"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ brand }} ile {{ amount }} tutarında {{ installments }} faizsiz taksit"
+    },
+    "breadcrumbs": {
+      "label": "İçerik haritası",
+      "home": "Ana sayfa"
+    },
+    "variant_group": {
+      "layout": "Görünüm",
+      "grid": "Izgara",
+      "list": "Liste",
+      "finishes": {
+        "one": "{{ count }} yüzey"
+      },
+      "current": "Şu anda görüntüleniyor"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} ürününü sepete ekle",
+      "added_to_cart": "{{ title }} sepete eklendi",
+      "add": "{{ title }} ürününü siparişinize ekleyin",
+      "price_addition": "+{{ price }}",
+      "previous": "Önceki ürünler",
+      "next": "Sonraki ürünler"
+    },
     "product": {
       "add_to_cart": "Sepete ekle",
       "adding_to_cart": "Ekleniyor...",

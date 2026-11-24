@@ -336,6 +336,36 @@
     "blog_post_description": "Een uittreksel van de content van je blogpost"
   },
   "products": {
+    "size_guide": {
+      "match": "Een vinger van {{ circumference }} mm past bij maat {{ size }}.",
+      "select_size": "Maat {{ size }} kiezen",
+      "out_of_range": "Voer een maat in tussen {{ min }} en {{ max }} mm.",
+      "size_selected": "Maat {{ size }} geselecteerd"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} renteloze termijnen van {{ amount }} met {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Kruimelpad",
+      "home": "Home"
+    },
+    "variant_group": {
+      "layout": "Weergave",
+      "grid": "Raster",
+      "list": "Lijst",
+      "finishes": {
+        "one": "{{ count }} afwerking"
+      },
+      "current": "Je bekijkt nu"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} aan winkelwagen toevoegen",
+      "added_to_cart": "{{ title }} is aan je winkelwagen toegevoegd",
+      "add": "{{ title }} aan je bestelling toevoegen",
+      "price_addition": "+{{ price }}",
+      "previous": "Vorige producten",
+      "next": "Volgende producten"
+    },
     "product": {
       "add_to_cart": "Aan winkelwagen toevoegen",
       "adding_to_cart": "Toevoegen...",

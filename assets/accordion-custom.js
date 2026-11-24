@@ -43,6 +43,8 @@ class AccordionCustom extends HTMLElement {
     this.addEventListener('keydown', this.#handleKeyDown, { signal });
     this.summary.addEventListener('click', this.handleClick, { signal });
     this.details.addEventListener('click', this.#handleContentClick, { signal });
+    // `toggle` doesn't bubble, so capture it here to survive section re-renders of the details
+    this.addEventListener('toggle', this.#handleToggle, { signal, capture: true });
     mediaQueryLarge.addEventListener('change', this.#handleMediaQueryChange, { signal });
   }
 
@@ -83,6 +85,25 @@ class AccordionCustom extends HTMLElement {
 
     this.summary.focus({ preventScroll: true });
     this.details.open = false;
+  };
+
+  /**
+   * Keeps one row open per `[data-accordion-group]` by closing the group's other rows.
+   *
+   * @param {Event} event - The toggle event.
+   */
+  #handleToggle = (event) => {
+    if (event.target !== this.details || !this.details.open) return;
+
+    const group = this.closest('[data-accordion-group]');
+    if (!group) return;
+
+    for (const row of group.querySelectorAll('accordion-custom')) {
+      if (row === this || !(row instanceof AccordionCustom)) continue;
+      if (row.closest('[data-accordion-group]') !== group) continue;
+
+      row.details.open = false;
+    }
   };
 
   /**

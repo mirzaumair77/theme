@@ -319,6 +319,36 @@
     "blog_post_description": "Um excerto do conteúdo da sua publicação no blogue"
   },
   "products": {
+    "size_guide": {
+      "match": "Um dedo de {{ circumference }} mm corresponde ao tamanho {{ size }}.",
+      "select_size": "Selecionar tamanho {{ size }}",
+      "out_of_range": "Introduza uma medida entre {{ min }} e {{ max }} mm.",
+      "size_selected": "Tamanho {{ size }} selecionado"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} prestações sem juros de {{ amount }} com {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Trilho de navegação",
+      "home": "Início"
+    },
+    "variant_group": {
+      "layout": "Visualização",
+      "grid": "Grelha",
+      "list": "Lista",
+      "finishes": {
+        "one": "{{ count }} acabamento"
+      },
+      "current": "A ver agora"
+    },
+    "add_ons": {
+      "add_to_cart": "Adicionar {{ title }} ao carrinho",
+      "added_to_cart": "{{ title }} adicionado ao carrinho",
+      "add": "Adicionar {{ title }} à sua encomenda",
+      "price_addition": "+{{ price }}",
+      "previous": "Produtos anteriores",
+      "next": "Produtos seguintes"
+    },
     "product": {
       "add_to_cart": "Adicionar ao carrinho",
       "added_to_cart": "Adicionado ao carrinho",

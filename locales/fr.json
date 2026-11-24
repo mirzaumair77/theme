@@ -319,6 +319,36 @@
     "blog_post_description": "Un extrait du contenu de votre article de blog"
   },
   "products": {
+    "size_guide": {
+      "match": "Un doigt de {{ circumference }} mm correspond à la taille {{ size }}.",
+      "select_size": "Choisir la taille {{ size }}",
+      "out_of_range": "Saisissez une mesure entre {{ min }} et {{ max }} mm.",
+      "size_selected": "Taille {{ size }} sélectionnée"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} versements sans intérêts de {{ amount }} avec {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Fil d’Ariane",
+      "home": "Accueil"
+    },
+    "variant_group": {
+      "layout": "Affichage",
+      "grid": "Grille",
+      "list": "Liste",
+      "finishes": {
+        "one": "{{ count }} finition"
+      },
+      "current": "Article consulté"
+    },
+    "add_ons": {
+      "add_to_cart": "Ajouter {{ title }} au panier",
+      "added_to_cart": "{{ title }} a été ajouté au panier",
+      "add": "Ajouter {{ title }} à votre commande",
+      "price_addition": "+{{ price }}",
+      "previous": "Produits précédents",
+      "next": "Produits suivants"
+    },
     "product": {
       "add_to_cart": "Ajouter au panier",
       "added_to_cart": "Ajouté au panier",

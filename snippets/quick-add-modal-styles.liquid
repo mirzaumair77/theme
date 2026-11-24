@@ -151,6 +151,14 @@
     grid-column: auto;
   }
 
+  /* The modal grid is single-column, so the Grid 2 full-width last image must not span */
+  .quick-add-modal__content
+    media-gallery.media-gallery--grid.media-gallery--two-column
+    .media-gallery__grid
+    > .product-media-container:last-child {
+    grid-column: auto;
+  }
+
   .quick-add-modal__content {
     /* One column */
     .media-gallery--grid:not(.media-gallery--two-column) .product-media > *,

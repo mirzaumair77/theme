@@ -60,8 +60,13 @@
     assign use_currency = true
   endif
 
-  # Format all prices
-  if use_currency
+  # Format all prices. Product pages show no currency code and no trailing .00.
+  if is_product_card == false
+    assign price = price | money_without_trailing_zeros
+    assign compare_at_price = compare_at_price | money_without_trailing_zeros
+    assign price_min = price_min | money_without_trailing_zeros
+    assign price_max = price_max | money_without_trailing_zeros
+  elsif use_currency
     assign price = price | money_with_currency
     assign compare_at_price = compare_at_price | money_with_currency
     assign price_min = price_min | money_with_currency
@@ -117,7 +122,9 @@
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
     {%- liquid
-      if use_currency
+      if is_product_card == false
+        assign unit_price = selected_variant.unit_price | money_without_trailing_zeros
+      elsif use_currency
         assign unit_price = selected_variant.unit_price | money_with_currency
       else
         assign unit_price = selected_variant.unit_price | money

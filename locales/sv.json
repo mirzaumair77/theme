@@ -336,6 +336,36 @@
     "blog_post_description": "Ett utdrag ur bloggpostens innehåll"
   },
   "products": {
+    "size_guide": {
+      "match": "Ett finger på {{ circumference }} mm motsvarar storlek {{ size }}.",
+      "select_size": "Välj storlek {{ size }}",
+      "out_of_range": "Ange ett mått mellan {{ min }} och {{ max }} mm.",
+      "size_selected": "Storlek {{ size }} vald"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} räntefria delbetalningar på {{ amount }} med {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Brödsmulor",
+      "home": "Hem"
+    },
+    "variant_group": {
+      "layout": "Visning",
+      "grid": "Rutnät",
+      "list": "Lista",
+      "finishes": {
+        "one": "{{ count }} finish"
+      },
+      "current": "Visas nu"
+    },
+    "add_ons": {
+      "add_to_cart": "Lägg {{ title }} i varukorgen",
+      "added_to_cart": "{{ title }} har lagts i varukorgen",
+      "add": "Lägg till {{ title }} i din beställning",
+      "price_addition": "+{{ price }}",
+      "previous": "Föregående produkter",
+      "next": "Nästa produkter"
+    },
     "product": {
       "add_to_cart": "Lägg till i varukorgen",
       "adding_to_cart": "Lägger till ...",

@@ -343,6 +343,36 @@
     "blog_post_description": "Un fragment din postarea pe blog"
   },
   "products": {
+    "size_guide": {
+      "match": "Unui deget de {{ circumference }} mm îi corespunde mărimea {{ size }}.",
+      "select_size": "Selectează mărimea {{ size }}",
+      "out_of_range": "Introdu o valoare între {{ min }} și {{ max }} mm.",
+      "size_selected": "Mărimea {{ size }} a fost selectată"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} rate fără dobândă de {{ amount }} cu {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Traseu de navigare",
+      "home": "Pagina principală"
+    },
+    "variant_group": {
+      "layout": "Afișare",
+      "grid": "Grilă",
+      "list": "Listă",
+      "finishes": {
+        "one": "{{ count }} finisaj"
+      },
+      "current": "Vizualizat acum"
+    },
+    "add_ons": {
+      "add_to_cart": "Adaugă {{ title }} în coș",
+      "added_to_cart": "{{ title }} a fost adăugat în coș",
+      "add": "Adaugă {{ title }} la comandă",
+      "price_addition": "+{{ price }}",
+      "previous": "Produsele anterioare",
+      "next": "Produsele următoare"
+    },
     "product": {
       "add_to_cart": "Adaugă în coș",
       "adding_to_cart": "Se adaugă...",

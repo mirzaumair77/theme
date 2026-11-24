@@ -1,0 +1,18 @@
+{%- doc -%}
+  Previous/next arrows for the product media slideshow on mobile, rendered when the
+  gallery's "Mobile pagination" is set to "Arrows" and there is more than one media item.
+  Uses the gallery's icon style, falling back to chevrons when it is "None" so the chosen
+  arrows stay visible. Styled by product-media-gallery-content (`.media-gallery__mobile-arrows`).
+
+  @param {string} mobile_controls_style - The gallery's slideshow_mobile_controls_style setting.
+  @param {string} [icons_style] - The gallery's icons_style setting.
+  @param {number} media_count - Number of media items in the slideshow.
+
+  @example
+  {% render 'product-media-gallery-mobile-arrows', mobile_controls_style: 'arrows', icons_style: 'chevron', media_count: 4 %}
+{%- enddoc -%}
+
+{%- if mobile_controls_style == 'arrows' and media_count > 1 -%}
+  {%- assign arrows_icon_style = icons_style | default: 'none' | replace: 'none', 'chevron' -%}
+  {% render 'slideshow-arrows', class: 'desktop:hidden media-gallery__mobile-arrows', icon_style: arrows_icon_style %}
+{%- endif -%}

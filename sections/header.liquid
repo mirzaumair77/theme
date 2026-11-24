@@ -102,7 +102,7 @@
   endif
 
   capture actions
-    render 'header-actions', customer_account_menu: section.settings.customer_account_menu, display_style: section.settings.actions_display_style, section: section
+    render 'header-actions', customer_account_menu: section.settings.customer_account_menu, display_style: section.settings.actions_display_style, section: section, show_account: section.settings.show_account, show_profile_badge: section.settings.show_profile_badge, show_cart_icon: section.settings.show_cart_icon
   endcapture
 
   if shop.customer_accounts_enabled
@@ -150,6 +150,15 @@
     capture drawer_search
       render 'search', class: 'search-action--hidden-on-menu', style: search_style, display_style: section.settings.actions_display_style
     endcapture
+  endif
+
+  # Append the merchant's search label addition inside the search snippet's text label,
+  # which is the first span it renders. Text style only; icon style keeps its markup.
+  assign search_label_suffix = section.settings.search_label_suffix | strip | escape
+  if section.settings.actions_display_style == 'text' and search_label_suffix != blank
+    assign search_label_suffix_markup = ' <span class="search-action__label-suffix">' | append: search_label_suffix | append: '</span></span>'
+    assign search = search | replace_first: '</span>', search_label_suffix_markup
+    assign drawer_search = drawer_search | replace_first: '</span>', search_label_suffix_markup
   endif
 
   assign show_language = section.settings.show_language
@@ -203,6 +212,20 @@
 
   if collapse_header_paddings_class
     assign class = class | append: ' ' | append: collapse_header_paddings_class
+  endif
+
+  if section.settings.actions_display_style == 'text'
+    assign class = class | append: ' header--text-utilities'
+  endif
+
+  if section.settings.desktop_drawer_menu
+    assign class = class | append: ' header--drawer-menu'
+  endif
+
+  # A start-aligned logo also leads the compact (drawer) layout, with search,
+  # account, cart, and the menu toggle grouped at the end
+  if section.settings.logo_position == 'left'
+    assign class = class | append: ' header--logo-start'
   endif
 
   # Determine transparent background value
@@ -522,7 +545,8 @@
     }
   }
 
-  #header-component[data-menu-style='drawer'] .header__column {
+  /* Text utilities keep the desktop columns in drawer mode; mobile still uses the rules in .header__column */
+  #header-component[data-menu-style='drawer']:not(.header--text-utilities) .header__column {
     display: contents;
   }
 
@@ -790,6 +814,11 @@
     border-bottom-color: var(--border-bottom-color-mobile);
   }
 
+  /* Hide the divider over the hero until the transparent header turns solid */
+  #header-component[transparent]:not([data-sticky-state='active']):not(:hover):not(:focus-within) .header__row--top {
+    border-bottom-color: transparent;
+  }
+
   .header__row.divider--page-width:not(.section--page-width) .header__columns {
     @media screen and (min-width: 750px) {
       padding-inline-start: 0;
@@ -811,7 +840,7 @@
 
   .header__column--left,
   .header__column--center {
-    gap: var(--gap-xl);
+    gap: 40px;
     grid-area: left;
   }
 
@@ -825,7 +854,7 @@
   }
 
   .header__column--right {
-    gap: var(--gap-xl);
+    gap: var(--header-icon-gap);
     justify-content: flex-end;
     grid-area: right;
 
@@ -920,8 +949,9 @@
   }
 
   /* not ideal but we need to duplicate these styles for when touch comes into play
-    We could avoid the duplication using js to set the data-menu-style attribute on small screens instead of using @media queries */
-  #header-component[data-menu-style='drawer'] .header__columns {
+    We could avoid the duplication using js to set the data-menu-style attribute on small screens instead of using @media queries.
+    Text utilities skip this duplicate so desktop keeps its columns; the mobile media query above still applies. */
+  #header-component[data-menu-style='drawer']:not(.header--text-utilities) .header__columns {
     --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
       var(--header-mobile-bookend) var(--header-mobile-bookend);
 
@@ -966,6 +996,235 @@
   /* Single column layout if there are no columns within */
   .header__columns:not(:has(.header__column)) {
     grid-template-columns: 1fr;
+  }
+
+  /* Start-aligned logo in the compact layout: logo | search | account + cart | menu toggle.
+     Duplicated for touch-driven drawer mode, like the default compact layout above. */
+  @media screen and (max-width: 749px) {
+    #header-component.header--logo-start:not(.header--text-utilities) .header__columns {
+      --header-template-columns: minmax(0, 1fr) auto auto auto auto;
+
+      grid-template-areas: 'center leftB rightA rightB leftA';
+
+      .header-logo {
+        justify-self: start;
+      }
+
+      .search-action {
+        grid-area: leftB;
+      }
+
+      header-actions {
+        grid-area: rightB;
+      }
+
+      .header__drawer {
+        grid-area: leftA;
+      }
+
+      .header__icon--menu {
+        justify-content: flex-end;
+        padding-inline: var(--padding-sm) 0;
+      }
+    }
+  }
+
+  #header-component.header--logo-start[data-menu-style='drawer']:not(.header--text-utilities) .header__columns {
+    --header-template-columns: minmax(0, 1fr) auto auto auto auto;
+
+    grid-template-areas: 'center leftB rightA rightB leftA';
+
+    .header-logo {
+      justify-self: start;
+    }
+
+    .search-action {
+      grid-area: leftB;
+    }
+
+    header-actions {
+      grid-area: rightB;
+    }
+
+    .header__drawer {
+      grid-area: leftA;
+    }
+
+    .header__icon--menu {
+      justify-content: flex-end;
+      padding-inline: var(--padding-sm) 0;
+    }
+  }
+
+  /* ================================
+   * Header icon row (icon style): search, account, and cart are 24px boxes 16px apart
+   * on every breakpoint. Spacing comes from the row itself (flex gap, a 16px grid track,
+   * and one row offset against the column gap), never from per-icon margins.
+   * ================================ */
+  #header-component:not(.header--text-utilities) {
+    --header-icon-size: 24px;
+    --header-icon-gap: 16px;
+
+    :is(.search-action, header-actions) .header-actions__action {
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--header-icon-size);
+      block-size: var(--header-icon-size);
+      padding: 0;
+
+      /* Invisible hit area (40 x 44px) that keeps the touch target without widening
+         the box; it stays within half the gap so neighbors never overlap */
+      &::after {
+        content: '';
+        position: absolute;
+        inset-block: -10px;
+        inset-inline: calc(var(--header-icon-gap) / -2);
+      }
+    }
+
+    :is(.search-action, header-actions) .header-actions__action .svg-wrapper,
+    .account-button shopify-account,
+    .account-button__icon-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: var(--header-icon-size);
+      min-width: var(--header-icon-size);
+      block-size: var(--header-icon-size);
+      min-height: var(--header-icon-size);
+    }
+
+    header-actions {
+      align-items: center;
+      gap: var(--header-icon-gap);
+    }
+
+    /* Cart badge: a 16px circle on the bag's top-end corner, mostly outside the 24px
+       glyph so it never covers the icon. The mask cuts a 1.5px gap around it in the glyph. */
+    .header-actions__cart-icon {
+      --cart-bubble-size: 16px;
+      --cart-bubble-top: -6px;
+      --cart-bubble-right: -7px;
+      --cart-bubble-gap: 1.5px;
+
+      inline-size: var(--header-icon-size);
+      block-size: var(--header-icon-size);
+    }
+
+    .header-actions__cart-icon .cart-bubble {
+      block-size: var(--cart-bubble-size);
+      padding: 0;
+    }
+
+    .header-actions__cart-icon .cart-bubble__background {
+      border-radius: 50%;
+    }
+
+    /* Count centered optically: fixed-width digits, no extra line box above or below */
+    .header-actions__cart-icon .cart-bubble__text {
+      inline-size: 100%;
+      block-size: 100%;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+      text-align: center;
+    }
+
+    /* 100+ items: the count is blank, so show a small dot instead */
+    cart-icon:has(.cart-bubble__text-count:empty),
+    cart-icon:has(.cart-bubble__text-count:empty) .svg-wrapper {
+      --cart-bubble-size: 8px;
+      --cart-bubble-top: -1px;
+      --cart-bubble-right: -1px;
+    }
+
+    .header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
+      mask: radial-gradient(
+        circle at calc(100% - var(--cart-bubble-right) - var(--cart-bubble-size) / 2)
+          calc(var(--cart-bubble-top) + var(--cart-bubble-size) / 2),
+        transparent calc(var(--cart-bubble-size) / 2 + var(--cart-bubble-gap)),
+        #fff calc(var(--cart-bubble-size) / 2 + var(--cart-bubble-gap))
+      );
+    }
+  }
+
+  [dir='rtl'] #header-component:not(.header--text-utilities) .header-actions__cart-icon.header-actions__cart-icon--has-cart svg {
+    mask: radial-gradient(
+      circle at calc(var(--cart-bubble-right) + var(--cart-bubble-size) / 2)
+        calc(var(--cart-bubble-top) + var(--cart-bubble-size) / 2),
+      transparent calc(var(--cart-bubble-size) / 2 + var(--cart-bubble-gap)),
+      #fff calc(var(--cart-bubble-size) / 2 + var(--cart-bubble-gap))
+    );
+  }
+
+  /* Desktop: search precedes header-actions in the right column. Swap the column gap
+     between them for the 16px icon gap. `~`, not `+`: header-actions renders a
+     <script> tag just before its element. */
+  @media screen and (min-width: 750px) {
+    #header-component[data-menu-style='menu']:not(.header--text-utilities) .header__column--right {
+      .search-action {
+        margin-inline-end: 0;
+      }
+
+      .search-action ~ header-actions {
+        margin-inline-start: calc(var(--header-icon-gap) - var(--gap-xl));
+      }
+    }
+  }
+
+  /* Compact layout: columns are `display: contents`, so the desktop column offsets
+     would pull icons out of their grid tracks. Clear them. */
+  @media screen and (max-width: 749px) {
+    #header-component:not(.header--text-utilities) .header__columns {
+      .search-action,
+      header-actions {
+        margin-inline: 0;
+      }
+    }
+  }
+
+  #header-component[data-menu-style='drawer']:not(.header--text-utilities) .header__columns {
+    .search-action,
+    header-actions {
+      margin-inline: 0;
+    }
+  }
+
+  /* Start-aligned logo: logo | search | 16px | account + cart | menu toggle. The empty
+     rightA track is the 16px gap between search and account; the menu toggle keeps its
+     glyph on the page margin with the same 16px before it. */
+  @media screen and (max-width: 749px) {
+    #header-component.header--logo-start:not(.header--text-utilities) .header__columns {
+      --header-template-columns: minmax(0, 1fr) auto var(--header-icon-gap) auto auto;
+
+      .header__icon--menu {
+        justify-content: flex-end;
+        inline-size: calc(var(--header-icon-gap) + var(--header-icon-size));
+        padding-inline: 0;
+      }
+
+      /* The drawer snippet centers this glyph with `margin: auto`; pin it to the end */
+      .header__icon--menu .header-drawer-icon {
+        margin-inline: auto 0;
+      }
+    }
+  }
+
+  #header-component.header--logo-start[data-menu-style='drawer']:not(.header--text-utilities) .header__columns {
+    --header-template-columns: minmax(0, 1fr) auto var(--header-icon-gap) auto auto;
+
+    .header__icon--menu {
+      justify-content: flex-end;
+      inline-size: calc(var(--header-icon-gap) + var(--header-icon-size));
+      padding-inline: 0;
+    }
+
+    .header__icon--menu .header-drawer-icon {
+      margin-inline: auto 0;
+    }
   }
 
   /* Check for hover support to avoid unnecessary expensive recalculations when tapping on mobile */
@@ -1014,12 +1273,27 @@
     height: var(--icon-size-md);
   }
 
+  /* Search, account, cart, and menu icons render at 24px on every breakpoint.
+     The icon row above sizes their wrappers; this keeps the glyphs from shrinking. */
+  #header-component .header-icon {
+    flex-shrink: 0;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  #header-component .header-icon > svg {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+  }
+
   .header:has(#Details-menu-drawer-container[open]) {
     contain: style;
   }
 
+  /* Whole pixels keep the 1px divider on one pixel row, so its color isn't blurred lighter */
   .header.header--compact {
-    --header-padding: var(--padding-2xs);
+    --header-padding: 17px;
   }
 
   .header__columns {
@@ -1099,8 +1373,8 @@
   }
 
   .dropdown-localization__button .icon-flag {
-    width: var(--menu-localization-font-size, var(--icon-size-sm));
-    height: var(--menu-localization-font-size, var(--icon-size-sm));
+    width: 12px;
+    height: 12px;
     clip-path: circle(50%); /* stylelint-disable-line */
     background-position: center;
     background-size: cover;
@@ -1157,6 +1431,7 @@
   }
 
   dropdown-localization-component {
+    margin-inline: var(--header-icon-gap);
     position: relative;
     background-color: transparent;
   }
@@ -1231,6 +1506,208 @@
   .dropdown-localization:not(dropdown-localization-component) .language-selector {
     font-family: var(--menu-localization-font);
     font-size: var(--menu-localization-font-size);
+  }
+
+  /* ================================
+     * Text utilities (desktop)
+     * Drawer toggle and search on the start side, localization and outlined cart count on the end side.
+     * ================================ */
+  @media screen and (min-width: 750px) {
+    .header--text-utilities {
+      --header-utility-letter-spacing: 0.15em;
+      --header-utility-icon-size: var(--icon-size-sm);
+      --header-menu-icon-width: 1.875rem;
+      --header-menu-icon-height: 0.5625rem;
+    }
+
+    /* Desktop drawer option: show the drawer toggle and hide the inline menu even when it fits */
+    #header-component.header--drawer-menu[data-menu-style] .header__drawer {
+      display: flex;
+      min-height: var(--header-drawer-min-height);
+    }
+
+    #header-component.header--drawer-menu[data-menu-style] .header-menu {
+      display: none;
+    }
+
+    /* Localization stays visible when the menu collapses into the drawer */
+    #header-component.header--text-utilities[data-menu-style='drawer'] .dropdown-localization {
+      display: flex;
+    }
+
+    /* Show one search in drawer mode: the drawer copy sits beside the menu toggle */
+    #header-component.header--text-utilities[data-menu-style='drawer']
+      .header__columns:has(.search-action--hidden-on-menu)
+      .search-action:not(.search-action--hidden-on-menu) {
+      display: none;
+    }
+
+    /* Two-line menu toggle, aligned to the page edge */
+    .header--text-utilities .menu-drawer-container .header__icon--menu {
+      padding-inline-start: 0;
+    }
+
+    .header--text-utilities .header__icon--menu .header-drawer-icon--open {
+      box-sizing: border-box;
+      width: var(--header-menu-icon-width);
+      height: var(--header-menu-icon-height);
+      border-block: var(--icon-stroke-width) solid currentColor;
+
+      svg {
+        display: none;
+      }
+    }
+
+    .header--text-utilities :is(.header-actions__text-style, .dropdown-localization__button) {
+      letter-spacing: var(--header-utility-letter-spacing);
+    }
+
+    /* Search shows its icon beside the label */
+    .header--text-utilities .search-action--text .header-actions__action {
+      align-items: center;
+      gap: var(--gap-sm);
+      white-space: nowrap;
+    }
+
+    .header--text-utilities .search-action--text .svg-wrapper.desktop\:hidden {
+      /* stylelint-disable-next-line declaration-no-important */
+      display: flex !important;
+      order: -1;
+      width: 18px;
+      height: 18px;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    /* Cart count in an outlined box, including an empty cart */
+    .header--text-utilities .header-actions__cart-icon--text {
+      gap: var(--gap-sm);
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble {
+      box-sizing: border-box;
+      width: auto;
+      min-width: 1.5em;
+      height: 1.75em;
+      aspect-ratio: auto;
+      padding-inline: 0.3em;
+      border: var(--icon-stroke-width) solid currentColor;
+      border-radius: 0;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble.visually-hidden {
+      /* stylelint-disable-next-line declaration-no-important */
+      position: relative !important;
+      overflow: visible;
+      margin: 0;
+      clip: auto;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__background {
+      display: none;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__text {
+      font-size: 0.85em;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__text-count.hidden {
+      /* stylelint-disable-next-line declaration-no-important */
+      display: inline !important;
+    }
+  }
+
+  /* ================================
+     * Text utilities (mobile)
+     * Two-line menu toggle and the cart count in an outlined box, matching desktop.
+     * ================================ */
+  @media screen and (max-width: 749px) {
+    .header--text-utilities {
+      --header-menu-icon-width: 2.5rem;
+      --header-menu-icon-height: 0.75rem;
+    }
+
+    /* Align the toggle to the page edge, mirroring the cart on the other side */
+    .header--text-utilities .menu-drawer-container .header__icon--menu {
+      padding-inline-start: 0;
+    }
+
+    .header--text-utilities .header__icon--menu .header-drawer-icon--open {
+      box-sizing: border-box;
+      width: var(--header-menu-icon-width);
+      height: var(--header-menu-icon-height);
+      margin-block: auto;
+      margin-inline: 0;
+      border-block: var(--icon-stroke-width) solid currentColor;
+
+      svg {
+        display: none;
+      }
+    }
+
+    /* Search stays beside the menu toggle. Without the account icon, Horizon would move it
+       next to the cart (rightA). */
+    .header--text-utilities .header__columns .search-action {
+      grid-area: leftB;
+      margin-inline-start: 1rem;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text {
+      display: flex;
+      align-items: center;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .svg-wrapper {
+      display: none;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble {
+      position: relative;
+      top: auto;
+      inset-inline-end: auto;
+      box-sizing: border-box;
+      width: auto;
+      min-width: 1.5rem;
+      height: 1.875rem;
+      aspect-ratio: auto;
+      padding-inline: 0.3em;
+      border: var(--icon-stroke-width) solid currentColor;
+      border-radius: 0;
+      color: inherit;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble.visually-hidden {
+      /* stylelint-disable-next-line declaration-no-important */
+      position: relative !important;
+      overflow: visible;
+      margin: 0;
+      clip: auto;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__background {
+      display: none;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__text {
+      font-size: 0.8125rem;
+    }
+
+    .header--text-utilities .header-actions__cart-icon--text .cart-bubble__text-count.hidden {
+      /* stylelint-disable-next-line declaration-no-important */
+      display: inline !important;
+    }
+
+    /* The menu drawer opens edge to edge on mobile */
+    #header-component .menu-drawer {
+      width: 100vw;
+      max-width: 100vw;
+      border-inline-end: 0;
+    }
   }
 {% endstylesheet %}
 
@@ -1314,6 +1791,12 @@
       "default": "top"
     },
     {
+      "type": "checkbox",
+      "id": "desktop_drawer_menu",
+      "label": "Use drawer menu on desktop",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "t:content.customer_account"
     },
@@ -1322,10 +1805,25 @@
       "content": "t:content.manage_customer_accounts"
     },
     {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Account",
+      "default": false
+    },
+    {
       "type": "link_list",
       "id": "customer_account_menu",
       "label": "t:settings.menu",
-      "default": "customer-account-main-menu"
+      "default": "customer-account-main-menu",
+      "visible_if": "{{ section.settings.show_account }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_profile_badge",
+      "label": "t:settings.profile_badge",
+      "info": "t:info.profile_badge",
+      "default": true,
+      "visible_if": "{{ section.settings.show_account and section.settings.actions_display_style == 'text' }}"
     },
     {
       "type": "header",
@@ -1370,6 +1868,14 @@
       ],
       "default": "top",
       "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "text",
+      "id": "search_label_suffix",
+      "label": "Search label addition",
+      "info": "Shown after the search label when utilities display as text.",
+      "default": "800+ designs",
+      "visible_if": "{{ section.settings.show_search and section.settings.actions_display_style == 'text' }}"
     },
     {
       "type": "header",
@@ -1616,6 +2122,10 @@
       "label": "t:settings.size",
       "options": [
         {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
           "value": "0.75rem",
           "label": "12px"
         },
@@ -1675,6 +2185,14 @@
         }
       ],
       "default": "none",
+      "visible_if": "{{ section.settings.actions_display_style == 'text' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_icon",
+      "label": "t:settings.cart_icon",
+      "info": "t:info.cart_icon",
+      "default": true,
       "visible_if": "{{ section.settings.actions_display_style == 'text' }}"
     },
     {

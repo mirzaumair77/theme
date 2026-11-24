@@ -313,6 +313,36 @@
     "blog_post_description": "博客文章内容摘录"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} 毫米的手指适合 {{ size }} 号。",
+      "select_size": "选择 {{ size }} 号",
+      "out_of_range": "请输入 {{ min }} 至 {{ max }} 毫米之间的数值。",
+      "size_selected": "已选择 {{ size }} 号"
+    },
+    "shop_pay_installments": {
+      "message_html": "使用 {{ brand }} 分 {{ installments }} 期免息付款，每期 {{ amount }}"
+    },
+    "breadcrumbs": {
+      "label": "面包屑导航",
+      "home": "首页"
+    },
+    "variant_group": {
+      "layout": "显示",
+      "grid": "网格",
+      "list": "列表",
+      "finishes": {
+        "one": "{{ count }} 种表面处理"
+      },
+      "current": "正在查看"
+    },
+    "add_ons": {
+      "add_to_cart": "将 {{ title }} 添加到购物车",
+      "added_to_cart": "已将 {{ title }} 添加到购物车",
+      "add": "将 {{ title }} 添加到订单",
+      "price_addition": "+{{ price }}",
+      "previous": "上一组产品",
+      "next": "下一组产品"
+    },
     "product": {
       "add_to_cart": "添加到购物车",
       "added_to_cart": "添加到购物车",

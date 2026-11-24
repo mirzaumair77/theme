@@ -1,0 +1,117 @@
+{%- doc -%}
+  Breadcrumb trail for the product page: Home / collection / product.
+  The collection is the one the shopper came from (collection-aware product URL),
+  falling back to the product's first collection. Rendered by product-information
+  when its "Show breadcrumbs" setting is on.
+
+  @param {product} product - The product being viewed.
+
+  @example
+  {% render 'breadcrumbs', product: product %}
+{%- enddoc -%}
+
+{%- liquid
+  assign trail_collection = collection
+  if trail_collection == blank
+    assign trail_collection = product.collections.first
+  endif
+-%}
+
+{%- if product != blank -%}
+  <nav
+    class="breadcrumbs"
+    aria-label="{{ 'products.breadcrumbs.label' | t }}"
+  >
+    <ol class="breadcrumbs__list list-unstyled">
+      <li class="breadcrumbs__item">
+        <a
+          class="breadcrumbs__link"
+          href="{{ routes.root_url }}"
+        >
+          {{- 'products.breadcrumbs.home' | t -}}
+        </a>
+      </li>
+      {%- if trail_collection != blank -%}
+        <li class="breadcrumbs__item">
+          <a
+            class="breadcrumbs__link"
+            href="{{ trail_collection.url }}"
+          >
+            {{- trail_collection.title | escape -}}
+          </a>
+        </li>
+      {%- endif -%}
+      <li class="breadcrumbs__item">
+        <span
+          class="breadcrumbs__current"
+          aria-current="page"
+        >
+          {{- product.title | escape -}}
+        </span>
+      </li>
+    </ol>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .breadcrumbs {
+    grid-column: 2;
+    min-width: 0;
+    padding-block: 8px 12px;
+    /* Sit close to the gallery: cancel the section's row gap below the trail */
+    margin-block-end: calc(var(--gap, 0px) * -1);
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: 0.033px;
+    font-weight: 500;
+  }
+
+  .breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .breadcrumbs__item + .breadcrumbs__item::before {
+    content: '/';
+    padding-inline: 8px;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-40));
+  }
+
+  .breadcrumbs__link {
+    /* color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text)); */
+    color: #737373;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      color: var(--color-foreground);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .breadcrumbs__current {
+    color: var(--color-foreground);
+    overflow-wrap: anywhere;
+  }
+
+  @media screen and (min-width: 750px) {
+    .breadcrumbs {
+      padding-block: var(--padding-lg);
+    }
+  }
+{% endstylesheet %}

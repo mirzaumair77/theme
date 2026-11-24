@@ -122,6 +122,32 @@ window.addEventListener('popstate', () => {
 });
 
 /**
+ * Keeps the locked document root at 0 in the squeeze layout.
+ *
+ * Apps inject elements as direct children of `<html>` (outside `<body>`), which makes the root
+ * taller than the viewport. `overflow: hidden`/`clip` on the root still allows programmatic
+ * scrolling, so fragment jumps (e.g. `#contact_form` after a newsletter submit) scroll the root
+ * after `.page-wrapper`, shifting the page up and exposing blank space. `.page-wrapper` has
+ * already been scrolled to the target by then, so resetting the root is enough.
+ */
+function resetLockedRootScroll() {
+  if (!SQUEEZE_QUERY.matches) return;
+
+  const root = document.scrollingElement ?? document.documentElement;
+  if (root.scrollTop !== 0 || root.scrollLeft !== 0) {
+    // 'instant' overrides `scroll-behavior: smooth` on html.
+    root.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
+}
+
+// Only root scrolls reach `window`; `.page-wrapper` scroll events don't bubble.
+window.addEventListener('scroll', resetLockedRootScroll, { passive: true });
+window.addEventListener('hashchange', resetLockedRootScroll);
+window.addEventListener('pageshow', resetLockedRootScroll);
+window.addEventListener('load', resetLockedRootScroll);
+resetLockedRootScroll();
+
+/**
  * Returns the appropriate target for listening to scroll events.
  * On desktop (≥990px), `.page-wrapper` emits scroll events directly.
  * On mobile, the document root scrolls natively and scroll events bubble to `document`.

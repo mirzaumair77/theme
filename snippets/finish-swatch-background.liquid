@@ -1,0 +1,28 @@
+{%- doc -%}
+  Outputs a CSS background value for a finish (metal) option value. Uses the merchant's swatch image or
+  color when one is set, otherwise a metallic gradient matched from the value's name.
+
+  @param {string} name - The option value name, e.g. "Gilded Bronze".
+  @param {object} [swatch] - The option value's swatch object.
+
+  @example
+  <span style="--finish-swatch: {% render 'finish-swatch-background', name: value.name, swatch: value.swatch %};"></span>
+{%- enddoc -%}
+
+{%- liquid
+  assign finish_name = name | downcase
+
+  if swatch.image
+    echo swatch.image | image_url: width: 80 | prepend: 'url(' | append: ') center / cover'
+  elsif swatch.color
+    echo 'rgb(' | append: swatch.color.rgb | append: ')'
+  elsif finish_name contains 'white'
+    echo 'linear-gradient(135deg, #f4f1ea 0%, #d3ccbd 48%, #efebe2 72%, #c6bfae 100%)'
+  elsif finish_name contains 'silver' or finish_name contains 'sterling' or finish_name contains 'rhodium' or finish_name contains 'platinum'
+    echo 'linear-gradient(135deg, #f6f7f9 0%, #c3c7cf 48%, #eceef2 72%, #b3b8c2 100%)'
+  elsif finish_name contains 'gold' or finish_name contains 'gilded' or finish_name contains 'bronze' or finish_name contains 'brass'
+    echo 'linear-gradient(135deg, #f1dca2 0%, #c4964a 45%, #e6c67d 70%, #b0823a 100%)'
+  else
+    echo '#d9d9d9'
+  endif
+-%}

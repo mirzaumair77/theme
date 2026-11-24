@@ -43,6 +43,35 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "layout",
+      "label": "t:settings.layout",
+      "options": [
+        {
+          "value": "stacked",
+          "label": "t:options.stacked"
+        },
+        {
+          "value": "inline",
+          "label": "t:options.inline"
+        }
+      ],
+      "default": "stacked",
+      "visible_if": "{{ block.settings.variant_style == 'buttons' }}"
+    },
+    {
+      "type": "textarea",
+      "id": "option_labels",
+      "label": "t:settings.option_labels",
+      "info": "t:info.option_labels"
+    },
+    {
+      "type": "text",
+      "id": "default_size",
+      "label": "t:settings.default_size",
+      "info": "t:info.default_size"
+    },
+    {
       "type": "header",
       "content": "t:content.appearance"
     },

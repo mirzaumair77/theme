@@ -21,6 +21,7 @@
     {% render 'border-override', settings: block_settings %}
     {% if block_settings.divider_color != blank %} --color-border: {{ block_settings.divider_color }};{% endif %}
   "
+  data-accordion-group
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}

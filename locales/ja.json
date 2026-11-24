@@ -313,6 +313,36 @@
     "blog_post_description": "ブログ記事の内容の抜粋"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} mmの指には{{ size }}が合います。",
+      "select_size": "サイズ{{ size }}を選択",
+      "out_of_range": "{{ min }}〜{{ max }} mmの値を入力してください。",
+      "size_selected": "サイズ{{ size }}を選択しました"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ brand }}で{{ amount }}ずつ、{{ installments }}回の無利息分割払い"
+    },
+    "breadcrumbs": {
+      "label": "パンくずリスト",
+      "home": "ホーム"
+    },
+    "variant_group": {
+      "layout": "表示",
+      "grid": "グリッド",
+      "list": "リスト",
+      "finishes": {
+        "one": "{{ count }}種類の仕上げ"
+      },
+      "current": "現在表示中"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }}をカートに追加",
+      "added_to_cart": "{{ title }}をカートに追加しました",
+      "add": "{{ title }}を注文に追加",
+      "price_addition": "+{{ price }}",
+      "previous": "前の商品",
+      "next": "次の商品"
+    },
     "product": {
       "add_to_cart": "カートに追加する",
       "added_to_cart": "カートに追加済み",

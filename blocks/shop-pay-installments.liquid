@@ -1,0 +1,383 @@
+{%- doc -%}
+  Shop Pay installments message for the buy buttons CTA group, e.g.
+  "4 interest-free installments of $86.25 with Shop Pay", calculated from the selected
+  variant's price and kept in sync on variant change by assets/shop-pay-installments.js.
+  Hidden when the price is outside the configured range. The optional
+  "Learn more" trigger opens a modal with merchant-authored details, using the theme's
+  dialog component (focus moves into the dialog, Escape / outside click / close button
+  close it, and focus returns to the trigger).
+
+  Rendered as a static block by blocks/buy-buttons.liquid, inside `.product-form-buttons`.
+
+  @example
+  {% content_for 'block', type: 'shop-pay-installments', id: 'shop-pay-installments' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign block_settings = block.settings
+  assign variant = closest.product.selected_or_first_available_variant
+  assign installments = block_settings.installments | default: 4
+  assign minimum_price = block_settings.minimum_price | default: 0 | times: 100
+  assign maximum_price = block_settings.maximum_price | default: 0 | times: 100
+
+  assign eligible = false
+  if variant != blank and variant.price >= minimum_price
+    if maximum_price == 0 or variant.price <= maximum_price
+      assign eligible = true
+    endif
+  endif
+
+  assign installment_amount = variant.price | times: 1.0 | divided_by: installments | round | money
+  assign brand_html = '<span class="shop-pay-installments__brand">Shop Pay</span>'
+
+  assign show_learn_more = false
+  if block_settings.show_learn_more and block_settings.popup_content != blank
+    assign show_learn_more = true
+  endif
+
+  assign learn_more_label = block_settings.learn_more_label | default: 'Learn more'
+  assign dialog_heading_id = 'ShopPayInstallmentsHeading-' | append: block.id
+-%}
+
+{%- comment -%}
+  Always rendered (hidden when out of range) so the component can update the message
+  and visibility when the shopper picks a variant with a different price.
+{%- endcomment -%}
+<script
+  src="{{ 'shop-pay-installments.js' | asset_url }}"
+  type="module"
+></script>
+{%- if show_learn_more -%}
+  <script
+    src="{{ 'dialog.js' | asset_url }}"
+    type="module"
+  ></script>
+{%- endif -%}
+<shop-pay-installments-component
+  class="shop-pay-installments"
+  data-block-id="{{ block.id }}"
+  data-product-id="{{ closest.product.id }}"
+  {% unless eligible %}
+    hidden
+  {% endunless %}
+  {{ block.shopify_attributes }}
+>
+  {%- if show_learn_more -%}
+    <dialog-component class="shop-pay-installments__dialog-root">
+  {%- endif -%}
+  <p class="shop-pay-installments__message">
+    <span data-installments-text>
+      {{- 'products.shop_pay_installments.message_html'
+        | t: installments: installments, amount: installment_amount, brand: brand_html
+      -}}
+    </span>
+    {%- if show_learn_more %}
+      <button
+        type="button"
+        class="button-unstyled shop-pay-installments__learn-more"
+        aria-haspopup="dialog"
+        on:click="/showDialog"
+      >
+        {{- learn_more_label | escape -}}
+      </button>
+    {%- endif -%}
+  </p>
+
+  {%- if show_learn_more -%}
+    <dialog
+      ref="dialog"
+      class="shop-pay-installments__dialog"
+      aria-labelledby="{{ dialog_heading_id }}"
+      scroll-lock
+    >
+      <div class="shop-pay-installments__dialog-header">
+        <h2
+          id="{{ dialog_heading_id }}"
+          class="shop-pay-installments__dialog-title"
+        >
+          {{- block_settings.popup_title | escape -}}
+        </h2>
+        <button
+          type="button"
+          class="button-unstyled shop-pay-installments__close"
+          aria-label="{{ 'accessibility.close_dialog' | t }}"
+          on:click="/closeDialog"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="shop-pay-installments__dialog-content">
+        {{- block_settings.popup_content -}}
+      </div>
+    </dialog>
+    </dialog-component>
+  {%- endif -%}
+</shop-pay-installments-component>
+
+{% stylesheet %}
+  .shop-pay-installments {
+    --shop-pay-installments-text: #737373;
+    --shop-pay-installments-brand: #5A31F4;
+    --shop-pay-installments-popup-background: #fff;
+    --shop-pay-installments-popup-text: #000;
+
+    display: block;
+    flex: 1 0 100%;
+    min-width: 0;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .shop-pay-installments__dialog-root {
+    display: block;
+  }
+
+  .shop-pay-installments__message {
+    margin: 0;
+    color: var(--shop-pay-installments-text);
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    line-height: normal;
+    font-weight: 400;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .shop-pay-installments__brand {
+    color: var(--shop-pay-installments-brand);
+    font-weight: 600;
+  }
+
+  /* Two classes: beats the buy buttons' `.product-form-buttons button` full-width rule */
+  .shop-pay-installments .shop-pay-installments__learn-more {
+    display: inline;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    margin-inline-start: 4px;
+    padding: 0;
+    vertical-align: baseline;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--shop-pay-installments-popup-text);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .shop-pay-installments__dialog {
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    margin: auto;
+    padding: 30px;
+    overflow-y: auto;
+    border: 0;
+    border-radius: 12px;
+    background-color: var(--shop-pay-installments-popup-background);
+    color: var(--shop-pay-installments-popup-text);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+    text-align: start;
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0.5);
+    }
+
+    &[open] {
+      animation: shop-pay-installments-open 0.3s ease forwards;
+    }
+
+    &[open]::backdrop {
+      animation: shop-pay-installments-fade 0.3s ease forwards;
+    }
+
+    &.dialog-closing {
+      animation: shop-pay-installments-close 0.3s ease forwards;
+    }
+
+    &.dialog-closing::backdrop {
+      animation: shop-pay-installments-fade 0.3s ease reverse forwards;
+    }
+
+    @media screen and (max-width: 749px) {
+      width: 95%;
+      padding: 20px;
+    }
+  }
+
+  .shop-pay-installments__dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-block-end: 20px;
+  }
+
+  .shop-pay-installments__dialog-title {
+    min-width: 0;
+    margin: 0;
+    color: var(--shop-pay-installments-popup-text);
+    font-size: 24px;
+    font-weight: 600;
+
+    @media screen and (max-width: 749px) {
+      font-size: 20px;
+    }
+  }
+
+  .shop-pay-installments .shop-pay-installments__close {
+    flex-shrink: 0;
+    width: auto;
+    height: auto;
+    padding: 5px;
+    color: var(--shop-pay-installments-popup-text);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: var(--focus-outline-offset);
+    }
+  }
+
+  .shop-pay-installments__dialog-content {
+    line-height: 1.6;
+
+    h3 {
+      margin-block: 20px 10px;
+      color: var(--shop-pay-installments-popup-text);
+    }
+
+    h3:first-child {
+      margin-block-start: 0;
+    }
+
+    ul {
+      margin: 10px 0;
+      padding-inline-start: 20px;
+    }
+
+    li {
+      margin-block-end: 5px;
+    }
+  }
+
+  @keyframes shop-pay-installments-open {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shop-pay-installments-close {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+  }
+
+  @keyframes shop-pay-installments-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shop-pay-installments__dialog[open],
+    .shop-pay-installments__dialog.dialog-closing,
+    .shop-pay-installments__dialog[open]::backdrop,
+    .shop-pay-installments__dialog.dialog-closing::backdrop {
+      animation-duration: 1ms;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.shop_pay_installments",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "installments",
+      "label": "t:settings.installments",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "number",
+      "id": "minimum_price",
+      "label": "t:settings.installments_minimum_price",
+      "info": "t:info.installments_price_range",
+      "default": 50
+    },
+    {
+      "type": "number",
+      "id": "maximum_price",
+      "label": "t:settings.installments_maximum_price",
+      "default": 3000
+    },
+    {
+      "type": "header",
+      "content": "t:content.popup"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_learn_more",
+      "label": "t:settings.show_learn_more",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "learn_more_label",
+      "label": "t:settings.learn_more_label",
+      "default": "t:text_defaults.learn_more",
+      "visible_if": "{{ block.settings.show_learn_more }}"
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "t:settings.popup_title",
+      "default": "t:text_defaults.installments_popup_title",
+      "visible_if": "{{ block.settings.show_learn_more }}"
+    },
+    {
+      "type": "richtext",
+      "id": "popup_content",
+      "label": "t:settings.popup_content",
+      "visible_if": "{{ block.settings.show_learn_more }}"
+    }
+  ]
+}
+{% endschema %}

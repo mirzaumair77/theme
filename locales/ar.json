@@ -364,6 +364,36 @@
     "blog_post_description": "مقتطف من محتوى منشور المدونة الخاص بك"
   },
   "products": {
+    "size_guide": {
+      "match": "إصبع بمقاس {{ circumference }} مم يناسب المقاس {{ size }}.",
+      "select_size": "اختيار المقاس {{ size }}",
+      "out_of_range": "أدخل قياسًا بين {{ min }} و{{ max }} مم.",
+      "size_selected": "تم اختيار المقاس {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} أقساط بدون فوائد بقيمة {{ amount }} مع {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "مسار التنقل",
+      "home": "الصفحة الرئيسية"
+    },
+    "variant_group": {
+      "layout": "العرض",
+      "grid": "شبكة",
+      "list": "قائمة",
+      "finishes": {
+        "one": "{{ count }} لمسة نهائية"
+      },
+      "current": "تشاهده الآن"
+    },
+    "add_ons": {
+      "add_to_cart": "أضف {{ title }} إلى السلة",
+      "added_to_cart": "تمت إضافة {{ title }} إلى السلة",
+      "add": "أضف {{ title }} إلى طلبك",
+      "price_addition": "+{{ price }}",
+      "previous": "المنتجات السابقة",
+      "next": "المنتجات التالية"
+    },
     "product": {
       "add_to_cart": "إضافة إلى سلة التسوق",
       "adding_to_cart": "جاري الإضافة...",

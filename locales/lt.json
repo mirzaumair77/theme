@@ -350,6 +350,36 @@
     "blog_post_description": "Jūsų tinklaraščio įrašo turinio ištrauka"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} mm pirštui tinka dydis {{ size }}.",
+      "select_size": "Pasirinkti dydį {{ size }}",
+      "out_of_range": "Įveskite matmenį nuo {{ min }} iki {{ max }} mm.",
+      "size_selected": "Pasirinktas dydis {{ size }}"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} beprocentės įmokos po {{ amount }} su {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Naršymo kelias",
+      "home": "Pagrindinis"
+    },
+    "variant_group": {
+      "layout": "Rodinys",
+      "grid": "Tinklelis",
+      "list": "Sąrašas",
+      "finishes": {
+        "one": "{{ count }} apdaila"
+      },
+      "current": "Šiuo metu peržiūrima"
+    },
+    "add_ons": {
+      "add_to_cart": "Įdėti {{ title }} į krepšelį",
+      "added_to_cart": "{{ title }} įdėtas į krepšelį",
+      "add": "Pridėti {{ title }} prie užsakymo",
+      "price_addition": "+{{ price }}",
+      "previous": "Ankstesni produktai",
+      "next": "Kiti produktai"
+    },
     "product": {
       "add_to_cart": "Įdėti į krepšelį",
       "adding_to_cart": "Pridedama…",

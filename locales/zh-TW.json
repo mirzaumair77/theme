@@ -336,6 +336,36 @@
     "blog_post_description": "您部落格貼文的內容摘錄"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} 公釐的手指適合 {{ size }} 號。",
+      "select_size": "選擇 {{ size }} 號",
+      "out_of_range": "請輸入 {{ min }} 至 {{ max }} 公釐之間的數值。",
+      "size_selected": "已選擇 {{ size }} 號"
+    },
+    "shop_pay_installments": {
+      "message_html": "使用 {{ brand }} 分 {{ installments }} 期免息付款，每期 {{ amount }}"
+    },
+    "breadcrumbs": {
+      "label": "導覽路徑",
+      "home": "首頁"
+    },
+    "variant_group": {
+      "layout": "顯示",
+      "grid": "網格",
+      "list": "清單",
+      "finishes": {
+        "one": "{{ count }} 種表面處理"
+      },
+      "current": "正在檢視"
+    },
+    "add_ons": {
+      "add_to_cart": "將 {{ title }} 加入購物車",
+      "added_to_cart": "已將 {{ title }} 加入購物車",
+      "add": "將 {{ title }} 加入訂單",
+      "price_addition": "+{{ price }}",
+      "previous": "上一組商品",
+      "next": "下一組商品"
+    },
     "product": {
       "add_to_cart": "加入購物車",
       "adding_to_cart": "正在新增…",

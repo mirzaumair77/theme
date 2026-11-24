@@ -336,6 +336,36 @@
     "blog_post_description": "آپ کی بلاگ پوسٹ کے مواد کا ایک اقتباس"
   },
   "products": {
+    "size_guide": {
+      "match": "{{ circumference }} ملی میٹر کی انگلی کے لیے سائز {{ size }} موزوں ہے۔",
+      "select_size": "سائز {{ size }} منتخب کریں",
+      "out_of_range": "{{ min }} اور {{ max }} ملی میٹر کے درمیان پیمائش درج کریں۔",
+      "size_selected": "سائز {{ size }} منتخب ہو گیا"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ brand }} کے ساتھ {{ amount }} کی {{ installments }} بلا سود اقساط"
+    },
+    "breadcrumbs": {
+      "label": "بریڈ کرمب",
+      "home": "ہوم"
+    },
+    "variant_group": {
+      "layout": "ڈسپلے",
+      "grid": "گرڈ",
+      "list": "فہرست",
+      "finishes": {
+        "one": "{{ count }} فنش"
+      },
+      "current": "ابھی دیکھا جا رہا ہے"
+    },
+    "add_ons": {
+      "add_to_cart": "{{ title }} کو کارٹ میں شامل کریں",
+      "added_to_cart": "{{ title }} کارٹ میں شامل کر دیا گیا",
+      "add": "{{ title }} کو اپنے آرڈر میں شامل کریں",
+      "price_addition": "+{{ price }}",
+      "previous": "پچھلی مصنوعات",
+      "next": "اگلی مصنوعات"
+    },
     "product": {
       "add_to_cart": "کارٹ میں شامل کریں",
       "adding_to_cart": "شامل کیا جا رہا ہے...",

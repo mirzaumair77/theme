@@ -343,6 +343,36 @@
     "blog_post_description": "Un estratto dal contenuto del tuo articolo del blog"
   },
   "products": {
+    "size_guide": {
+      "match": "Un dito di {{ circumference }} mm corrisponde alla misura {{ size }}.",
+      "select_size": "Seleziona misura {{ size }}",
+      "out_of_range": "Inserisci una misura tra {{ min }} e {{ max }} mm.",
+      "size_selected": "Misura {{ size }} selezionata"
+    },
+    "shop_pay_installments": {
+      "message_html": "{{ installments }} rate senza interessi da {{ amount }} con {{ brand }}"
+    },
+    "breadcrumbs": {
+      "label": "Percorso di navigazione",
+      "home": "Home"
+    },
+    "variant_group": {
+      "layout": "Visualizzazione",
+      "grid": "Griglia",
+      "list": "Elenco",
+      "finishes": {
+        "one": "{{ count }} finitura"
+      },
+      "current": "Stai visualizzando"
+    },
+    "add_ons": {
+      "add_to_cart": "Aggiungi {{ title }} al carrello",
+      "added_to_cart": "{{ title }} aggiunto al carrello",
+      "add": "Aggiungi {{ title }} al tuo ordine",
+      "price_addition": "+{{ price }}",
+      "previous": "Prodotti precedenti",
+      "next": "Prodotti successivi"
+    },
     "product": {
       "add_to_cart": "Aggiungi al carrello",
       "adding_to_cart": "Aggiunta in corso...",

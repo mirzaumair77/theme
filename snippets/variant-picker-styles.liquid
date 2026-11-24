@@ -523,4 +523,128 @@
   .variant-option__button-label--has-swatch:has([data-option-available='false']):has(:checked):hover {
     background-color: inherit;
   }
+
+  /* Values wrapper is layout-neutral unless the inline layout opts in */
+  .variant-option__values {
+    display: contents;
+  }
+
+  /*
+   * Inline layout (variant picker "Layout: Inline"):
+   * "FINISH:  ◯ ◯ ◯  Gilded Bronze" and "US SIZE:  ⃝ ⃝ ⃝ …" rows.
+   */
+  .variant-picker--inline {
+    --variant-inline-label-width: 5.5rem;
+    --variant-inline-size-button: 2.5rem;
+  }
+
+  .variant-picker--inline .variant-option--buttons {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  /* A floated legend joins the flex row (a rendered legend cannot be a flex item).
+     Its height matches one row of controls so it lines up with the first row when they wrap. */
+  .variant-picker--inline .variant-option--buttons legend {
+    float: inline-start;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    /* min-width: var(--variant-inline-label-width); */
+    min-height: var(--variant-inline-size-button);
+    margin: 0;
+    color: #2A2A2A;
+    font-size: var(--font-size--2xs);
+    font-weight: 600;
+    letter-spacing: 0.36px;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .variant-picker--inline .variant-option--buttons legend::after {
+    content: ':';
+  }
+
+  .variant-picker--inline .variant-option__values {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: var(--variant-inline-size-button);
+  }
+
+  /* Label, swatches and finish name share one line; unusually long swatch lists may still wrap */
+  .variant-picker--inline .variant-option--swatches .variant-option__values:not(:has(label:nth-of-type(6))) {
+    flex-wrap: nowrap;
+  }
+
+  .variant-picker--inline .variant-option--swatches .variant-option__button-label {
+    flex-shrink: 0;
+  }
+
+  .variant-picker--inline .variant-option--default-width-buttons .variant-option__values {
+    gap: 6px;
+  }
+
+  .variant-picker--inline .variant-option--default-width-buttons legend {
+    min-height: auto;
+  }
+
+  .variant-picker--inline .variant-option__selected-value {
+    font-size: var(--font-size--sm);
+    color: var(--variant-option-label-color-subdued, var(--color-foreground));
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Text options (e.g. ring sizes) become round, outline-only buttons */
+  .variant-picker--inline .variant-option__button-label:not(.variant-option__button-label--has-swatch) {
+    flex: 0 0 var(--variant-inline-size-button);
+    width: var(--variant-inline-size-button);
+    min-width: var(--variant-inline-size-button);
+    height: var(--variant-inline-size-button);
+    min-height: var(--variant-inline-size-button);
+    padding: 0;
+    border-radius: 50%;
+    font-family: var(--font-inter, var(--font-body--family));
+    font-size: var(--font-size--2xs);
+    font-weight: 500;
+    background-color: transparent;
+    color: var(--color-variant-text);
+
+    &::before {
+      border-color: rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    }
+
+    &:has(:checked) {
+      color: var(--color-variant-text);
+      font-weight: 700;
+    }
+
+    &:has(:checked)::before {
+      border-color: var(--color-foreground);
+    }
+
+    .variant-option__button-label__text {
+      text-align: center;
+    }
+  }
+
+  /* Selection is shown by the outline ring, so the sliding fill pill is not used here */
+  .variant-picker--inline .variant-option__button-label__pill {
+    display: none;
+  }
+
+  .variant-picker--inline .variant-option__button-label:has(:checked):hover {
+    color: var(--color-variant-text);
+  }
+
+  @media screen and (max-width: 749px) {
+    .variant-picker--inline {
+      --variant-inline-label-width: 4.5rem;
+    }
+  }
 {% endstylesheet %}
