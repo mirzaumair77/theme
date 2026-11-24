@@ -1,0 +1,272 @@
+{% doc %}
+  @prompt
+    {%- liquid
+      assign clean_title = product.title | remove: '™' | strip
+      assign artisan_name = product.metafields.custom.artisan_name.value | default: 'Jose Balli'
+      assign craft_image = product.featured_image
+      for img in product.images
+        if img.alt contains 'options' or img.src contains 'options' or img.src contains 'metal-options'
+          assign craft_image = img
+          break
+        endif
+      endfor
+      assign craft_alt = craft_image.alt | default: clean_title
+    -%}
+    <div class="jbps-craft">
+      <div class="jbps-craft__media">
+        {%- if craft_image -%}
+          {{ craft_image | image_url: width: 1200 | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 750px) 50vw, 100vw',
+            widths: '400,600,900,1200',
+            alt: craft_alt
+          -}}
+        {%- endif -%}
+      </div>
+      <div class="jbps-craft__content">
+        <p class="jbps-craft__eyebrow">Handmade in New Orleans</p>
+        <h2 class="jbps-craft__title">Not Stamped. Carved.</h2>
+        <p class="jbps-craft__body">Every {{ clean_title }} starts as a block of wax, hand-carved by {{ artisan_name }} &mdash; not pulled from a mass-production die. It's cast in solid sterling silver, gilded bronze, or white bronze using lost-wax casting, one of the oldest techniques in jewelry-making, then hand-polished until the finish is right.</p>
+        <p class="jbps-craft__body">The patented magnetic mount is built into every piece, so it holds its shape from the first wear to the thousandth. Pocket Square&trade; Pocket Jewelry is a Jose&nbsp;Balli original &mdash; there's no version of this design anywhere else. Every order ships in its own branded box and pouch, ready to give as-is.</p>
+        <ul class="jbps-craft__list">
+          <li>Available in Sterling Silver, Gilded Bronze, or White Bronze</li>
+          <li>Hand-carved original design, cast using lost-wax casting, hand-polished finish</li>
+          <li>Designed and made in New Orleans, Louisiana</li>
+          <li>Arrives in a branded box and pouch, ready to gift</li>
+        </ul>
+      </div>
+    </div>
+    
+    <style>
+      .jbps-craft {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        align-items: center;
+        max-width: 1100px;
+        margin-inline: auto;
+        font-family: var(--font-body--family);
+        color: #000;
+      }
+      @media screen and (min-width: 750px) {
+        .jbps-craft { grid-template-columns: 1.05fr 0.95fr; gap: 4rem; }
+      }
+      .jbps-craft__media img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+      }
+      .jbps-craft__eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #777777;
+        margin: 0 0 0.5rem;
+      }
+      .jbps-craft__title {
+        font-family: var(--font-primary--family);
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        font-weight: 600;
+        margin: 0 0 1.25rem;
+        line-height: 1.15;
+      }
+      .jbps-craft__body {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333333;
+        margin: 0 0 1rem;
+        max-width: 48ch;
+      }
+      .jbps-craft__list {
+        margin: 1.5rem 0 0;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid #e7e7e7;
+      }
+      .jbps-craft__list li {
+        padding: 0.65rem 0;
+        border-bottom: 1px solid #e7e7e7;
+        font-size: 0.9rem;
+        color: #000;
+      }
+    </style>
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% liquid
+  assign clean_title = product.title | remove: '™' | strip
+  assign artisan_name = product.metafields.custom.artisan_name.value | default: block.settings.artisan_name
+  assign craft_image = block.settings.image | default: product.featured_image
+  unless block.settings.image
+    for img in product.images
+      if img.alt contains 'options' or img.src contains 'options' or img.src contains 'metal-options'
+        assign craft_image = img
+        break
+      endif
+    endfor
+  endunless
+%}
+
+{% style %}
+  .jbps-craft-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin-inline: auto;
+    color: {{ block.settings.text_color }};
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__media,
+  .jbps-craft-{{ ai_gen_id }}__media img {
+    width: 100%;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__media img {
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__placeholder {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: {{ block.settings.placeholder_color }};
+    overflow: hidden;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__placeholder svg {
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    max-height: 420px;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__empty {
+    position: absolute;
+    inset-inline: 1rem;
+    bottom: 1rem;
+    margin: 0;
+    color: #555555;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__eyebrow {
+    margin: 0 0 0.5rem;
+    color: {{ block.settings.muted_color }};
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__title {
+    margin: 0 0 1.25rem;
+    color: {{ block.settings.text_color }};
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__body {
+    max-width: 52ch;
+    margin: 0 0 1rem;
+    color: {{ block.settings.body_color }};
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__list {
+    margin: 1.5rem 0 0;
+    padding: 0;
+    border-top: 1px solid {{ block.settings.divider_color }};
+    list-style: none;
+  }
+
+  .jbps-craft-{{ ai_gen_id }}__list li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid {{ block.settings.divider_color }};
+    color: {{ block.settings.text_color }};
+    font-family: var(--font-body--family);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  @media screen and (min-width: 750px) {
+    .jbps-craft-{{ ai_gen_id }}__inner {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 4rem;
+    }
+  }
+{% endstyle %}
+
+<div class="jbps-craft-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="jbps-craft-{{ ai_gen_id }}__inner">
+    <div class="jbps-craft-{{ ai_gen_id }}__media">
+      {% if craft_image %}
+        {{ craft_image | image_url: width: 1200 | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 50vw, 100vw', widths: '400,600,900,1200', alt: craft_image.alt | default: clean_title | escape }}
+      {% else %}
+        <div class="jbps-craft-{{ ai_gen_id }}__placeholder">
+          {{ 'image' | placeholder_svg_tag }}
+          <p class="jbps-craft-{{ ai_gen_id }}__empty">Add a craft image or product image</p>
+        </div>
+      {% endif %}
+    </div>
+    <div class="jbps-craft-{{ ai_gen_id }}__content">
+      {% if block.settings.eyebrow != blank %}<p class="jbps-craft-{{ ai_gen_id }}__eyebrow">{{ block.settings.eyebrow }}</p>{% endif %}
+      {% if block.settings.title != blank %}<h2 class="jbps-craft-{{ ai_gen_id }}__title">{{ block.settings.title }}</h2>{% endif %}
+      {% if block.settings.body_one != blank %}<p class="jbps-craft-{{ ai_gen_id }}__body">{{ block.settings.body_one | replace: '[product]', clean_title | replace: '[artisan]', artisan_name }}</p>{% endif %}
+      {% if block.settings.body_two != blank %}<p class="jbps-craft-{{ ai_gen_id }}__body">{{ block.settings.body_two }}</p>{% endif %}
+      <ul class="jbps-craft-{{ ai_gen_id }}__list">
+        {% if block.settings.feature_one != blank %}<li>{{ block.settings.feature_one }}</li>{% endif %}
+        {% if block.settings.feature_two != blank %}<li>{{ block.settings.feature_two }}</li>{% endif %}
+        {% if block.settings.feature_three != blank %}<li>{{ block.settings.feature_three }}</li>{% endif %}
+        {% if block.settings.feature_four != blank %}<li>{{ block.settings.feature_four }}</li>{% endif %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Craft story",
+  "settings": [
+    {"type":"header","content":"Content"},
+    {"type":"image_picker","id":"image","label":"Craft image"},
+    {"type":"text","id":"artisan_name","label":"Artisan name","default":"Jose Balli"},
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"Handmade in New Orleans"},
+    {"type":"text","id":"title","label":"Title","default":"Not stamped. Carved."},
+    {"type":"textarea","id":"body_one","label":"First paragraph","default":"Every [product] starts as a block of wax, hand-carved by [artisan] — not pulled from a mass-production die. It's cast in solid sterling silver, gilded bronze, or white bronze using lost-wax casting, then hand-polished until the finish is right."},
+    {"type":"textarea","id":"body_two","label":"Second paragraph","default":"The patented magnetic mount is built into every piece, so it holds its shape from the first wear to the thousandth. Pocket Square™ Pocket Jewelry is a Jose Balli original — there's no version of this design anywhere else. Every order ships in its own branded box and pouch, ready to give as-is."},
+    {"type":"text","id":"feature_one","label":"Feature one","default":"Available in Sterling Silver, Gilded Bronze, or White Bronze"},
+    {"type":"text","id":"feature_two","label":"Feature two","default":"Hand-carved original design, cast using lost-wax casting, hand-polished finish"},
+    {"type":"text","id":"feature_three","label":"Feature three","default":"Designed and made in New Orleans, Louisiana"},
+    {"type":"text","id":"feature_four","label":"Feature four","default":"Arrives in a branded box and pouch, ready to gift"},
+    {"type":"header","content":"Layout"},
+    {"type":"range","id":"desktop_width_percent","label":"Desktop width","min":50,"max":100,"step":5,"unit":"%","default":100},
+    {"type":"header","content":"Colors"},
+    {"type":"color","id":"text_color","label":"Text","default":"#000000"},
+    {"type":"color","id":"body_color","label":"Body text","default":"#333333"},
+    {"type":"color","id":"muted_color","label":"Muted text","default":"#555555"},
+    {"type":"color","id":"divider_color","label":"Dividers","default":"#D9D9D9"},
+    {"type":"color","id":"placeholder_color","label":"Placeholder","default":"#F5F5F5"}
+  ],
+  "presets": [{"name":"Craft story"}],
+  "tag": null,
+  "class": "craft-story-block"
+}
+{% endschema %}

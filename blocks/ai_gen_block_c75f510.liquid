@@ -1,0 +1,206 @@
+{% doc %}
+  @prompt
+    {%- liquid
+      assign clean_title = product.title | remove: '™' | strip
+      assign wedding_image = nil
+      for img in product.images
+        if img.alt contains 'wedding' or img.src contains 'wedding'
+          assign wedding_image = img
+          break
+        endif
+      endfor
+      assign wedding_alt = wedding_image.alt | default: clean_title
+    -%}
+    <div class="jbps-occasions">
+      <div class="jbps-occasions__head">
+        <h2 class="jbps-occasions__title">One Piece. Every Occasion It Matters.</h2>
+        <p class="jbps-occasions__lede">You don't own three outfits' worth of accessories. You own one that belongs everywhere.</p>
+      </div>
+    
+      <div class="jbps-occasions__grid">
+        <div class="jbps-occasions__card{% if wedding_image %} jbps-occasions__card--photo{% endif %}">
+          {%- if wedding_image -%}
+            <div class="jbps-occasions__photo">
+              {{ wedding_image | image_url: width: 600 | image_tag:
+                loading: 'lazy',
+                sizes: '(min-width: 750px) 33vw, 100vw',
+                widths: '300,450,600',
+                alt: wedding_alt
+              -}}
+            </div>
+          {%- else -%}
+            <span class="jbps-occasions__icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="18" cy="27" r="10" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="30" cy="27" r="10" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </span>
+          {%- endif -%}
+          <div class="jbps-occasions__card-content">
+            <h3 class="jbps-occasions__card-title">The Wedding</h3>
+            <p class="jbps-occasions__card-body">Groomsman, best man, or the guy who cleaned up better than expected. It holds through the toasts, the dancing, and the photos that end up framed.</p>
+          </div>
+        </div>
+    
+        <div class="jbps-occasions__card">
+          <span class="jbps-occasions__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 8c0 6 4 8 4 13a5 5 0 01-10 0c0-5 4-7 4-13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M19 21v14M14 40h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M32 12v22M26 40h12M27 12h10l-5 9-5-9z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <h3 class="jbps-occasions__card-title">The Date</h3>
+          <p class="jbps-occasions__card-body">The dinner reservation you actually got dressed for. One less thing to think about while you're trying not to think about anything.</p>
+        </div>
+    
+        <div class="jbps-occasions__card">
+          <span class="jbps-occasions__icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="18" width="32" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M18 18v-4a4 4 0 014-4h4a4 4 0 014 4v4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 27h32" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M22 27h4v4h-4z" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </span>
+          <h3 class="jbps-occasions__card-title">The Work Event</h3>
+          <p class="jbps-occasions__card-body">The client dinner. The award you have to walk up for. The photo on LinkedIn you didn't know was being taken.</p>
+        </div>
+      </div>
+    
+     
+    </div>
+    
+    <style>
+      .jbps-occasions {
+        max-width: 1100px;
+        margin-inline: auto;
+        font-family: var(--font-body--family);
+        color: #000;
+      }
+      .jbps-occasions__head { text-align: center; margin-bottom: 2.5rem; }
+      .jbps-occasions__title {
+        font-family: var(--font-primary--family);
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        line-height: 1.15;
+      }
+      .jbps-occasions__lede {
+        font-size: 1rem;
+        color: #555555;
+        max-width: 46ch;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+      .jbps-occasions__grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      @media screen and (min-width: 750px) {
+        .jbps-occasions__grid { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+      }
+      .jbps-occasions__card {
+        text-align: center;
+        padding: 2rem 1.25rem;
+        border: 1px solid #e7e7e7;
+        display: flex;
+        flex-direction: column;
+      }
+      .jbps-occasions__card--photo {
+        padding: 0 0 2rem;
+      }
+      .jbps-occasions__photo {
+        margin-bottom: 1.25rem;
+      }
+      .jbps-occasions__photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+      }
+      .jbps-occasions__card--photo .jbps-occasions__card-content {
+        padding: 0 1.25rem;
+      }
+      .jbps-occasions__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        color: #000;
+        margin-bottom: 1.25rem;
+      }
+      .jbps-occasions__icon svg {
+        width: 100%;
+        height: 100%;
+      }
+      .jbps-occasions__card-t,  .jbps-occasions__icon svg {
+        width: 100%;
+        height: 100%;
+      }
+      .jbps-occasions__card-title {
+        font-family: var(--font-primary--family);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+      }
+      .jbps-occasions__card-body {
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: #444444;
+        margin: 0;
+      }
+      .jbps-occasions__foot {
+        text-align: center;
+        margin: 2.5rem 0 0;
+        font-size: 0.95rem;
+        font-style: italic;
+        color: #555555;
+      }
+    </style>
+    
+    Add this at the end. Give me any customization options I might need. Including gap and field editing, Remove the phrase at the bottom of the block
+{% enddoc %}
+{% liquid
+  assign ai_gen_id = block.id | replace: '_', '' | downcase
+  assign clean_title = product.title | remove: '™' | strip
+  assign wedding_image = nil
+  for img in product.images
+    if img.alt contains 'wedding' or img.src contains 'wedding'
+      assign wedding_image = img
+      break
+    endif
+  endfor
+%}
+{% style %}
+  .jb-occasions-{{ ai_gen_id }}{display:block;width:{{ block.settings.desktop_width_percent }}%;max-width:100%;margin-inline:auto;color:{{ block.settings.text_color }}}
+  .jb-occasions-{{ ai_gen_id }}__head{text-align:center;max-width:680px;margin:0 auto 40px}
+  .jb-occasions-{{ ai_gen_id }}__title{margin:0 0 12px;color:{{ block.settings.heading_color }};font-family:var(--font-heading--family,serif);font-size:clamp(28px,4vw,42px);font-weight:400;line-height:1.15}
+  .jb-occasions-{{ ai_gen_id }}__lede,.jb-occasions-{{ ai_gen_id }}__card-body{color:{{ block.settings.muted_color }};font-family:var(--font-body--family,sans-serif)}
+  .jb-occasions-{{ ai_gen_id }}__lede{max-width:52ch;margin:0 auto;font-size:16px;line-height:1.55}
+  .jb-occasions-{{ ai_gen_id }}__grid{display:grid;grid-template-columns:1fr;gap:{{ block.settings.mobile_gap }}px}
+  .jb-occasions-{{ ai_gen_id }}__card{display:flex;flex-direction:column;min-height:100%;padding:32px 24px;border:1px solid {{ block.settings.border_color }};text-align:center}
+  .jb-occasions-{{ ai_gen_id }}__card--photo{padding:0 0 32px}.jb-occasions-{{ ai_gen_id }}__photo{margin-bottom:24px}.jb-occasions-{{ ai_gen_id }}__photo img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+  .jb-occasions-{{ ai_gen_id }}__card-content{flex:1}.jb-occasions-{{ ai_gen_id }}__card--photo .jb-occasions-{{ ai_gen_id }}__card-content{padding-inline:24px}
+  .jb-occasions-{{ ai_gen_id }}__icon{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;margin:0 auto 20px;color:{{ block.settings.icon_color }};}.jb-occasions-{{ ai_gen_id }}__icon svg{width:100%;height:100%}
+  .jb-occasions-{{ ai_gen_id }}__card-title{margin:0 0 12px;color:{{ block.settings.heading_color }};font-family:var(--font-heading--family,serif);font-size:{{ block.settings.card_title_size }}px;font-weight:400;line-height:1.25}.jb-occasions-{{ ai_gen_id }}__card-body{margin:0;font-size:{{ block.settings.card_body_size }}px;line-height:1.6}
+  @media screen and (min-width:750px){.jb-occasions-{{ ai_gen_id }}__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:{{ block.settings.desktop_gap }}px}}
+{% endstyle %}
+<div class="jb-occasions-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="jb-occasions-{{ ai_gen_id }}__head"><h2 class="jb-occasions-{{ ai_gen_id }}__title">{{ block.settings.title }}</h2><p class="jb-occasions-{{ ai_gen_id }}__lede">{{ block.settings.lede }}</p></div>
+  <div class="jb-occasions-{{ ai_gen_id }}__grid">
+    {% for i in (1..3) %}
+      {% liquid
+        assign title_key = 'card_' | append: i | append: '_title'
+        assign body_key = 'card_' | append: i | append: '_body'
+      %}
+      <article class="jb-occasions-{{ ai_gen_id }}__card{% if i == 1 and wedding_image %} jb-occasions-{{ ai_gen_id }}__card--photo{% endif %}">
+        {% if i == 1 and wedding_image %}<div class="jb-occasions-{{ ai_gen_id }}__photo">{{ wedding_image | image_url: width: 800 | image_tag: loading: 'lazy', sizes: '(min-width: 750px) 33vw, 100vw', widths: '400,600,800', alt: wedding_image.alt | default: clean_title }}</div>{% else %}<span class="jb-occasions-{{ ai_gen_id }}__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="1.5"/><path d="M24 15v18M15 24h18" stroke="currentColor" stroke-width="1.5"/></svg></span>{% endif %}
+        <div class="jb-occasions-{{ ai_gen_id }}__card-content"><h3 class="jb-occasions-{{ ai_gen_id }}__card-title">{{ block.settings[title_key] }}</h3><p class="jb-occasions-{{ ai_gen_id }}__card-body">{{ block.settings[body_key] }}</p></div>
+      </article>
+    {% endfor %}
+  </div>
+</div>
+{% schema %}{"name":"Occasion cards","tag":null,"class":"occasion-cards-block","settings":[{"type":"text","id":"title","label":"Title","default":"One Piece. Every Occasion It Matters."},{"type":"textarea","id":"lede","label":"Intro text","default":"You don't own three outfits' worth of accessories. You own one that belongs everywhere."},{"type":"range","id":"desktop_width_percent","label":"Desktop width","min":50,"max":100,"step":5,"unit":"%","default":100},{"type":"header","content":"Card content"},{"type":"text","id":"card_1_title","label":"First title","default":"The Wedding"},{"type":"textarea","id":"card_1_body","label":"First description","default":"Groomsman, best man, or the guy who cleaned up better than expected. It holds through the toasts, the dancing, and the photos that end up framed."},{"type":"text","id":"card_2_title","label":"Second title","default":"The Date"},{"type":"textarea","id":"card_2_body","label":"Second description","default":"The dinner reservation you actually got dressed for. One less thing to think about while you're trying not to think about anything."},{"type":"text","id":"card_3_title","label":"Third title","default":"The Work Event"},{"type":"textarea","id":"card_3_body","label":"Third description","default":"The client dinner. The award you have to walk up for. The photo on LinkedIn you didn't know was being taken."},{"type":"header","content":"Spacing and type"},{"type":"range","id":"desktop_gap","label":"Desktop gap","min":0,"max":80,"step":5,"unit":"px","default":20},{"type":"range","id":"mobile_gap","label":"Mobile gap","min":0,"max":60,"step":5,"unit":"px","default":20},{"type":"range","id":"card_title_size","label":"Card title size","min":16,"max":40,"step":2,"unit":"px","default":24},{"type":"range","id":"card_body_size","label":"Card text size","min":12,"max":22,"step":1,"unit":"px","default":15},{"type":"header","content":"Colors"},{"type":"color","id":"heading_color","label":"Heading","default":"#000000"},{"type":"color","id":"text_color","label":"Text","default":"#000000"},{"type":"color","id":"muted_color","label":"Secondary text","default":"#555555"},{"type":"color","id":"border_color","label":"Borders","default":"#E7E7E7"},{"type":"color","id":"icon_color","label":"Icons","default":"#000000"}],"presets":[{"name":"Occasion cards"}]}{% endschema %}

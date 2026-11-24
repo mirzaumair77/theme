@@ -1,0 +1,389 @@
+{% doc %}
+  @prompt
+    I want a small pay button block that show that we offer shop installments with a hyperlink popup that displays more info about pay later option.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-pay-button-{{ ai_gen_id }} {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: {{ block.settings.button_background_color }};
+    color: {{ block.settings.button_text_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    text-decoration: none;
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .ai-pay-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_background_color }};
+    color: {{ block.settings.button_hover_text_color }};border-color: {{ block.settings.border_hover_color }};
+  }
+
+  .ai-pay-button-icon-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .ai-pay-button-text-{{ ai_gen_id }} {
+    white-space: nowrap;
+  }
+
+  .ai-pay-info-link-{{ ai_gen_id }} {
+    color: {{ block.settings.info_link_color }};
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+
+  .ai-pay-info-link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.info_link_hover_color }};
+  }
+
+  .ai-pay-popup-overlay-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .ai-pay-popup-overlay-{{ ai_gen_id }}.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .ai-pay-popup-{{ ai_gen_id }} {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: {{ block.settings.popup_background_color }};
+    color: {{ block.settings.popup_text_color }};
+    border-radius: {{ block.settings.popup_border_radius }}px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    transition: transform 0.3s ease;
+  }
+
+  .ai-pay-popup-overlay-{{ ai_gen_id }}.active .ai-pay-popup-{{ ai_gen_id }} {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .ai-pay-popup-header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .ai-pay-popup-title-{{ ai_gen_id }} {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;color: {{ block.settings.popup_heading_color }};
+  }
+
+  .ai-pay-popup-close-{{ ai_gen_id }} {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: {{ block.settings.popup_text_color }};
+    padding: 5px;
+    line-height: 1;
+  }
+
+  .ai-pay-popup-close-{{ ai_gen_id }}:hover {
+    opacity: 0.7;
+  }
+
+  .ai-pay-popup-content-{{ ai_gen_id }} {
+    line-height: 1.6;
+  }
+
+  .ai-pay-popup-content-{{ ai_gen_id }} h3 {
+    color: {{ block.settings.popup_heading_color }};
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .ai-pay-popup-content-{{ ai_gen_id }} h3:first-child {
+    margin-top: 0;
+  }
+
+  .ai-pay-popup-content-{{ ai_gen_id }} ul {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+
+  .ai-pay-popup-content-{{ ai_gen_id }} li {
+    margin-bottom: 5px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-pay-button-{{ ai_gen_id }} {
+      padding: 10px 16px;
+      font-size: {{ block.settings.font_size | times: 0.9 }}px;
+    }
+
+    .ai-pay-popup-{{ ai_gen_id }} {
+      padding: 20px;
+      width: 95%;
+    }
+
+    .ai-pay-popup-title-{{ ai_gen_id }} {
+      font-size: 20px;
+    }
+  }
+{% endstyle %}
+
+<shop-pay-button-{{ ai_gen_id }} {{ block.shopify_attributes }}>
+  <div class="ai-pay-button-{{ ai_gen_id }}">
+    <svg class="ai-pay-button-icon-{{ ai_gen_id }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+      <line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+    <span class="ai-pay-button-text-{{ ai_gen_id }}">
+      {{ block.settings.button_text }}<span class="ai-pay-info-link-{{ ai_gen_id }}" data-info-trigger>{{ block.settings.info_link_text }}</span>
+    </span>
+  </div><div class="ai-pay-popup-overlay-{{ ai_gen_id }}" data-popup-overlay>
+    <div class="ai-pay-popup-{{ ai_gen_id }}" role="dialog" aria-modal="true" aria-labelledby="popup-title-{{ ai_gen_id }}">
+      <div class="ai-pay-popup-header-{{ ai_gen_id }}">
+        <h2 class="ai-pay-popup-title-{{ ai_gen_id }}" id="popup-title-{{ ai_gen_id }}">{{ block.settings.popup_title }}</h2>
+        <button class="ai-pay-popup-close-{{ ai_gen_id }}" data-popup-close aria-label="Close popup">&times;</button>
+      </div>
+      <div class="ai-pay-popup-content-{{ ai_gen_id }}">
+        {{ block.settings.popup_content }}
+      </div>
+    </div>
+  </div>
+</shop-pay-button-{{ ai_gen_id }}><script>
+  (function() {
+    class ShopPayButton{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.infoTrigger = this.querySelector('[data-info-trigger]');
+        this.popupOverlay = this.querySelector('[data-popup-overlay]');
+        this.popupClose = this.querySelector('[data-popup-close]');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.infoTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.openPopup();
+        });
+
+        this.popupClose.addEventListener('click', () => {
+          this.closePopup();
+        });
+
+        this.popupOverlay.addEventListener('click', (e) => {
+          if (e.target === this.popupOverlay) {
+            this.closePopup();
+          }
+        });document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.popupOverlay.classList.contains('active')) {
+            this.closePopup();
+          }
+        });
+      }
+
+      openPopup() {
+        this.popupOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        this.popupClose.focus();
+      }
+
+      closePopup() {
+        this.popupOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+        this.infoTrigger.focus();
+      }
+    }
+
+    customElements.define('shop-pay-button-{{ ai_gen_id }}', ShopPayButton{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop installments button",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Button content"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Pay in installments"
+    },
+    {
+      "type": "text",
+      "id": "info_link_text",
+      "label": "Info link text",
+      "default": "Learn more"
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Background color",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_background_color",
+      "label": "Hover background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Hover text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "border_hover_color",
+      "label": "Border hover color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "info_link_color",
+      "label": "Info link color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "info_link_hover_color",
+      "label": "Info link hover color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Popup content"
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup title",
+      "default": "Pay Later Options"
+    },
+    {
+      "type": "richtext",
+      "id": "popup_content",
+      "label": "Popup content",
+      "default": "<h3>Shop Pay Installments</h3><p>Split your purchase into 4 interest-free payments, paid every2 weeks.</p><ul><li>No interest or fees when you pay on time</li><li>25% due today, 25% due every 2 weeks</li><li>Quick approval process</li><li>Available for orders $50-$3,000</li></ul><h3>How it works</h3><p>Select Shop Pay at checkout, choose the installment option, and complete your purchase. You'll receive payment reminders before each due date.</p>"},
+    {
+      "type": "header",
+      "content": "Popup style"
+    },
+    {
+      "type": "color",
+      "id": "popup_background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "popup_heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "popup_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop installments button"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

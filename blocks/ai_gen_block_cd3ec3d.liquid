@@ -1,0 +1,135 @@
+{% doc %}
+  @prompt
+    {%- liquid
+      assign clean_title = product.title | remove: '™' | strip
+    -%}
+    <div class="jbps-compare">
+      <div class="jbps-compare__head">
+        <h2 class="jbps-compare__title">Two Very Different Ideas of a Pocket Square</h2>
+        <p class="jbps-compare__lede">A folded square of cloth has been the default for a hundred years. Here's what changes when you stop folding it.</p>
+      </div>
+    
+      <div class="jbps-compare__table" role="table" aria-label="Traditional cloth pocket square compared to {{ clean_title }}">
+        <div class="jbps-compare__row jbps-compare__row--header" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="columnheader"></div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="columnheader">Traditional Cloth</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="columnheader">{{ clean_title }}</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Every time you wear it</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Refolded by hand, a little differently each time</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Set once. It doesn't move again</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">By the end of the night</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Wilts, slips, or works its way out of the pocket</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Holds its shape &mdash; the magnetic mount keeps it upright</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Upkeep</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Dry clean, iron, replace once it stains or frays</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Wipe clean. Solid metal doesn't fade, fray, or stain</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">What people notice</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>One of a thousand identical squares</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>A hand-carved, sculptural piece &mdash; the detail people ask about</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Ten years from now</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Long since replaced</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Still on the jacket &mdash; solid sterling silver or bronze, built to be handed down</div>
+        </div>
+      </div>
+    
+      <p class="jbps-compare__foot">Same pocket. A completely different piece of your outfit.</p>
+    </div>
+    
+    <style>
+      .jbps-compare {
+        max-width: 900px;
+        margin-inline: auto;
+        font-family: var(--font-body--family);
+        color: #000;
+      }
+      .jbps-compare__head { text-align: center; margin-bottom: 2.5rem; }
+      .jbps-compare__title {
+        font-family: var(--font-primary--family);
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        line-height: 1.15;
+      }
+      .jbps-compare__lede {
+        font-size: 1rem;
+        color: #555555;
+        max-width: 46ch;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+      .jbps-compare__table { border-top: 1px solid #e7e7e7; }
+      .jbps-compare__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        border-bottom: 1px solid #e7e7e7;
+      }
+      .jbps-compare__row--header { border-bottom: 2px solid #000; }
+      .jbps-compare__cell {
+        padding: 1rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+      .jbps-compare__cell--label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+      }
+      .jbps-compare__row--header .jbps-compare__cell--label { visibility: hidden; }
+      .jbps-compare__cell--them { color: #777777; }
+      .jbps-compare__cell--us , color: #000000; font-weight: 500; background: #f5f5f5; }
+      .jbps-compare__row--header .jbps-compare__cell--them,
+      .jbps-compare__row--header .jbps-compare__cell--us {
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: transparent;
+        color: #000;
+      }
+      .jbps-mark {
+        display: inline-block;
+        width: 1.1em;
+        margin-right: 0.5em;
+        font-weight: 700;
+      }
+      .jbps-mark--no { color: #b5b5b5; }
+      .jbps-mark--yes { color: #000; }
+      .jbps-compare__foot {
+        text-align: center;
+        margin: 2rem 0 0;
+        font-size: 0.95rem;
+        font-style: italic;
+        color: #555555;
+      }
+    
+      @media screen and (max-width: 749px) {
+        .jbps-compare__row { grid-template-columns: 1fr 1fr; }
+        .jbps-compare__cell--label { display: none; }
+        .jbps-compare__row--header .jbps-compare__cell--label { display: none; }
+        .jbps-compare__cell { padding: 0.85rem 0.75rem; }
+      }
+    </style> 
+    
+    add this at the end of the code
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign clean_title = product.title | remove: '™' | strip %}
+{% style %}.jbps-compare-{{ ai_gen_id }}{display:block;width:{{ block.settings.desktop_width_percent }}%;max-width:100%;margin-inline:auto;color:#000;font-family:{{ settings.type_body_font.family }},sans-serif}.jbps-compare-{{ ai_gen_id }}__head{text-align:center;margin-bottom:2.5rem}.jbps-compare-{{ ai_gen_id }}__title{font-family:{{ settings.type_heading_font.family }},serif;font-size:clamp(1.5rem,2.5vw,2.25rem);font-weight:600;margin:0 0 .75rem;line-height:1.15}.jbps-compare-{{ ai_gen_id }}__lede{font-size:1rem;color:#555;max-width:46ch;margin:0 auto;line-height:1.5}.jbps-compare-{{ ai_gen_id }}__table{border-top:1px solid #e7e7e7}.jbps-compare-{{ ai_gen_id }}__row{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #e7e7e7}.jbps-compare-{{ ai_gen_id }}__row--header{border-bottom:2px solid #000}.jbps-compare-{{ ai_gen_id }}__cell{padding:1rem;font-size:.9rem;line-height:1.45}.jbps-compare-{{ ai_gen_id }}__cell--label{color:#000;font-weight:500;background:#f5f5f5;display:flex;align-items:center}.jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell--them,.jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell--us{font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:#000}.jbps-compare-{{ ai_gen_id }}__cell--them{color:#777}.jbps-compare-{{ ai_gen_id }}__mark{display:inline-block;width:1.1em;margin-right:.5em;font-weight:700}.jbps-compare-{{ ai_gen_id }}__mark--no{color:#777}.jbps-compare-{{ ai_gen_id }}__mark--yes{color:#000}.jbps-compare-{{ ai_gen_id }}__foot{text-align:center;margin:2rem 0 0;font-size:.95rem;font-style:italic;color:#555}@media screen and (max-width:749px){.jbps-compare-{{ ai_gen_id }}__row{grid-template-columns:1fr 1fr}.jbps-compare-{{ ai_gen_id }}__cell--label,.jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell--label{display:none}.jbps-compare-{{ ai_gen_id }}__cell{padding:.85rem .75rem}}{% endstyle %}
+<div class="jbps-compare-{{ ai_gen_id }}" {{ block.shopify_attributes }}><div class="jbps-compare-{{ ai_gen_id }}__head"><h2 class="jbps-compare-{{ ai_gen_id }}__title">{{ block.settings.title }}</h2><p class="jbps-compare-{{ ai_gen_id }}__lede">{{ block.settings.lede }}</p></div><div class="jbps-compare-{{ ai_gen_id }}__table" role="table" aria-label="{{ block.settings.title | escape }}"><div class="jbps-compare-{{ ai_gen_id }}__row jbps-compare-{{ ai_gen_id }}__row--header" role="row"><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--label" role="columnheader"></div><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--them" role="columnheader">{{ block.settings.traditional_label }}</div><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--us" role="columnheader">{{ clean_title }}</div></div>{% for i in (1..5) %}{% assign label_key = 'row_' | append: i | append: '_label' %}{% assign old_key = 'row_' | append: i | append: '_old' %}{% assign new_key = 'row_' | append: i | append: '_new' %}<div class="jbps-compare-{{ ai_gen_id }}__row" role="row"><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--label" role="rowheader">{{ block.settings[label_key] }}</div><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--them" role="cell"><span class="jbps-compare-{{ ai_gen_id }}__mark jbps-compare-{{ ai_gen_id }}__mark--no" aria-hidden="true">&times;</span>{{ block.settings[old_key] }}</div><div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--us" role="cell"><span class="jbps-compare-{{ ai_gen_id }}__mark jbps-compare-{{ ai_gen_id }}__mark--yes" aria-hidden="true">&#10003;</span>{{ block.settings[new_key] }}</div></div>{% endfor %}</div><p class="jbps-compare-{{ ai_gen_id }}__foot">{{ block.settings.foot }}</p></div>
+{% schema %}{"name":"Product comparison","tag":null,"class":"product-comparison-block","settings":[{"type":"text","id":"title","label":"Title","default":"Two very different ideas of a pocket square"},{"type":"textarea","id":"lede","label":"Intro","default":"A folded square of cloth has been the default for a hundred years. Here's what changes when you stop folding it."},{"type":"text","id":"traditional_label","label":"Traditional label","default":"Traditional cloth"},{"type":"text","id":"foot","label":"Closing line","default":"Same pocket. A completely different piece of your outfit."},{"type":"range","id":"desktop_width_percent","label":"Desktop width","min":50,"max":100,"step":5,"unit":"%","default":100},{"type":"header","content":"Rows"},{"type":"text","id":"row_1_label","label":"Row 1 label","default":"Every time you wear it"},{"type":"textarea","id":"row_1_old","label":"Row 1 traditional","default":"Refolded by hand, a little differently each time"},{"type":"textarea","id":"row_1_new","label":"Row 1 product","default":"Set once. It doesn't move again"},{"type":"text","id":"row_2_label","label":"Row 2 label","default":"By the end of the night"},{"type":"textarea","id":"row_2_old","label":"Row 2 traditional","default":"Wilts, slips, or works its way out of the pocket"},{"type":"textarea","id":"row_2_new","label":"Row 2 product","default":"Holds its shape—the magnetic mount keeps it upright"},{"type":"text","id":"row_3_label","label":"Row 3 label","default":"Upkeep"},{"type":"textarea","id":"row_3_old","label":"Row 3 traditional","default":"Dry clean, iron, replace once it stains or frays"},{"type":"textarea","id":"row_3_new","label":"Row 3 product","default":"Wipe clean. Solid metal doesn't fade, fray, or stain"},{"type":"text","id":"row_4_label","label":"Row 4 label","default":"What people notice"},{"type":"textarea","id":"row_4_old","label":"Row 4 traditional","default":"One of a thousand identical squares"},{"type":"textarea","id":"row_4_new","label":"Row 4 product","default":"A hand-carved, sculptural piece—the detail people ask about"},{"type":"text","id":"row_5_label","label":"Row 5 label","default":"Ten years from now"},{"type":"textarea","id":"row_5_old","label":"Row 5 traditional","default":"Long since replaced"},{"type":"textarea","id":"row_5_new","label":"Row 5 product","default":"Still on the jacket—solid sterling silver or bronze, built to be handed down"}],"presets":[{"name":"Product comparison"}]}{% endschema %}

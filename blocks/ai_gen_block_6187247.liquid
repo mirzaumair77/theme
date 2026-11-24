@@ -1,0 +1,206 @@
+{% doc %}
+  @prompt
+    {%- liquid
+      assign clean_title = product.title | remove: '™' | strip
+    -%}
+    <div class="jbps-faq">
+      <h2 class="jbps-faq__title">Before You Buy</h2>
+    
+      <details class="jbps-faq__item" open>
+        <summary>How does the magnetic mount work?</summary>
+        <div class="jbps-faq__answer">
+          <p>The {{ clean_title }} has a patented magnetic insert built into the back. It sits in your jacket's breast pocket and clips gently to the fabric from behind &mdash; no pin, no folding, no adjusting throughout the day.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>Will it damage my jacket?</summary>
+        <div class="jbps-faq__answer">
+          <p>No. The magnet clips through the pocket fabric rather than piercing it, so it's safe for suit jackets, sport coats, and tuxedos alike.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>Is it safe if I have a pacemaker?</summary>
+        <div class="jbps-faq__answer">
+          <p>Because it contains magnets, we don't recommend it for individuals with pacemakers or other magnet-sensitive medical devices.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>How do I clean and care for it?</summary>
+        <div class="jbps-faq__answer">
+          <p>Wipe it with a soft, dry cloth to keep it looking sharp. There's no dry cleaning, ironing, or refolding required &mdash; that's the point.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>Is every piece really unique?</summary>
+        <div class="jbps-faq__answer">
+          <p>Each design starts as a hand-carved original, then is cast and hand-polished in New Orleans. You won't find this shape on a rack anywhere else.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>Does it come gift-ready?</summary>
+        <div class="jbps-faq__answer">
+          <p>Yes &mdash; every order arrives in its own branded green box with a matching green pouch, ready to hand over as-is for weddings, groomsmen gifts, or any occasion worth dressing up for.</p>
+        </div>
+      </details>
+    
+      <details class="jbps-faq__item">
+        <summary>What if it's not right?</summary>
+        <div class="jbps-faq__answer">
+          <p>You're covered by our 100-day return policy &mdash; plenty of time to wear it out and be sure.</p>
+        </div>
+      </details>
+    </div>
+    
+    <style>
+      .jbps-faq {
+        max-width: 720px;
+        margin-inline: auto;
+        font-family: var(--font-body--family);
+        color: #000;
+      }
+      .jbps-faq__title {
+        font-family: var(--font-primary--family);
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        font-weight: 600;
+        text-align: center;
+        margin: 0 0 2rem;
+      }
+      .jbps-faq__item {
+        border-bottom: 1px solid #e7e7e7;
+        padding: 1rem 0;
+      }
+      .jbps-faq__item:first-of-type { border-top: 1px solid #e7e7e7; }
+      .jbps-faq__item summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 1.5rem;
+        position: relative;
+      }
+      .jbps-faq__item summary::-webkit-details-marker { display: none; }
+      .jbps-faq__item summary::after {
+        content: '+';
+        position: absolute;
+        right: 0;
+        font-size: 1.25rem;
+        font-weight: 400;
+      }
+      .jbps-faq__item[open] summary::after { content: '−'; }
+      .jbps-faq__answer {
+        padding-top: 0.75rem;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: #444444;
+        max-width: 60ch;
+      }
+      .jbps-faq__answer p { margin: 0; }
+    </style>, Let me align and edit the width of the FAQ's, Allow me to edit title size, bold, etc
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign clean_title = product.title | remove: '™' | strip %}
+{% if block.settings.alignment == 'left' %}{% assign faq_margin = '0 auto 0 0' %}{% elsif block.settings.alignment == 'right' %}{% assign faq_margin = '0 0 0 auto' %}{% else %}{% assign faq_margin = '0 auto' %}{% endif %}
+
+{% style %}
+  .ai-faq-{{ ai_gen_id }} { display: block; width: {{ block.settings.desktop_width_percent }}%; max-width: 100%; margin: {{ faq_margin }}; color: {{ block.settings.text_color }}; font-family: {{ block.settings.body_font.family }}; }
+  .ai-faq-{{ ai_gen_id }}__title { margin: 0 0 {{ block.settings.title_spacing }}px; color: {{ block.settings.text_color }}; font-family: {{ block.settings.heading_font.family }}; font-size: {{ block.settings.heading_size }}px; font-weight: {{ block.settings.heading_weight }}; line-height: {{ block.settings.heading_line_height }}; letter-spacing: {{ block.settings.heading_letter_spacing }}px; text-align: {{ block.settings.title_alignment }}; text-transform: {{ block.settings.heading_case }}; }
+  .ai-faq-{{ ai_gen_id }}__item { border-top: 1px solid {{ block.settings.border_color }}; padding: 0; }
+  .ai-faq-{{ ai_gen_id }}__item:last-child { border-bottom: 1px solid {{ block.settings.border_color }}; }
+  .ai-faq-{{ ai_gen_id }}__summary { position: relative; display: flex; align-items: center; min-height: 64px; padding: 18px 34px 18px 0; color: {{ block.settings.text_color }}; cursor: pointer; font-size: {{ block.settings.question_size }}px; font-weight: {{ block.settings.question_weight }}; line-height: 1.4; list-style: none; }
+  .ai-faq-{{ ai_gen_id }}__summary::-webkit-details-marker { display: none; }
+  .ai-faq-{{ ai_gen_id }}__summary::after { position: absolute; right: 3px; content: '+'; font-size: 24px; font-weight: 400; line-height: 1; }
+  .ai-faq-{{ ai_gen_id }}__item[open] .ai-faq-{{ ai_gen_id }}__summary::after { content: '−'; }
+  .ai-faq-{{ ai_gen_id }}__summary:focus-visible { outline: 2px solid {{ block.settings.text_color }}; outline-offset: 4px; }
+  .ai-faq-{{ ai_gen_id }}__answer { max-width: 68ch; padding: 0 34px 22px 0; color: {{ block.settings.answer_color }}; font-size: {{ block.settings.answer_size }}px; line-height: 1.6; }
+  .ai-faq-{{ ai_gen_id }}__answer p { margin: 0; }
+  @media screen and (max-width: 749px) { .ai-faq-{{ ai_gen_id }} { width: 100%; margin: 0; } .ai-faq-{{ ai_gen_id }}__title { font-size: {{ block.settings.heading_size | times: 0.85 | round }}px; } }
+{% endstyle %}
+
+<product-faq-{{ ai_gen_id }} class="ai-faq-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <h2 class="ai-faq-{{ ai_gen_id }}__title">{{ block.settings.title }}</h2>
+  {% for i in (1..7) %}
+    {% liquid
+      assign question_key = 'question_' | append: i
+      assign answer_key = 'answer_' | append: i
+      assign question = block.settings[question_key]
+      assign answer = block.settings[answer_key]
+    %}
+    {% if question != blank and answer != blank %}
+      <details class="ai-faq-{{ ai_gen_id }}__item" {% if forloop.first and block.settings.open_first %}open{% endif %}>
+        <summary class="ai-faq-{{ ai_gen_id }}__summary">{{ question }}</summary>
+        <div class="ai-faq-{{ ai_gen_id }}__answer"><p>{{ answer | replace: '[product]', clean_title }}</p></div>
+      </details>
+    {% endif %}
+  {% endfor %}
+</product-faq-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ProductFaq{{ ai_gen_id }} extends HTMLElement {
+      connectedCallback() {
+        const items = this.querySelectorAll('details');
+        items.forEach((item) => item.addEventListener('toggle', () => {
+          if (item.open && {{ block.settings.allow_multiple | json }} === false) items.forEach((other) => { if (other !== item) other.open = false; });
+        }));
+      }
+    }
+    if (!customElements.get('product-faq-{{ ai_gen_id }}')) customElements.define('product-faq-{{ ai_gen_id }}', ProductFaq{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product FAQ",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title", "default": "Before You Buy" },
+    { "type": "checkbox", "id": "open_first", "label": "Open first item", "default": true },
+    { "type": "checkbox", "id": "allow_multiple", "label": "Allow multiple open", "default": true },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 25, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "select", "id": "alignment", "label": "Block alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }], "default": "center" },
+    { "type": "select", "id": "title_alignment", "label": "Title alignment", "options": [{ "value": "left", "label": "Left" }, { "value": "center", "label": "Center" }, { "value": "right", "label": "Right" }], "default": "center" },
+    { "type": "header", "content": "Questions and answers" },
+    { "type": "text", "id": "question_1", "label": "Question 1", "default": "How does the magnetic mount work?" },
+    { "type": "textarea", "id": "answer_1", "label": "Answer 1", "default": "The [product] has a patented magnetic insert built into the back. It sits in your jacket's breast pocket and clips gently to the fabric from behind — no pin, no folding, no adjusting throughout the day." },
+    { "type": "text", "id": "question_2", "label": "Question 2", "default": "Will it damage my jacket?" },
+    { "type": "textarea", "id": "answer_2", "label": "Answer 2", "default": "No. The magnet clips through the pocket fabric rather than piercing it, so it's safe for suit jackets, sport coats, and tuxedos alike." },
+    { "type": "text", "id": "question_3", "label": "Question 3", "default": "Is it safe if I have a pacemaker?" },
+    { "type": "textarea", "id": "answer_3", "label": "Answer 3", "default": "Because it contains magnets, we don't recommend it for individuals with pacemakers or other magnet-sensitive medical devices." },
+    { "type": "text", "id": "question_4", "label": "Question 4", "default": "How do I clean and care for it?" },
+    { "type": "textarea", "id": "answer_4", "label": "Answer 4", "default": "Wipe it with a soft, dry cloth to keep it looking sharp. There's no dry cleaning, ironing, or refolding required — that's the point." },
+    { "type": "text", "id": "question_5", "label": "Question 5", "default": "Is every piece really unique?" },
+    { "type": "textarea", "id": "answer_5", "label": "Answer 5", "default": "Each design starts as a hand-carved original, then is cast and hand-polished in New Orleans. You won't find this shape on a rack anywhere else." },
+    { "type": "text", "id": "question_6", "label": "Question 6", "default": "Does it come gift-ready?" },
+    { "type": "textarea", "id": "answer_6", "label": "Answer 6", "default": "Yes — every order arrives in its own branded green box with a matching green pouch, ready to hand over as-is for weddings, groomsmen gifts, or any occasion worth dressing up for." },
+    { "type": "text", "id": "question_7", "label": "Question 7", "default": "What if it's not right?" },
+    { "type": "textarea", "id": "answer_7", "label": "Answer 7", "default": "You're covered by our 100-day return policy — plenty of time to wear it out and be sure." },
+    { "type": "header", "content": "Title style" },
+    { "type": "font_picker", "id": "heading_font", "label": "Font", "default": "lora_n4" },
+    { "type": "range", "id": "heading_size", "label": "Size", "min": 20, "max": 64, "step": 2, "unit": "px", "default": 32 },
+    { "type": "select", "id": "heading_weight", "label": "Weight", "options": [{ "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }], "default": "500" },
+    { "type": "range", "id": "heading_line_height", "label": "Line height", "min": 1, "max": 2, "step": 0.1, "default": 1.2 },
+    { "type": "range", "id": "heading_letter_spacing", "label": "Letter spacing", "min": -2, "max": 5, "step": 0.5, "unit": "px", "default": 0 },
+    { "type": "select", "id": "heading_case", "label": "Text case", "options": [{ "value": "none", "label": "Default" }, { "value": "uppercase", "label": "Uppercase" }, { "value": "lowercase", "label": "Lowercase" }], "default": "none" },
+    { "type": "range", "id": "title_spacing", "label": "Space below", "min": 8, "max": 60, "step": 4, "unit": "px", "default": 28 },
+    { "type": "header", "content": "Question style" },
+    { "type": "font_picker", "id": "body_font", "label": "Font", "default": "poppins_n4" },
+    { "type": "range", "id": "question_size", "label": "Question size", "min": 14, "max": 24, "step": 1, "unit": "px", "default": 16 },
+    { "type": "select", "id": "question_weight", "label": "Question weight", "options": [{ "value": "400", "label": "Regular" }, { "value": "500", "label": "Medium" }, { "value": "600", "label": "Semibold" }, { "value": "700", "label": "Bold" }], "default": "600" },
+    { "type": "range", "id": "answer_size", "label": "Answer size", "min": 13, "max": 20, "step": 1, "unit": "px", "default": 15 },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#000000" },
+    { "type": "color", "id": "answer_color", "label": "Answer text", "default": "#333333" },
+    { "type": "color", "id": "border_color", "label": "Borders", "default": "#D9D9D9" }
+  ],
+  "presets": [{ "name": "Product FAQ" }],
+  "tag": null,
+  "class": "product-faq-block"
+}
+{% endschema %}

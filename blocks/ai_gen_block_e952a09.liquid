@@ -1,0 +1,823 @@
+{% doc %}
+  @prompt
+    <style>
+      #shopify-section-{{ section.id }} {
+        background-color: {{ section.settings.background_color }};
+        {% if section.settings.background_image != blank %}
+          background:
+                  linear-gradient(0deg, rgba(240, 231, 209, 0.40) 0%, rgba(240, 231, 209, 0.40) 100%),
+                  url({{ section.settings.background_image | img_url: 'master' }});
+          background-size: 150%;
+          background-position: left;
+        {% endif %}
+      }
+    </style>
+    
+    <article class="jb-newsletter__content">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'Heading' %}
+            {% assign tag = block.settings.tag | default: 'h2' %}
+            {% assign space = block.settings.margin_bottom | default: '0' %}
+            {% if tag == 'h1' or tag == 'h2' or tag == 'h3' or tag == 'h4' or tag == 'h5' or tag == 'h6' %}
+              <{{ tag }} class="jb-newsletter__heading" style="margin-bottom: {{ space }};">
+                {{ block.settings.text }}
+              </{{ tag }}>
+            {% else %}
+              <p class="jb-newsletter__text" style="margin-bottom: {{ space }};">
+                {{ block.settings.text }}
+              </p>
+            {% endif %}
+          {% when 'Form' %}
+            <form
+              id="jb-shopify-section-{{ section.id }}-newsletter-form"
+              method="post"
+              accept-charset="UTF-8"
+              class="jb-newsletter__form"
+              data-kl-site="{{ block.settings.klaviyo_site_id }}"
+              data-kl-list="{{ block.settings.klaviyo_list_id }}"
+            >
+              <input
+                type="email"
+                name="jbnewsletterform"
+                placeholder="{{ block.settings.placeholder }}"
+                required
+                class="jb-newsletter__input"
+              >
+              <button type="submit" class="jb-newsletter__button">
+                {{ block.settings.button_text }}
+                {% if block.settings.show_icon %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="9" viewBox="0 0 20 9" fill="none">
+                    <path d="M19.8536 4.85355C20.0488 4.65829 20.0488 4.34171 19.8536 4.14645L16.6716 0.964466C16.4763 0.769204 16.1597 0.769204 15.9645 0.964466C15.7692 1.15973 15.7692 1.47631 15.9645 1.67157L18.7929 4.5L15.9645 7.32843C15.7692 7.52369 15.7692 7.84027 15.9645 8.03553C16.1597 8.2308 16.4763 8.2308 16.6716 8.03553L19.8536 4.85355ZM0.5 4C0.223858 4 0 4.22386 0 4.5C0 4.77614 0.223858 5 0.5 5V4.5V4ZM19.5 4.5V4L0.5 4V4.5V5L19.5 5V4.5Z" fill="black"/>
+                  </svg>
+                {% endif %}
+              </button>
+            </form>
+            <script>
+              (function () {
+                const form = document.getElementById('{{ "jb-shopify-section-" | append: section.id | append: "-newsletter-form" }}');
+                if (!form) return;
+                console.log("Form script loaded for section {{ section.id }}");
+    
+                form.addEventListener('submit', async (e) => {
+                  e.preventDefault();
+    
+                  const email = form.querySelector('input[type="email"]')?.value.trim();
+                  const siteId = form.dataset.klSite;
+                  const listId = form.dataset.klList;
+    
+                  console.log("Submitting email:", email, "to site:", siteId, "list:", listId);
+    
+                  if (!email || !siteId || !listId) return;
+    
+                  const payload = {
+                    data: {
+                      type: 'subscription',
+                      attributes: {
+                        profile: {
+                          data: {
+                            type: 'profile',
+                            attributes: { email }
+                          }
+                        }
+                      },
+                      relationships: { list: { data: { type: 'list', id: listId } } }
+                    }
+                  };
+    
+                  try {
+                    const res = await fetch(`https://a.klaviyo.com/client/subscriptions/?company_id=${encodeURIComponent(siteId)}`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'revision': '2025-07-15'
+                      },
+                      body: JSON.stringify(payload)
+                    });
+    
+                    if (res.ok) {
+                      form.reset();
+                      form.querySelector('button')?.classList.add('is-success');
+                    } else {
+                      form.querySelector('button')?.classList.add('is-error');
+                    }
+                  } catch (err) {
+                    form.querySelector('button')?.classList.add('is-error');
+                  }
+                });
+              })();
+            </script>
+          {% when '@app' %}
+            <!-- App block placeholder -->
+            {% render block %}
+          {% when 'custom_liquid' %}
+            {{ block.settings.custom_liquid }}
+        {% endcase %}
+      {% endfor %}
+    </article>
+    
+    {% schema %}
+    {
+      "name": "JB Newsletter",
+      "tag": "section",
+      "class": "jb-newsletter",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background Image"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "B
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-newsletter-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    padding: {{ block.settings.padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    {% if block.settings.background_image != blank %}
+      background-image:
+        linear-gradient(0deg, {{ block.settings.overlay_color }}, {{ block.settings.overlay_color }}),
+        url({{ block.settings.background_image | image_url: width: 2000 }});
+      background-size: cover;
+      background-position: center;
+    {% endif %}
+  }
+
+  .ai-newsletter-content-{{ ai_gen_id }} {
+    max-width: {{ block.settings.content_max_width }}px;
+    margin: 0 auto;
+    text-align: {{ block.settings.text_alignment }};
+  }
+
+  .ai-newsletter-heading-{{ ai_gen_id }} {
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    margin: 0 0 {{ block.settings.heading_spacing }}px 0;
+  }
+
+  .ai-newsletter-subtext-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    margin: 0 0 {{ block.settings.form_spacing }}px 0;
+  }
+
+  .ai-newsletter-form-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.input_button_gap }}px;
+    {% if block.settings.form_layout == 'vertical' %}
+      flex-direction: column;
+    {% else %}
+      flex-direction: row;
+    {% endif %}
+  }
+
+  .ai-newsletter-input-{{ ai_gen_id }} {
+    flex: 1;
+    padding: {{ block.settings.input_padding }}px;
+    border: {{ block.settings.input_border_width }}px solid {{ block.settings.input_border_color }};
+    border-radius: {{ block.settings.input_border_radius }}px;
+    background-color: {{ block.settings.input_background_color }};
+    color: {{ block.settings.input_text_color }};
+    font-size: {{ block.settings.input_font_size }}px;
+  }
+
+  .ai-newsletter-input-{{ ai_gen_id }}::placeholder {
+    color: {{ block.settings.input_placeholder_color }};
+    opacity: 0.7;
+  }
+
+  .ai-newsletter-input-{{ ai_gen_id }}:focus {
+    outline: 2px solid {{ block.settings.input_focus_color }};
+    outline-offset: 2px;
+  }
+
+  .ai-newsletter-button-{{ ai_gen_id }} {
+    padding: {{ block.settings.button_padding }}px {{ block.settings.button_padding | times: 1.5 }}px;
+    background-color: {{ block.settings.button_background_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+
+  .ai-newsletter-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .ai-newsletter-button-{{ ai_gen_id }}.is-success {
+    background-color: {{ block.settings.success_color }};
+  }
+
+  .ai-newsletter-button-{{ ai_gen_id }}.is-error {
+    background-color: {{ block.settings.error_color }};
+  }
+
+  .ai-newsletter-button-icon-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-newsletter-message-{{ ai_gen_id }} {
+    margin-top: 12px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .ai-newsletter-success-{{ ai_gen_id }} {
+    color: {{ block.settings.success_color }};
+  }
+
+  .ai-newsletter-error-{{ ai_gen_id }} {
+    color: {{ block.settings.error_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-newsletter-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-newsletter-form-{{ ai_gen_id }} {
+      flex-direction: column;
+    }
+
+    .ai-newsletter-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<newsletter-signup-{{ ai_gen_id }}
+  class="ai-newsletter-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-newsletter-content-{{ ai_gen_id }}">
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-newsletter-heading-{{ ai_gen_id }}">
+        {{ block.settings.heading }}
+      </h2>
+    {% endif %}
+
+    {% if block.settings.subtext != blank %}
+      <div class="ai-newsletter-subtext-{{ ai_gen_id }}">
+        {{ block.settings.subtext }}
+      </div>
+    {% endif %}
+
+    <form
+      class="ai-newsletter-form-{{ ai_gen_id }}"
+      data-newsletter-form
+      data-kl-site="{{ block.settings.klaviyo_site_id }}"
+      data-kl-list="{{ block.settings.klaviyo_list_id }}"
+    >
+      <input
+        type="email"
+        name="email"
+        class="ai-newsletter-input-{{ ai_gen_id }}"
+        placeholder="{{ block.settings.placeholder }}"
+        required
+        aria-label="Email address"
+        aria-describedby="ai-newsletter-message-{{ ai_gen_id }}"
+      >
+      <button
+        type="submit"
+        class="ai-newsletter-button-{{ ai_gen_id }}"
+      >
+        {{ block.settings.button_text }}
+        {% if block.settings.show_icon %}
+          <span class="ai-newsletter-button-icon-{{ ai_gen_id }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="9" viewBox="0 0 20 9" fill="none">
+              <path d="M19.8536 4.85355C20.0488 4.65829 20.0488 4.34171 19.8536 4.14645L16.6716 0.964466C16.4763 0.769204 16.1597 0.769204 15.9645 0.964466C15.7692 1.15973 15.7692 1.47631 15.9645 1.67157L18.7929 4.5L15.9645 7.32843C15.7692 7.52369 15.7692 7.84027 15.9645 8.03553C16.1597 8.2308 16.4763 8.2308 16.6716 8.03553L19.8536 4.85355ZM0.5 4C0.223858 4 0 4.22386 0 4.5C0 4.77614 0.223858 5 0.5 5V4.5V4ZM19.5 4.5V4L0.5 4V4.5V5L19.5 5V4.5Z" fill="currentColor"/>
+            </svg>
+          </span>
+        {% endif %}
+      </button>
+    </form>
+
+    <div
+      id="ai-newsletter-message-{{ ai_gen_id }}"
+      class="ai-newsletter-message-{{ ai_gen_id }}"
+      role="status"
+      aria-live="polite"
+    ></div>
+  </div>
+</newsletter-signup-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class NewsletterSignup{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.form = this.querySelector('[data-newsletter-form]');
+        this.button = this.form.querySelector('button[type="submit"]');
+        this.input = this.form.querySelector('input[type="email"]');
+        this.message = this.querySelector('#ai-newsletter-message-{{ ai_gen_id }}');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.form.addEventListener('submit', this.handleSubmit.bind(this));
+      }
+
+      async handleSubmit(e) {
+        e.preventDefault();
+
+        const email = this.input.value.trim();
+        const siteId = this.form.dataset.klSite;
+        const listId = this.form.dataset.klList;
+
+        if (!email || !siteId || !listId) {
+          this.showMessage('Please enter a valid email address.', 'error');
+          return;
+        }
+
+        this.button.disabled = true;
+        this.button.textContent = 'Subscribing...';
+
+        const payload = {
+          data: {
+            type: 'subscription',
+            attributes: {
+              profile: {
+                data: {
+                  type: 'profile',
+                  attributes: { email }
+                }
+              }
+            },
+            relationships: {
+              list: {
+                data: {
+                  type: 'list',
+                  id: listId
+                }
+              }
+            }
+          }
+        };
+
+        try {
+          const res = await fetch(
+            `https://a.klaviyo.com/client/subscriptions/?company_id=${encodeURIComponent(siteId)}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'revision': '2025-07-15'
+              },
+              body: JSON.stringify(payload)
+            }
+          );
+
+          if (res.ok) {
+            this.form.reset();
+            this.button.classList.add('is-success');
+            this.button.textContent = '{{ block.settings.success_button_text }}';
+            this.showMessage('{{ block.settings.success_message }}', 'success');
+            setTimeout(() => {
+              this.button.classList.remove('is-success');
+              this.button.textContent = '{{ block.settings.button_text }}';
+              this.button.disabled = false;
+            }, 3000);
+          } else {
+            throw new Error('Subscription failed');
+          }
+        } catch (err) {
+          this.button.classList.add('is-error');
+          this.button.textContent = 'Error';
+          this.showMessage('{{ block.settings.error_message }}', 'error');
+          setTimeout(() => {
+            this.button.classList.remove('is-error');
+            this.button.textContent = '{{ block.settings.button_text }}';
+            this.button.disabled = false;
+          }, 3000);
+        }
+      }
+
+      showMessage(text, type) {
+        this.message.textContent = text;
+        this.message.className = `ai-newsletter-message-{{ ai_gen_id }} ai-newsletter-${type}-{{ ai_gen_id }}`;
+      }
+    }
+
+    customElements.define('newsletter-signup-{{ ai_gen_id }}', NewsletterSignup{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter signup",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join our newsletter"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Get exclusive offers and updates"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Klaviyo integration"
+    },
+    {
+      "type": "text",
+      "id": "klaviyo_site_id",
+      "label": "Klaviyo site ID",
+      "info": "Your Klaviyo public API key (company ID)"
+    },
+    {
+      "type": "text",
+      "id": "klaviyo_list_id",
+      "label": "Klaviyo list ID",
+      "info": "The ID of the list to subscribe users to"
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for subscribing!"
+    },
+    {
+      "type": "text",
+      "id": "success_button_text",
+      "label": "Success button text",
+      "default": "Subscribed!"
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Error message",
+      "default": "Something went wrong. Please try again."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "form_layout",
+      "label": "Form layout",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 300,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay color",
+      "default": "#f0e7d199"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Subtext"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "form_spacing",
+      "label": "Form top spacing",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Input field"
+    },
+    {
+      "type": "color",
+      "id": "input_background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "input_placeholder_color",
+      "label": "Placeholder",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Border",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "input_focus_color",
+      "label": "Focus outline",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "input_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "input_padding",
+      "label": "Padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "input_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "input_button_gap",
+      "label": "Gap between input and button",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Hover background",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "button_padding",
+      "label": "Padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Status colors"
+    },
+    {
+      "type": "color",
+      "id": "success_color",
+      "label": "Success",
+      "default": "#008060"
+    },
+    {
+      "type": "color",
+      "id": "error_color",
+      "label": "Error",
+      "default": "#D82C0D"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter signup"
+    }
+  ]
+}
+{% endschema %}

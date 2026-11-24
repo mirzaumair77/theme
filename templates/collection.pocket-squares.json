@@ -1,0 +1,413 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "section": {
+      "type": "section",
+      "blocks": {
+        "text_tqQTNE": {
+          "type": "text",
+          "name": "Collection title",
+          "settings": {
+            "text": "<h1>{{ closest.collection.title }}</h1>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_twGGkJ": {
+          "type": "text",
+          "name": "t:names.text",
+          "settings": {
+            "text": "{{ closest.collection.description }}",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 8,
+            "padding-block-end": 8,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_tqQTNE",
+        "text_twGGkJ"
+      ],
+      "name": "Heading",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 8,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "{{ settings.color_palette.background }}",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "section_pressStr1": {
+      "type": "section",
+      "blocks": {
+        "text_pressH1": {
+          "type": "text",
+          "name": "Press heading",
+          "settings": {
+            "text": "<h3>Worn by Sylvester Stallone.</h3>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "center",
+            "type_preset": "h3",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "{{ settings.color_palette.background }}",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "text_pressP1": {
+          "type": "text",
+          "name": "Press subtext",
+          "settings": {
+            "text": "<p>As seen in <em>Tulsa King</em></p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "center",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "{{ settings.color_palette.background }}",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 8,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "text_pressH1",
+        "text_pressP1"
+      ],
+      "name": "Press strip",
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "center",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "center",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 8,
+        "section_width": "full-width",
+        "section_height": "custom",
+        "section_height_custom": 45,
+        "background_media": "image",
+        "background_color": "",
+        "video_position": "cover",
+        "background_image": "shopify://shop_images/eagle-sapphire-eye-pocket-square-sylvester-stallone-tulsa-king.png",
+        "background_image_position": "cover",
+        "toggle_overlay": true,
+        "overlay_color": "#00000059",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "main": {
+      "type": "main-collection",
+      "blocks": {
+        "filters": {
+          "type": "filters",
+          "static": true,
+          "settings": {
+            "enable_filtering": true,
+            "filter_style": "horizontal",
+            "filter_width": "centered",
+            "text_label_case": "default",
+            "show_swatch_label": true,
+            "show_filter_label": true,
+            "enable_sorting": true,
+            "enable_grid_density": true,
+            "background_color": "",
+            "text_color": "",
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0,
+            "facets_margin_bottom": 0,
+            "facets_margin_right": 20
+          },
+          "blocks": {}
+        },
+        "product-card": {
+          "type": "_product-card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 12,
+            "background_color": "{{ settings.color_palette.background }}",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "card-gallery": {
+              "type": "_product-card-gallery",
+              "settings": {
+                "image_ratio": "portrait",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "group": {
+              "type": "_product-card-group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 4,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "product_title_3QjUff": {
+                  "type": "product-title",
+                  "name": "t:names.product_title",
+                  "settings": {
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "custom_liquid_aJwz3N": {
+                  "type": "custom-liquid",
+                  "name": "t:names.custom_liquid",
+                  "settings": {
+                    "custom_liquid": "{% render 'swatch-styles' %}\n{%- assign second_media_id = closest.product.media[1].id -%}\n{%- assign preferred_order = 'White Bronze,Gilded Bronze,Sterling Silver' | split: ',' -%}\n{%- for option in closest.product.options_with_values -%}\n  {%- assign swatch_values = option.values | map: 'swatch' | compact -%}\n  {%- if swatch_values.size > 0 -%}\n    {%- liquid\n      assign ordered_index = ''\n      for pref in preferred_order\n        assign pref_name = pref | strip | downcase\n        for value in option.values\n          assign value_name = value.name | strip | downcase\n          if value_name == pref_name\n            assign ordered_index = ordered_index | append: forloop.index0 | append: ','\n          endif\n        endfor\n      endfor\n      for value in option.values\n        assign value_name = value.name | strip | downcase\n        assign is_preferred = false\n        for pref in preferred_order\n          assign pref_name = pref | strip | downcase\n          if value_name == pref_name\n            assign is_preferred = true\n            break\n          endif\n        endfor\n        unless is_preferred\n          assign ordered_index = ordered_index | append: forloop.index0 | append: ','\n        endunless\n      endfor\n      assign ordered_index = ordered_index | split: ','\n      assign first_index = ordered_index.first | plus: 0\n      assign first_value = option.values[first_index]\n    -%}\n    <div class=\"ccs-option\" data-second-media-id=\"{{ second_media_id }}\" style=\"display:flex; align-items:center; gap:10px; margin-bottom:4px; padding: 4px 6px;\">\n      <div class=\"ccs-swatches\" style=\"display:flex; gap:8px; align-items:center;\">\n        {%- for index in ordered_index -%}\n          {%- liquid\n            assign value_index = index | plus: 0\n            assign value = option.values[value_index]\n            assign featured_media_id = value.variant.featured_media.id\n            if featured_media_id == blank\n              assign option_key = 'option' | append: option.position\n              for v in closest.product.variants\n                if v[option_key] == value.name and v.featured_media\n                  assign featured_media_id = v.featured_media.id\n                  break\n                endif\n              endfor\n            endif\n          -%}\n          <button\n            type=\"button\"\n            class=\"ccs-swatch-btn{% if forloop.first %} is-selected{% endif %}\"\n            data-value-name=\"{{ value.name | escape }}\"\n            data-media-id=\"{{ featured_media_id }}\"\n            aria-label=\"{{ value.name | escape }}\"\n            style=\"background:none; border:none; padding:0; cursor:pointer; line-height:0;\"\n          >\n            {% render 'swatch', swatch: value.swatch %}\n          </button>\n        {%- endfor -%}\n      </div>\n      <span class=\"ccs-selected-title\" style=\"font-size: calc(0.5em + 3pt); display:flex; align-items:center;\">{{ first_value.name }}</span>\n    </div>\n    <style>\n      .ccs-swatch-btn.is-selected .swatch {\n        outline: 2px solid rgba(0, 0, 0, 0.8);\n        outline-offset: 2px;\n      }\n    </style>\n    <script>\n      (function () {\n        var script = document.currentScript;\n        var wrapper = script.previousElementSibling.previousElementSibling;\n        if (!wrapper) return;\n        var buttons = wrapper.querySelectorAll('.ccs-swatch-btn');\n        var label = wrapper.querySelector('.ccs-selected-title');\n        var card = wrapper.closest('product-card');\n        var cardGallery = card ? card.querySelector('.card-gallery') : null;\n        var secondMediaId = wrapper.getAttribute('data-second-media-id');\n        var selectedMediaId = null; // stays null (hands-off) until the shopper actually clicks a swatch\n        function isGalleryEvent(event) {\n          return cardGallery && (event.target === cardGallery || cardGallery.contains(event.target));\n        }\n        if (card && cardGallery) {\n          card.addEventListener('pointerenter', function (event) {\n            if (selectedMediaId && secondMediaId && isGalleryEvent(event)) {\n              event.stopPropagation();\n              if (typeof card.previewVariant === 'function') {\n                card.previewVariant(secondMediaId);\n              }\n            }\n          }, true);\n          card.addEventListener('pointerleave', function (event) {\n            if (selectedMediaId && isGalleryEvent(event)) {\n              event.stopPropagation();\n              if (typeof card.previewVariant === 'function') {\n                card.previewVariant(selectedMediaId);\n              }\n            }\n          }, true);\n        }\n        function applyInitialVariantPhoto() {\n          var firstBtn = buttons[0];\n          if (!firstBtn || !card) return;\n          var mediaId = firstBtn.getAttribute('data-media-id');\n          if (!mediaId) return;\n          selectedMediaId = mediaId;\n          if (typeof card.previewVariant === 'function') {\n            card.previewVariant(mediaId);\n          }\n        }\n        if (window.customElements && customElements.whenDefined) {\n          customElements.whenDefined('product-card').then(function () {\n            requestAnimationFrame(applyInitialVariantPhoto);\n          });\n        } else {\n          applyInitialVariantPhoto();\n        }\n\n        buttons.forEach(function (btn) {\n          btn.addEventListener('click', function (e) {\n            e.preventDefault();\n            buttons.forEach(function (b) { b.classList.remove('is-selected'); });\n            btn.classList.add('is-selected');\n            if (label) label.textContent = btn.getAttribute('data-value-name');\n            var mediaId = btn.getAttribute('data-media-id');\n            if (mediaId) selectedMediaId = mediaId;\n            if (card && mediaId && typeof card.previewVariant === 'function') {\n              card.previewVariant(mediaId);\n            }\n          });\n        });\n      })();\n    </script>\n  {%- endif -%}\n{%- endfor -%}\n\n<!-- JBTEST-MARKER-ALWAYS -->\n{%- if closest.product.tags contains 'bestseller' -%}\n  <div class=\"jb-bestseller-badge\">Best Seller</div>\n  <style>\n    .jb-bestseller-badge {\n      position: absolute;\n      left: -9999px;\n      top: -9999px;\n    }\n    .jb-bestseller-badge--placed {\n      position: absolute;\n      top: 10px;\n      left: 10px;\n      z-index: 2;\n      background: #000000;\n      color: #ffffff;\n      font-size: 11px;\n      letter-spacing: 0.05em;\n      text-transform: uppercase;\n      font-weight: 600;\n      padding: 5px 12px;\n      border-radius: 999px;\n      pointer-events: none;\n    }\n  </style>\n  <script>\n    (function () {\n      var script = document.currentScript;\n      var badge = script.previousElementSibling;\n      if (!badge) return;\n      var card = badge.closest('product-card');\n      var gallery = card ? card.querySelector('.card-gallery') : null;\n      if (gallery) {\n        gallery.appendChild(badge);\n        badge.classList.remove('jb-bestseller-badge');\n        badge.classList.add('jb-bestseller-badge--placed');\n      }\n    })();\n  </script>\n{%- endif -%}"
+                  },
+                  "blocks": {}
+                },
+                "price": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "h5",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "text_color": "",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "review_eAJXAx": {
+                  "type": "review",
+                  "name": "t:names.product_review_stars",
+                  "settings": {
+                    "stars_style": "shaded",
+                    "show_number": true,
+                    "text_color": "",
+                    "type_preset": "h5",
+                    "width": "100%",
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                },
+                "swatches_xWhL7M": {
+                  "type": "swatches",
+                  "name": "t:names.swatches",
+                  "disabled": true,
+                  "settings": {
+                    "product_swatches_alignment": "flex-start",
+                    "product_swatches_alignment_mobile": "flex-start",
+                    "hide_padding": false,
+                    "product_swatches_padding_top": 4,
+                    "product_swatches_padding_bottom": 0,
+                    "product_swatches_padding_left": 0,
+                    "product_swatches_padding_right": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "product_title_3QjUff",
+                "custom_liquid_aJwz3N",
+                "price",
+                "review_eAJXAx",
+                "swatches_xWhL7M"
+              ]
+            }
+          },
+          "block_order": [
+            "card-gallery",
+            "group"
+          ]
+        }
+      },
+      "custom_css": [],
+      "settings": {
+        "layout_type": "grid",
+        "product_card_size": "medium",
+        "mobile_product_card_size": "small",
+        "enable_infinite_scroll": true,
+        "products_per_page": 24,
+        "product_grid_width": "centered",
+        "full_width_on_mobile": true,
+        "columns_gap_horizontal": 16,
+        "columns_gap_vertical": 16,
+        "padding-inline-start": 0,
+        "padding-inline-end": 0,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 0,
+        "padding-block-end": 10
+      }
+    }
+  },
+  "order": [
+    "section",
+    "section_pressStr1",
+    "main"
+  ]
+}

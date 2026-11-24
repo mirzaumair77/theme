@@ -1,0 +1,2023 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product-information",
+      "blocks": {
+        "media-gallery": {
+          "type": "_product-media-gallery",
+          "static": true,
+          "settings": {
+            "media_presentation": "grid",
+            "media_columns": "two",
+            "image_gap": 0,
+            "large_first_image": false,
+            "icons_style": "chevron",
+            "slideshow_controls_style": "counter",
+            "slideshow_mobile_controls_style": "arrows",
+            "thumbnail_position": "right",
+            "thumbnail_width": 44,
+            "thumbnail_radius": 0,
+            "aspect_ratio": "adapt",
+            "constrain_to_viewport": false,
+            "media_fit": "cover",
+            "media_radius": 0,
+            "extend_media": true,
+            "zoom": true,
+            "mobile_zoom_icon": "show",
+            "video_loop": true,
+            "hide_variants": false,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "product-details": {
+          "type": "_product-details",
+          "static": true,
+          "settings": {
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "details_position": "flex-start",
+            "gap": 24,
+            "sticky_details_desktop": true,
+            "background_media": "none",
+            "background_color": "",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 20,
+            "padding-block-end": 56,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "group_icgrde": {
+              "type": "group",
+              "name": "Header",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 10,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "text_xrnftG": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<h1>{{ closest.product.title }}</h1>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "h3",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "variant_title": {
+                  "type": "variant-title",
+                  "settings": {
+                    "type_preset": "custom",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "0.875rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "price_tVjtKg": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "custom",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1.25rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "text_color": "",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "review_WVGBgF": {
+                  "type": "review",
+                  "name": "t:names.product_review_stars",
+                  "settings": {
+                    "enable_ratings": true,
+                    "stars_style": "text",
+                    "show_number": true,
+                    "hide_review_text": true,
+                    "hide_separator": false,
+                    "text_color": "",
+                    "type_preset": "paragraph",
+                    "width": "100%",
+                    "alignment": "left"
+                  },
+                  "blocks": {}
+                },
+                "product_subtitle": {
+                  "type": "product-subtitle",
+                  "disabled": true,
+                  "settings": {},
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_xrnftG",
+                "variant_title",
+                "price_tVjtKg",
+                "review_WVGBgF",
+                "product_subtitle"
+              ]
+            },
+            "divider_JrgGmV": {
+              "type": "_divider",
+              "name": "t:names.divider",
+              "settings": {
+                "thickness": 1,
+                "corner_radius": "square",
+                "divider_color": "#d6d0c6",
+                "width_percent": 100,
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "text_aEtTtq": {
+              "type": "text",
+              "name": "Product description",
+              "settings": {
+                "text": "{{ closest.product.description }}",
+                "width": "100%",
+                "max_width": "normal",
+                "alignment": "left",
+                "type_preset": "rte",
+                "font": "var(--font-primary--family)",
+                "font_size": "",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "wrap": "pretty",
+                "text_color": "",
+                "background": false,
+                "background_color": "#00000026",
+                "corner_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_group": {
+              "type": "variant-group",
+              "settings": {
+                "heading": "Design",
+                "default_layout": "grid",
+                "products_shown": 4,
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "variant_picker_R3rGDr": {
+              "type": "variant-picker",
+              "settings": {
+                "variant_style": "buttons",
+                "show_swatches": true,
+                "layout": "inline",
+                "option_labels": "Color: Finish\nColour: Finish\nMetal: Finish\nRing size: US Size\nSize: US Size",
+                "default_size": "",
+                "option_label_text_color": "",
+                "variant_style_class": "default",
+                "custom_variant_background": "{{ settings.color_palette.background }}",
+                "custom_variant_text": "{{ settings.color_palette.foreground }}",
+                "custom_variant_border": "{{ settings.color_palette.foreground }}",
+                "selected_variant_style_class": "default",
+                "custom_selected_variant_background": "{{ settings.color_palette.foreground }}",
+                "custom_selected_variant_text": "{{ settings.color_palette.background }}",
+                "custom_selected_variant_border": "{{ settings.color_palette.foreground }}",
+                "alignment": "left",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "buy_buttons_eYQEYi": {
+              "type": "buy-buttons",
+              "settings": {
+                "stacking": true,
+                "show_quantity_selector": false,
+                "text_color": "",
+                "show_pickup_availability": false,
+                "gift_card_form": true,
+                "recipient_button_style": "default",
+                "recipient_button_background": "{{ settings.color_palette.background }}",
+                "recipient_button_text": "{{ settings.color_palette.foreground }}",
+                "recipient_button_border": "{{ settings.color_palette.foreground }}",
+                "selected_recipient_button_style": "default",
+                "selected_recipient_button_background": "{{ settings.color_palette.foreground }}",
+                "selected_recipient_button_text": "{{ settings.color_palette.background }}",
+                "selected_recipient_button_border": "{{ settings.color_palette.foreground }}",
+                "input_style": "default",
+                "input_background_color": "{{ settings.color_palette.background }}",
+                "input_text_color": "{{ settings.color_palette.foreground }}",
+                "input_border_color": "{{ settings.color_palette.foreground }}",
+                "border_width": 1,
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "quantity": {
+                  "type": "quantity",
+                  "static": true,
+                  "settings": {
+                    "input_style": "default",
+                    "input_background_color": "{{ settings.color_palette.background }}",
+                    "input_text_color": "{{ settings.color_palette.foreground }}",
+                    "input_border_color": "{{ settings.color_palette.foreground }}",
+                    "border_width": 1,
+                    "border_radius": 0
+                  },
+                  "blocks": {}
+                },
+                "add-to-cart": {
+                  "type": "add-to-cart",
+                  "static": true,
+                  "settings": {
+                    "style_class": "button-custom",
+                    "label": "Add to bag",
+                    "icon": "arrow",
+                    "custom_button_background": "{{ settings.color_palette.foreground }}",
+                    "custom_button_text": "{{ settings.color_palette.background }}",
+                    "custom_button_border": "{{ settings.color_palette.foreground }}"
+                  },
+                  "blocks": {}
+                },
+                "accelerated-checkout": {
+                  "type": "accelerated-checkout",
+                  "static": true,
+                  "settings": {},
+                  "blocks": {}
+                },
+                "shop-pay-installments": {
+                  "type": "shop-pay-installments",
+                  "static": true,
+                  "settings": {
+                    "installments": 4,
+                    "minimum_price": 50,
+                    "maximum_price": 3000,
+                    "show_learn_more": false,
+                    "learn_more_label": "Learn more",
+                    "popup_title": "Pay Later Options",
+                    "popup_content": "<h3>Shop Pay Installments</h3><p>Split your purchase into 4 interest-free payments, paid every 2 weeks.</p><ul><li>No interest or fees when you pay on time</li><li>25% due today, 25% due every 2 weeks</li><li>Quick approval process</li><li>Available for orders $50-$3,000</li></ul><h3>How it works</h3><p>Select Shop Pay at checkout, choose the installment option, and complete your purchase. You'll receive payment reminders before each due date.</p>"
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": []
+            },
+            "ai_gen_block_830c57b_ncmPhQ": {
+              "type": "ai_gen_block_830c57b",
+              "disabled": true,
+              "settings": {
+                "button_text": "4 interest-free payments with Shop Pay",
+                "info_link_text": "Learn more",
+                "button_background_color": "#ffffff",
+                "button_text_color": "#000000",
+                "button_hover_background_color": "#ffffff",
+                "button_hover_text_color": "#000000",
+                "border_color": "#000f9f",
+                "border_hover_color": "#000000",
+                "info_link_color": "#000000",
+                "info_link_hover_color": "#000000",
+                "font_size": 12,
+                "border_width": 0,
+                "border_radius": 0,
+                "popup_title": "Pay Later Options",
+                "popup_content": "<h3>Shop Pay Installments</h3><p>Split your purchase into 4 interest-free payments, paid every 2 weeks.</p><ul><li>No interest or fees when you pay on time</li><li>25% due today, 25% due every 2 weeks</li><li>Quick approval process</li><li>Available for orders $50-$3,000</li></ul><h3>How it works</h3><p>Select Shop Pay at checkout, choose the installment option, and complete your purchase. You'll receive payment reminders before each due date.</p>",
+                "popup_background_color": "#ffffff",
+                "popup_text_color": "#000000",
+                "popup_heading_color": "#000000",
+                "popup_border_radius": 12
+              },
+              "blocks": {}
+            },
+            "trust_row": {
+              "type": "group",
+              "name": "Trust row",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "space-between",
+                "vertical_alignment": "flex-start",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 12,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "divider_trust_top": {
+                  "type": "_divider",
+                  "settings": {
+                    "thickness": 1,
+                    "corner_radius": "square",
+                    "divider_color": "",
+                    "width_percent": 100,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0
+                  },
+                  "blocks": {}
+                },
+                "trust_badges": {
+                  "type": "group",
+                  "name": "Trust badges",
+                  "settings": {
+                    "content_direction": "row",
+                    "vertical_on_mobile": false,
+                    "horizontal_alignment": "space-between",
+                    "vertical_alignment": "flex-start",
+                    "align_baseline": false,
+                    "horizontal_alignment_flex_direction_column": "flex-start",
+                    "vertical_alignment_flex_direction_column": "center",
+                    "gap": 8,
+                    "width": "fill",
+                    "custom_width": 100,
+                    "width_mobile": "fill",
+                    "custom_width_mobile": 100,
+                    "height": "fit",
+                    "custom_height": 100,
+                    "background_media": "none",
+                    "background_color": "",
+                    "video_position": "cover",
+                    "background_image_position": "cover",
+                    "toggle_overlay": false,
+                    "overlay_color": "#00000026",
+                    "overlay_style": "solid",
+                    "gradient_direction": "to top",
+                    "border": "none",
+                    "border_width": 1,
+                    "border_opacity": 100,
+                    "border_color": "",
+                    "border_radius": 0,
+                    "link": "",
+                    "open_in_new_tab": false,
+                    "placeholder": "",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {
+                    "trust_shipping": {
+                      "type": "group",
+                      "name": "Free US Shipping",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "align_baseline": false,
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "gap": 6,
+                        "width": "fill",
+                        "custom_width": 100,
+                        "width_mobile": "custom",
+                        "custom_width_mobile": 45,
+                        "height": "fit",
+                        "custom_height": 100,
+                        "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
+                        "border": "none",
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "",
+                        "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "placeholder": "",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {
+                        "trust_shipping_icon": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "truck",
+                            "image_upload": "shopify://shop_images/icon-truck.svg",
+                            "width": 20,
+                            "link": "",
+                            "open_in_new_tab": false,
+                            "icon_color": ""
+                          },
+                          "blocks": {}
+                        },
+                        "trust_shipping_text": {
+                          "type": "text",
+                          "settings": {
+                            "text": "<p>Free US Shipping</p>",
+                            "width": "100%",
+                            "max_width": "normal",
+                            "alignment": "center",
+                            "type_preset": "custom",
+                            "font": "var(--font-primary--family)",
+                            "font_size": "0.6875rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "text_color": "",
+                            "background": false,
+                            "background_color": "#00000026",
+                            "corner_radius": 0,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "trust_shipping_icon",
+                        "trust_shipping_text"
+                      ]
+                    },
+                    "trust_returns": {
+                      "type": "group",
+                      "name": "100-Day Returns",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "align_baseline": false,
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "gap": 6,
+                        "width": "fill",
+                        "custom_width": 100,
+                        "width_mobile": "custom",
+                        "custom_width_mobile": 45,
+                        "height": "fit",
+                        "custom_height": 100,
+                        "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
+                        "border": "none",
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "",
+                        "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "placeholder": "",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {
+                        "trust_returns_icon": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "return",
+                            "image_upload": "shopify://shop_images/icon-return.svg",
+                            "width": 20,
+                            "link": "",
+                            "open_in_new_tab": false,
+                            "icon_color": ""
+                          },
+                          "blocks": {}
+                        },
+                        "trust_returns_text": {
+                          "type": "text",
+                          "settings": {
+                            "text": "<p>100-Day Returns</p>",
+                            "width": "100%",
+                            "max_width": "normal",
+                            "alignment": "center",
+                            "type_preset": "custom",
+                            "font": "var(--font-primary--family)",
+                            "font_size": "0.6875rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "text_color": "",
+                            "background": false,
+                            "background_color": "#00000026",
+                            "corner_radius": 0,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "trust_returns_icon",
+                        "trust_returns_text"
+                      ]
+                    },
+                    "trust_warranty": {
+                      "type": "group",
+                      "name": "1-Year Warranty",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "align_baseline": false,
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "gap": 6,
+                        "width": "fill",
+                        "custom_width": 100,
+                        "width_mobile": "custom",
+                        "custom_width_mobile": 45,
+                        "height": "fit",
+                        "custom_height": 100,
+                        "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
+                        "border": "none",
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "",
+                        "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "placeholder": "",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {
+                        "trust_warranty_icon": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "lock",
+                            "image_upload": "shopify://shop_images/icon-warranty.svg",
+                            "width": 20,
+                            "link": "",
+                            "open_in_new_tab": false,
+                            "icon_color": ""
+                          },
+                          "blocks": {}
+                        },
+                        "trust_warranty_text": {
+                          "type": "text",
+                          "settings": {
+                            "text": "<p>1-Year Warranty</p>",
+                            "width": "100%",
+                            "max_width": "normal",
+                            "alignment": "center",
+                            "type_preset": "custom",
+                            "font": "var(--font-primary--family)",
+                            "font_size": "0.6875rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "text_color": "",
+                            "background": false,
+                            "background_color": "#00000026",
+                            "corner_radius": 0,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "trust_warranty_icon",
+                        "trust_warranty_text"
+                      ]
+                    },
+                    "trust_gift": {
+                      "type": "group",
+                      "name": "Gift Box Included",
+                      "settings": {
+                        "content_direction": "column",
+                        "vertical_on_mobile": true,
+                        "horizontal_alignment": "flex-start",
+                        "vertical_alignment": "center",
+                        "align_baseline": false,
+                        "horizontal_alignment_flex_direction_column": "center",
+                        "vertical_alignment_flex_direction_column": "center",
+                        "gap": 6,
+                        "width": "fill",
+                        "custom_width": 100,
+                        "width_mobile": "custom",
+                        "custom_width_mobile": 45,
+                        "height": "fit",
+                        "custom_height": 100,
+                        "background_media": "none",
+                        "background_color": "",
+                        "video_position": "cover",
+                        "background_image_position": "cover",
+                        "toggle_overlay": false,
+                        "overlay_color": "#00000026",
+                        "overlay_style": "solid",
+                        "gradient_direction": "to top",
+                        "border": "none",
+                        "border_width": 1,
+                        "border_opacity": 100,
+                        "border_color": "",
+                        "border_radius": 0,
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "placeholder": "",
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {
+                        "trust_gift_icon": {
+                          "type": "icon",
+                          "name": "t:names.icon",
+                          "settings": {
+                            "icon": "washing",
+                            "image_upload": "shopify://shop_images/icon-gift-box.svg",
+                            "width": 20,
+                            "link": "",
+                            "open_in_new_tab": false,
+                            "icon_color": ""
+                          },
+                          "blocks": {}
+                        },
+                        "trust_gift_text": {
+                          "type": "text",
+                          "settings": {
+                            "text": "<p>Gift Box Included</p>",
+                            "width": "100%",
+                            "max_width": "normal",
+                            "alignment": "center",
+                            "type_preset": "custom",
+                            "font": "var(--font-primary--family)",
+                            "font_size": "0.6875rem",
+                            "line_height": "normal",
+                            "letter_spacing": "normal",
+                            "case": "none",
+                            "wrap": "pretty",
+                            "text_color": "",
+                            "background": false,
+                            "background_color": "#00000026",
+                            "corner_radius": 0,
+                            "padding-block-start": 0,
+                            "padding-block-end": 0,
+                            "padding-inline-start": 0,
+                            "padding-inline-end": 0
+                          },
+                          "blocks": {}
+                        }
+                      },
+                      "block_order": [
+                        "trust_gift_icon",
+                        "trust_gift_text"
+                      ]
+                    }
+                  },
+                  "block_order": [
+                    "trust_shipping",
+                    "trust_returns",
+                    "trust_warranty",
+                    "trust_gift"
+                  ]
+                },
+                "divider_trust_bottom": {
+                  "type": "_divider",
+                  "settings": {
+                    "thickness": 1,
+                    "corner_radius": "square",
+                    "divider_color": "",
+                    "width_percent": 100,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "divider_trust_top",
+                "trust_badges",
+                "divider_trust_bottom"
+              ]
+            },
+            "customer_quote": {
+              "type": "group",
+              "name": "Customer quote",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "center",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 6,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "#efeae1",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "placeholder": "",
+                "padding-block-start": 20,
+                "padding-block-end": 20,
+                "padding-inline-start": 20,
+                "padding-inline-end": 20
+              },
+              "blocks": {
+                "quote_stars": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>★★★★★</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "center",
+                    "type_preset": "custom",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "0.75rem",
+                    "line_height": "normal",
+                    "letter_spacing": "loose",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "quote_text": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>“He wore it on our wedding day and the amount of compliments he received was insane.”</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "center",
+                    "type_preset": "custom",
+                    "font": "var(--font-heading--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "quote_author": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Maxine V.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "center",
+                    "type_preset": "custom",
+                    "font": "var(--font-primary--family)",
+                    "font_size": "0.6875rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "#777777",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "quote_stars",
+                "quote_text",
+                "quote_author"
+              ]
+            },
+            "complete_the_look": {
+              "type": "complete-the-look",
+              "settings": {
+                "heading": "Complete the look",
+                "selleasy_widget": "pac",
+                "background_color": "#f7f5f0",
+                "padding-block-start": 0,
+                "padding-block-end": 0
+              },
+              "blocks": {}
+            },
+            "wedding_offer": {
+              "type": "wedding-offer",
+              "settings": {
+                "heading": "Buying for a Wedding?",
+                "subheading": "Enjoy 20% off 4 or more Metal Pocket Squares.\nMix and match designs and finishes.",
+                "text": "Discount applied automatically at checkout.\nPlease include your wedding date in the cart notes.",
+                "text_color": "#2a2a2a",
+                "border_color": "#2a2a2a",
+                "alignment": "center",
+                "padding_top": 16,
+                "padding_bottom": 16,
+                "padding_left": 18,
+                "padding_right": 18,
+                "padding_top_mobile": 16,
+                "padding_bottom_mobile": 16,
+                "padding_left_mobile": 12,
+                "padding_right_mobile": 12,
+                "heading_font": "lora_n6",
+                "heading_size": 16,
+                "heading_size_mobile": 16,
+                "heading_line_height": 120,
+                "heading_line_height_mobile": 120,
+                "subheading_font": "poppins_n4",
+                "subheading_size": 14,
+                "subheading_size_mobile": 12,
+                "subheading_line_height": 120,
+                "subheading_line_height_mobile": 140,
+                "text_font": "poppins_i4",
+                "text_size": 10,
+                "text_size_mobile": 10,
+                "text_line_height": 130,
+                "text_line_height_mobile": 130
+              },
+              "blocks": {}
+            },
+            "accordion_details": {
+              "type": "accordion",
+              "name": "t:names.accordion",
+              "settings": {
+                "icon": "plus",
+                "dividers": true,
+                "divider_color": "#e5e5e5",
+                "type_preset": "paragraph",
+                "background_color": "",
+                "text_color": "",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "accordion_row_details": {
+                  "type": "_accordion-row",
+                  "name": "Important",
+                  "settings": {
+                    "heading": "Details + Dimensions",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "accordion_row_details_text": {
+                      "type": "text",
+                      "settings": {
+                        "text": "{{ closest.product.metafields.custom.sizing_info | metafield_tag }}",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "accordion_row_details_text"
+                  ]
+                },
+                "accordion_row_insert": {
+                  "type": "_accordion-row",
+                  "name": "Insert + Fit",
+                  "settings": {
+                    "heading": "Insert + Fit",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "accordion_row_insert_text": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p><strong>Magnetic Insert</strong><br/>Our patented insert slides inside your suit jacket's pocket, holding the Metal Pocket Square™ securely in place without pins or folding.</p><p><strong>Designed to Fit</strong><br/>Compatible with suit jackets, blazers, and tuxedos with a minimum pocket dimensions of 3.5\" wide × 4.5\" deep.</p><p><strong>Magnet Safety</strong><br/>Contains strong magnets. Keep away from pacemakers and other implanted medical devices.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "accordion_row_insert_text"
+                  ]
+                },
+                "accordion_row_materials": {
+                  "type": "_accordion-row",
+                  "name": "Important",
+                  "settings": {
+                    "heading": "Materials + Care",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "accordion_row_materials_text": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p><strong>Solid Precious Metals</strong><br/>Available in solid sterling silver, gilded bronze, and white bronze. Never plated.</p><p><strong>Handcrafted in New Orleans</strong><br/>Each design begins with an original wax carving by Jose Balli, then is cast using the lost-wax process and finished by hand in our New Orleans studio.</p><p><strong>Product Care</strong><br/>Gently clean with a jewelry polishing cloth. Sterling silver and bronze naturally develop a patina over time.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "accordion_row_materials_text"
+                  ]
+                },
+                "accordion_row_shipping": {
+                  "type": "_accordion-row",
+                  "name": "Important",
+                  "settings": {
+                    "heading": "Shipping + Returns",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "accordion_row_shipping_text": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p><strong>Complimentary U.S. Shipping</strong><br/>Free ground shipping on all U.S. orders.</p><p><strong>Made to Order</strong><br/>Handcrafted in New Orleans. Please allow approximately 3–4 weeks for production before shipping.</p><p><strong>International Shipping</strong><br/>DHL Express to select countries. Rates calculated at checkout.</p><p><strong>100-Day Returns + Exchanges</strong><br/>Eligible unworn items may be exchanged or returned within 100 days of purchase. Custom, sized, and personalized pieces are final sale.</p><p><strong>Need It By a Certain Date?</strong><br/>Let us know of your event date in the note section at checkout. If you've already placed order, simply email us about the event date so we can help you.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    },
+                    "accordion_row_shipping_button": {
+                      "type": "button",
+                      "settings": {
+                        "label": "View Full Policy",
+                        "link": "shopify://pages/shipping-returns",
+                        "open_in_new_tab": false,
+                        "style_class": "button-secondary",
+                        "custom_button_background": "{{ settings.color_palette.foreground }}",
+                        "custom_button_text": "{{ settings.color_palette.background }}",
+                        "custom_button_border": "{{ settings.color_palette.background }}",
+                        "link_text_color": "",
+                        "width": "fit-content",
+                        "custom_width": 100,
+                        "width_mobile": "fit-content",
+                        "custom_width_mobile": 100
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "accordion_row_shipping_text",
+                    "accordion_row_shipping_button"
+                  ]
+                }
+              },
+              "block_order": [
+                "accordion_row_details",
+                "accordion_row_insert",
+                "accordion_row_materials",
+                "accordion_row_shipping"
+              ]
+            },
+            "accordion_LqxKX6": {
+              "type": "accordion",
+              "name": "Accordian",
+              "disabled": true,
+              "settings": {
+                "icon": "caret",
+                "dividers": true,
+                "divider_color": "",
+                "type_preset": "h6",
+                "background_color": "",
+                "text_color": "",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 10,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "accordion_row_FUMgdJ": {
+                  "type": "_accordion-row",
+                  "name": "What Is a Metal Pocket Square™?",
+                  "settings": {
+                    "heading": "What Is a Metal Pocket Square™?",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_GDpp6V": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Jose Balli created the Original Metal Pocket Square™ as a new take on the classic fabric pocket square.</p><p>Each design is sculpted in solid metal and made to sit in your jacket pocket. No fabric. No folding. Just an original finishing touch made to be remembered.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_GDpp6V"
+                  ]
+                },
+                "accordion_row_XYcJ7N": {
+                  "type": "_accordion-row",
+                  "name": "How Does It Work?",
+                  "settings": {
+                    "heading": "How Does It Work?",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_FgWneA": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>A patented magnetic insert slides inside your jacket pocket, holding the Pocket Square™ securely in place at the perfect height.</p><p><strong>Please note:</strong>&nbsp;Contains strong magnets. Keep away from pacemakers and other implanted medical devices.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_FgWneA"
+                  ]
+                },
+                "accordion_row_7rfPfG": {
+                  "type": "_accordion-row",
+                  "name": "Size & Materials",
+                  "settings": {
+                    "heading": "Size & Materials",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_mWwiUK": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<ul><li>Insert: 4.5\" L × 3.5\" W</li><li>Horse: 1.5\" L × 3\" W</li></ul><p>Available in Sterling Silver, Gilded Bronze and White Bronze.</p><p>Designed and handcrafted in New Orleans.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_mWwiUK"
+                  ]
+                },
+                "accordion_row_QMGaJA": {
+                  "type": "_accordion-row",
+                  "name": "Shipping & Craftsmanship",
+                  "settings": {
+                    "heading": "Shipping & Craftsmanship",
+                    "open_by_default": false,
+                    "icon": "none",
+                    "width": 20
+                  },
+                  "blocks": {
+                    "text_DQPAxx": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Free ground shipping on all national orders.</p><p>Every Pocket Square™ is handcrafted and finished in our New Orleans studio. Please allow approximately 2–3 weeks for your piece to be made before shipping.</p><p>Each piece arrives in a Jose Balli box and pouch, ready to gift.</p>",
+                        "width": "100%",
+                        "max_width": "normal",
+                        "alignment": "left",
+                        "type_preset": "custom",
+                        "font": "var(--font-body--family)",
+                        "font_size": "0.75rem",
+                        "line_height": "normal",
+                        "letter_spacing": "normal",
+                        "case": "none",
+                        "wrap": "pretty",
+                        "text_color": "",
+                        "background": false,
+                        "background_color": "#00000026",
+                        "corner_radius": 0,
+                        "padding-block-start": 0,
+                        "padding-block-end": 0,
+                        "padding-inline-start": 0,
+                        "padding-inline-end": 0
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "text_DQPAxx"
+                  ]
+                }
+              },
+              "block_order": [
+                "accordion_row_FUMgdJ",
+                "accordion_row_XYcJ7N",
+                "accordion_row_7rfPfG",
+                "accordion_row_QMGaJA"
+              ]
+            }
+          },
+          "block_order": [
+            "group_icgrde",
+            "divider_JrgGmV",
+            "text_aEtTtq",
+            "variant_group",
+            "variant_picker_R3rGDr",
+            "buy_buttons_eYQEYi",
+            "ai_gen_block_830c57b_ncmPhQ",
+            "trust_row",
+            "customer_quote",
+            "complete_the_look",
+            "wedding_offer",
+            "accordion_details",
+            "accordion_LqxKX6"
+          ]
+        }
+      },
+      "custom_css": [
+        "[class*=\"__text_aEtTtq\"] ul {list-style: \"— \"; padding-left: 1em; margin: 0.75rem 0 0;}",
+        "[class*=\"__text_aEtTtq\"] li {margin-bottom: 0.4em;}",
+        ".shopify-payment-button__more-options {display: none !important;}"
+      ],
+      "settings": {
+        "content_width": "content-center-aligned",
+        "desktop_media_position": "left",
+        "equal_columns": false,
+        "limit_details_width": false,
+        "details_width": 416,
+        "gap": 40,
+        "show_breadcrumbs": true,
+        "enable_sticky_add_to_cart": true,
+        "title_accent_text": "™",
+        "background_color": "#ffffff",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "how_work_iinxri": {
+      "type": "how-work",
+      "blocks": {
+        "step_LE6amj": {
+          "type": "step",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/how-it-work__step-1.png",
+            "video_url": "",
+            "video_muted": true,
+            "video_autoplay": false,
+            "title": "Snap",
+            "description": "Attach design to the magnetic insert."
+          }
+        },
+        "step_EWBGAd": {
+          "type": "step",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/how-it-work__step-2.png",
+            "video_url": "",
+            "video_muted": true,
+            "video_autoplay": false,
+            "title": "Slide",
+            "description": "Place into your pocket and adjust."
+          }
+        },
+        "step_zCd3wT": {
+          "type": "step",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/how-it-work__step-3.png",
+            "video_url": "",
+            "video_muted": true,
+            "video_autoplay": false,
+            "title": "Stand Out",
+            "description": "Enjoy a finishing touch that gets noticed."
+          }
+        }
+      },
+      "block_order": [
+        "step_LE6amj",
+        "step_EWBGAd",
+        "step_zCd3wT"
+      ],
+      "name": "How It Works",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "subheading": "How it works",
+        "heading": "No pins. No folding. It stays put all night.",
+        "image_ratio": "auto",
+        "padding_top": 88,
+        "padding_bottom": 88,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "why_metal_xxGM6Q": {
+      "type": "why-metal",
+      "blocks": {
+        "row_A6P6PY": {
+          "type": "row",
+          "settings": {
+            "label": "FIT",
+            "column_one_text": "Needs frequent adjusting.",
+            "column_two_text": "Stays securely in place all night."
+          }
+        },
+        "row_jmHJE4": {
+          "type": "row",
+          "settings": {
+            "label": "Shape",
+            "column_one_text": "Can wilt & lose its shape.",
+            "column_two_text": "Holds its shape wear after wear."
+          }
+        },
+        "row_W96PBJ": {
+          "type": "row",
+          "settings": {
+            "label": "Look",
+            "column_one_text": "Common finishing touch.",
+            "column_two_text": "Statement piece that stands out."
+          }
+        },
+        "row_Y8p4cR": {
+          "type": "row",
+          "settings": {
+            "label": "Care",
+            "column_one_text": "Requires washing, pressing, & folding.",
+            "column_two_text": "Simply wipe clean with a polishing cloth."
+          }
+        },
+        "row_NjWqdh": {
+          "type": "row",
+          "settings": {
+            "label": "Legacy",
+            "column_one_text": "Fabric can show wear over time.",
+            "column_two_text": "Crafted to last for generations."
+          }
+        }
+      },
+      "block_order": [
+        "row_A6P6PY",
+        "row_jmHJE4",
+        "row_W96PBJ",
+        "row_Y8p4cR",
+        "row_NjWqdh"
+      ],
+      "name": "Why Metal",
+      "settings": {
+        "background_color": "#F7F5F0",
+        "mobile_background_color": "#FBFBF8",
+        "subheading": "Why metal",
+        "heading": "A new take on the pocket square.",
+        "column_one_heading": "Cloth pocket square",
+        "column_two_heading": "Metal pocket square™",
+        "padding_top": 88,
+        "padding_bottom": 88,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "meaningful_moments_LRXV46": {
+      "type": "meaningful-moments",
+      "blocks": {
+        "slide_eU6RT3": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/moment-matters__image-1.png",
+            "product_display": "disabled",
+            "product": "eagle-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_RfDkjW": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/moment-matters__image-2.png",
+            "product_display": "disabled",
+            "product": "eagle-sapphire-eye-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_xCf4Ui": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/moment-matters__image-3.png",
+            "product_display": "disabled",
+            "product": "lion-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_x6atge": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/how-it-work__step-3.png",
+            "product_display": "disabled",
+            "product": "alligator-pocket-square",
+            "link": ""
+          }
+        },
+        "slide_UyTQxk": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Kraken_Pocket_Square_03_On_Model.jpg",
+            "product_display": "disabled",
+            "product": "kraken-pocket-square",
+            "link": ""
+          }
+        },
+        "slide_tAKcYt": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/EXTENDEDSUITwAddedButton-GildedBronzeDragonPocketSquare-6000px.jpg",
+            "product_display": "disabled",
+            "product": "dragon-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_aEDTiz": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/HorsePocketSquare-WhiteBronze-Wornonamodelatthederby.png",
+            "product_display": "disabled",
+            "product": "horse-pocket-square",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_eU6RT3",
+        "slide_RfDkjW",
+        "slide_xCf4Ui",
+        "slide_x6atge",
+        "slide_UyTQxk",
+        "slide_tAKcYt",
+        "slide_aEDTiz"
+      ],
+      "name": "Meaningful Moments",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "heading": "Made for moments that matter.",
+        "padding_top": 88,
+        "padding_bottom": 88,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "image_with_content_BiUHtf": {
+      "type": "image-with-content",
+      "blocks": {
+        "row_Ryye3m": {
+          "type": "row",
+          "disabled": true,
+          "settings": {
+            "media_type": "image",
+            "video_url": "",
+            "video_autoplay": false,
+            "image_position": "left",
+            "layout": "panel",
+            "subheading": "The Story",
+            "heading": "Inspired by Louisiana’s\nsugarcane fields",
+            "description": "<p>A tribute to the fields that have shaped South Louisiana for generations. Each hand-carved design captures a piece of our state's agricultural heritage.</p>"
+          }
+        },
+        "row_VbGbxt": {
+          "type": "row",
+          "settings": {
+            "media_type": "video",
+            "image": "shopify://shop_images/image-content__the_balli_process.png",
+            "video": "shopify://files/videos/Alligator Pocket Square – 07 – Demonstration Video.mp4",
+            "video_url": "",
+            "cover_image": "shopify://shop_images/image-content__the_balli_process.png",
+            "video_autoplay": false,
+            "image_position": "right",
+            "layout": "boxed",
+            "subheading": "The Balli Process",
+            "heading": "Carved by hand.\nCast in solid metal.",
+            "description": "<p>Each design begins with an original wax carving, then is cast in solid metal using the lost-wax process. Every piece is finished by hand in our New Orleans studio.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "row_Ryye3m",
+        "row_VbGbxt"
+      ],
+      "name": "Image with Content",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "mobile_padding_top": 0,
+        "mobile_padding_bottom": 0
+      }
+    },
+    "1786548443262f12a3": {
+      "type": "_blocks",
+      "blocks": {
+        "yotpo_product_reviews_reviews_DHL8NK": {
+          "type": "shopify://apps/yotpo-product-reviews/blocks/reviews/eb7dfd7d-db44-4334-bc49-c893b51b36cf",
+          "settings": {
+            "product": "{{product}}"
+          }
+        }
+      },
+      "block_order": [
+        "yotpo_product_reviews_reviews_DHL8NK"
+      ],
+      "custom_css": [
+        ".shopify-app-block {width: 100%;}"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "background_media": "none",
+        "background_color": "#f7f5f0",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_color": "",
+        "border_radius": 0,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "faq_UFDjpK": {
+      "type": "faq",
+      "blocks": {
+        "question_ezfK6w": {
+          "type": "question",
+          "settings": {
+            "question": "Will it fit in my suit jacket?",
+            "answer": "<p>Absolutely! The Metal Pocket Square™ works with suit jackets, blazers, and tuxedos with a chest pocket at least 3.5\" wide and 4.5\" deep to fit the magnetic insert. No pins, no holes, and no damage to your jacket.</p>"
+          }
+        },
+        "question_y6BiXR": {
+          "type": "question",
+          "settings": {
+            "question": "Can I get it in time for my event?",
+            "answer": "<p>Each Metal Pocket Square™ is made to order, with production typically taking 3–4 weeks. Have a special date in mind? Leave us a note at checkout, and we'll do our best to accommodate!</p>"
+          }
+        },
+        "question_F9k6Rx": {
+          "type": "question",
+          "settings": {
+            "question": "What if I change my mind?",
+            "answer": "<p>We want you to love your Metal Pocket Square™! Eligible unworn pieces can be exchanged or returned within 100 days of purchase. See our <a href=\"/pages/shipping-returns\" title=\"Shipping &amp; Returns\">Shipping &amp; Returns</a> page for details.</p>"
+          }
+        },
+        "question_6apW4M": {
+          "type": "question",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes! We ship via DHL Express to select countries worldwide, including Canada, the UK, Australia, and several European countries. Shipping costs are calculated at checkout.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "question_ezfK6w",
+        "question_y6BiXR",
+        "question_F9k6Rx",
+        "question_6apW4M"
+      ],
+      "custom_css": [],
+      "name": "FAQ",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "heading": "FAQ",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "related_products_tDmNUW": {
+      "type": "related-products",
+      "name": "Related products",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "heading": "You may also like.",
+        "button_label": "Shop best sellers",
+        "button_link": "shopify://collections/best-sellers",
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "max_products": 10,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 36,
+        "mobile_padding_bottom": 36
+      }
+    },
+    "product_recommendations_qggXJq": {
+      "type": "product-recommendations",
+      "blocks": {
+        "text_cbcgyb": {
+          "type": "text",
+          "name": "t:names.header",
+          "settings": {
+            "text": "<h3>You may also like </h3>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "text_color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "static-product-card": {
+          "type": "_product-card",
+          "name": "t:names.product_card",
+          "static": true,
+          "settings": {
+            "product_card_gap": 8,
+            "background_color": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_color": "",
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "product_card_gallery_DNizbJ": {
+              "type": "_product-card-gallery",
+              "name": "t:names.product_card_media",
+              "settings": {
+                "image_ratio": "portrait",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "group_zGryyP": {
+              "type": "_product-card-group",
+              "settings": {
+                "content_direction": "column",
+                "vertical_on_mobile": true,
+                "horizontal_alignment": "flex-start",
+                "vertical_alignment": "center",
+                "align_baseline": false,
+                "horizontal_alignment_flex_direction_column": "flex-start",
+                "vertical_alignment_flex_direction_column": "center",
+                "gap": 4,
+                "width": "fill",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100,
+                "height": "fit",
+                "custom_height": 100,
+                "background_media": "none",
+                "background_color": "",
+                "video_position": "cover",
+                "background_image_position": "cover",
+                "toggle_overlay": false,
+                "overlay_color": "#00000026",
+                "overlay_style": "solid",
+                "gradient_direction": "to top",
+                "border": "none",
+                "border_width": 1,
+                "border_opacity": 100,
+                "border_color": "",
+                "border_radius": 0,
+                "link": "",
+                "open_in_new_tab": false,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {
+                "product_title_Dk8awd": {
+                  "type": "product-title",
+                  "name": "t:names.product_title",
+                  "settings": {
+                    "width": "fit-content",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "text_color": "",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "price_AUnDAd": {
+                  "type": "price",
+                  "settings": {
+                    "show_sale_price_first": true,
+                    "show_installments": false,
+                    "show_tax_info": false,
+                    "type_preset": "h6",
+                    "width": "100%",
+                    "alignment": "left",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "text_color": "",
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                },
+                "swatches_yPCmba": {
+                  "type": "swatches",
+                  "settings": {
+                    "product_swatches_alignment": "flex-start",
+                    "product_swatches_alignment_mobile": "flex-start",
+                    "hide_padding": false,
+                    "product_swatches_padding_top": 4,
+                    "product_swatches_padding_bottom": 0,
+                    "product_swatches_padding_left": 0,
+                    "product_swatches_padding_right": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "product_title_Dk8awd",
+                "price_AUnDAd",
+                "swatches_yPCmba"
+              ]
+            }
+          },
+          "block_order": [
+            "product_card_gallery_DNizbJ",
+            "group_zGryyP"
+          ]
+        }
+      },
+      "block_order": [
+        "text_cbcgyb"
+      ],
+      "disabled": true,
+      "name": "t:names.product_recommendations",
+      "settings": {
+        "product": "{{ closest.product }}",
+        "recommendation_type": "related",
+        "layout_type": "grid",
+        "carousel_on_mobile": false,
+        "max_products": 4,
+        "columns": 4,
+        "mobile_columns": "2",
+        "columns_gap": 12,
+        "rows_gap": 24,
+        "icons_style": "arrow",
+        "icons_shape": "none",
+        "section_width": "page-width",
+        "gap": 28,
+        "background_color": "{{ settings.color_palette.background }}",
+        "padding-block-start": 14,
+        "padding-block-end": 48
+      }
+    }
+  },
+  "order": [
+    "main",
+    "how_work_iinxri",
+    "why_metal_xxGM6Q",
+    "meaningful_moments_LRXV46",
+    "image_with_content_BiUHtf",
+    "1786548443262f12a3",
+    "faq_UFDjpK",
+    "related_products_tDmNUW",
+    "product_recommendations_qggXJq"
+  ]
+}

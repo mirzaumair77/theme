@@ -1,0 +1,138 @@
+{%- doc -%}
+  Renders one product in the Variant Group block. A single markup serves both the
+  Grid and List layouts; the block's `data-layout` attribute decides what is visible.
+
+  Non-current items link to their PDP with the variant whose Color option matches the
+  shopper's current Color selection, so the chosen finish carries over. The
+  `data-color-variants` map lets `variant-group.js` keep that link current when the
+  shopper changes Color on this page.
+
+  @param {product} item_product - The product this item represents.
+  @param {string} item_title - Display title (metaobject title or product title).
+  @param {image} [item_image] - Display image (metaobject image or product featured image).
+  @param {boolean} is_current - Whether this item is the product being viewed.
+  @param {string} [selected_color] - The current product's selected Color value.
+  @param {boolean} [is_extra] - Whether the item stays hidden until "Show more" is used.
+
+  @example
+  {% render 'variant-group-item',
+    item_product: entry.product.value,
+    item_title: entry.title.value,
+    item_image: entry.featured_image.value,
+    is_current: false,
+    selected_color: 'Gilded Bronze',
+    is_extra: false
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign item_variant = item_product.selected_or_first_available_variant
+  assign item_url = item_product.url
+  assign selected_color_key = selected_color | downcase | strip
+
+  assign item_color_option = nil
+  for item_option in item_product.options_with_values
+    assign item_option_key = item_option.name | downcase | strip
+    if item_option_key == 'color' or item_option_key == 'colour'
+      assign item_color_option = item_option
+      break
+    endif
+  endfor
+
+  # Map each Color value to its variant so JS can retarget the link without a request.
+  assign color_variant_pairs = ''
+  if item_color_option
+    for color_value in item_color_option.values
+      if color_value.variant == blank
+        continue
+      endif
+
+      assign color_value_key = color_value.name | downcase | strip
+      assign color_variant_pair = color_value_key | json | append: ':' | append: color_value.variant.id
+
+      if color_variant_pairs == ''
+        assign color_variant_pairs = color_variant_pair
+      else
+        assign color_variant_pairs = color_variant_pairs | append: ',' | append: color_variant_pair
+      endif
+
+      if is_current == false and selected_color_key != blank and color_value_key == selected_color_key
+        assign item_variant = color_value.variant
+        assign item_url = color_value.variant.url
+      endif
+    endfor
+  endif
+
+  if is_current
+    assign item_url = item_variant.url | default: item_product.url
+  endif
+
+  # Built here because a literal brace inside an output tag would end the tag early.
+  assign color_variants_json = ''
+  if color_variant_pairs != ''
+    assign color_variants_json = '{' | append: color_variant_pairs | append: '}'
+  endif
+
+  if item_image == blank
+    assign item_image = item_product.featured_image
+  endif
+-%}
+
+<li
+  class="variant-group__item{% if is_current %} variant-group__item--current{% endif %}{% if is_extra %} variant-group__item--extra{% endif %}"
+  {% if is_extra %}
+    data-extra
+  {% endif %}
+>
+  <a
+    href="{{ item_url }}"
+    class="variant-group__link"
+    data-base-url="{{ item_product.url }}"
+    {% if color_variants_json != '' %}
+      data-color-variants="{{ color_variants_json | escape }}"
+    {% endif %}
+    {% if is_current %}
+      aria-current="page"
+    {% endif %}
+  >
+    <span class="variant-group__media">
+      {%- if item_image != blank -%}
+        {{
+          item_image
+          | image_url: width: 240
+          | image_tag:
+            widths: '80, 120, 160, 240',
+            sizes: '(min-width: 750px) 120px, 22vw',
+            loading: 'lazy',
+            alt: '',
+            class: 'variant-group__image'
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'variant-group__image variant-group__image--placeholder' }}
+      {%- endif -%}
+    </span>
+
+    <span class="variant-group__details">
+      <span class="variant-group__title">{{ item_title | escape }}</span>
+      {% comment %} {%- if item_color_option -%}
+        <span class="variant-group__meta">
+          {{- 'products.variant_group.finishes' | t: count: item_color_option.values.size -}}
+        </span>
+      {%- endif -%} {% endcomment %}
+      {%- if is_current -%}
+        <span class="visually-hidden">{{ 'products.variant_group.current' | t }}</span>
+      {%- endif -%}
+    </span>
+
+    <span class="variant-group__price">{{ item_variant.price | money_without_trailing_zeros }}</span>
+
+    {%- if is_current -%}
+      <span
+        class="variant-group__check svg-wrapper"
+        aria-hidden="true"
+      >
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+      </span>
+    {%- endif -%}
+  </a>
+</li>

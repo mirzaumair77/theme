@@ -1,0 +1,461 @@
+{%- liquid
+  assign background_color = section.settings.background_color
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign section_index = section.index
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    {%- if background_color != blank %}
+    background: {{ background_color }};
+    {%- endif %}
+    padding-top: {{ mobile_padding_top }}px;
+    padding-bottom: {{ mobile_padding_bottom }}px;
+  }
+
+  @media (min-width: 769px) {
+    #shopify-section-{{ section.id }} {
+      padding-top: {{ padding_top }}px;
+      padding-bottom: {{ padding_bottom }}px;
+    }
+  }
+
+  .image-with-content__row {
+    --media-ratio: 397 / 322;
+    display: grid;
+  }
+
+  .image-with-content__row--boxed {
+    --media-ratio: 283 / 250;
+    gap: 40px;
+    padding: 40px 16px;
+  }
+
+  .image-with-content__media {
+    overflow: hidden;
+  }
+
+  .image-with-content__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Video keeps the row's media ratio and covers it like the image does */
+  .image-with-content__media--video {
+    aspect-ratio: var(--media-ratio);
+  }
+
+  .image-with-content__media--video :is(deferred-media, .video-placeholder-wrapper) {
+    display: block;
+    height: 100%;
+  }
+
+  .image-with-content__media--video :is(img, video, svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-with-content__image--placeholder {
+    background-color: #e5e0d9;
+    fill: #b9b2a8;
+  }
+
+  .image-with-content__row--panel .image-with-content__content {
+    padding: 40px 16px;
+    background-color: #efeae1;
+  }
+
+  .image-with-content__content > :first-child {
+    margin-top: 0;
+  }
+
+  .image-with-content__subheading {
+    padding-block-end: 8px;
+  }
+
+  .image-with-content__subheading p {
+    margin: 0;
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 14px;
+    line-height: 16.8px;
+    letter-spacing: 1.12px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .image-with-content__heading h2 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    color: #2A2A2A;
+    font-size: 24px;
+    line-height: 27.6px;
+    letter-spacing: -0.48px;
+    font-weight: 400;
+  }
+
+  .image-with-content__description {
+    padding-block-start: 20px;
+  }
+
+  .image-with-content__description p {
+    margin: 0;
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 16px;
+    line-height: 22.4px;
+    font-weight: 400;
+  }
+
+  .image-with-content__description p + p {
+    margin-top: 1em;
+  }
+
+  @media (min-width: 769px) {
+    .image-with-content__row {
+      --media-ratio: 7 / 6;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .image-with-content__row--boxed {
+      --media-ratio: 29 / 28;
+      grid-template-columns: 9fr 10fr;
+      align-items: center;
+      gap: clamp(32px, 5.6vw, 72px);
+      padding: clamp(48px, 6.2vw, 88px) clamp(24px, 5.6vw, 80px);
+    }
+
+    .image-with-content__row--boxed.image-with-content__row--image-right {
+      grid-template-columns: 10fr 9.24fr;
+    }
+
+    .image-with-content__row--image-right .image-with-content__media {
+      order: 1;
+    }
+
+    .image-with-content__row--panel .image-with-content__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px clamp(32px, 5.6vw, 80px);
+    }
+    
+    .image-with-content__subheading {
+      padding-block-end: 16px;
+    }
+
+    .image-with-content__subheading p {
+      font-size: 20px;
+      line-height: 24px;
+      letter-spacing: 1.6px;
+    }
+
+    .image-with-content__heading h2 {
+      font-size: 40px;
+      line-height: 56px;
+      letter-spacing: -0.8px;
+    }
+
+    .image-with-content__description {
+      padding-block-start: 40px;
+    }
+
+    .image-with-content__description p {
+      font-size: 18px;
+      line-height: 25.5px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="image-with-content">
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign image = block.settings.image
+      assign image_position = block.settings.image_position
+      assign layout = block.settings.layout
+      assign subheading = block.settings.subheading
+      assign heading = block.settings.heading
+      assign description = block.settings.description
+
+      assign row_class = 'image-with-content__row image-with-content__row--' | append: layout
+      if image_position == 'right'
+        assign row_class = row_class | append: ' image-with-content__row--image-right'
+      endif
+
+      if layout == 'panel'
+        assign image_sizes = '(min-width: 769px) 50vw, 100vw'
+      else
+        assign image_sizes = '(min-width: 769px) 45vw, calc(100vw - 36px)'
+      endif
+
+      assign image_loading = 'lazy'
+      assign image_priority = 'auto'
+      if section_index <= 2 and forloop.first and request.page_type != 'product'
+        assign image_loading = 'eager'
+        assign image_priority = 'high'
+      endif
+
+      assign heading_text = heading | newline_to_br | strip_newlines | replace: '<br />', ' '
+      assign image_alt = image.alt | default: heading_text
+
+      # Video: an uploaded video wins; otherwise the YouTube/Vimeo URL is used.
+      assign is_video = false
+      if block.settings.media_type == 'video'
+        assign is_video = true
+        assign video_source = block.settings.video
+        assign video_from_url = false
+        assign video_type = nil
+        if video_source == blank
+          assign video_from_url = true
+          assign video_source = block.settings.video_url.id
+          assign video_type = block.settings.video_url.type
+        endif
+        assign video_poster = block.settings.cover_image | default: block.settings.video.preview_image
+      endif
+    -%}
+
+    <div class="{{ row_class }}" {{ block.shopify_attributes }}>
+      <div class="image-with-content__media{% if is_video %} image-with-content__media--video{% endif %}">
+        {%- if is_video -%}
+          {% render 'video',
+            video: video_source,
+            video_from_url: video_from_url,
+            video_type: video_type,
+            video_alt: heading_text,
+            video_preview_image: video_poster,
+            video_autoplay: block.settings.video_autoplay,
+            video_loop: block.settings.video_autoplay,
+            video_class: 'image-with-content__video',
+            loading: image_loading
+          %}
+        {%- elsif image != blank -%}
+          {{
+            image
+            | image_url: width: 1500
+            | image_tag:
+              class: 'image-with-content__image',
+              widths: '375, 550, 750, 1100, 1500',
+              sizes: image_sizes,
+              loading: image_loading,
+              fetchpriority: image_priority,
+              alt: image_alt
+          }}
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: 'image-with-content__image image-with-content__image--placeholder' }}
+        {%- endif -%}
+      </div>
+
+      <div class="image-with-content__content">
+        {%- if subheading != blank -%}
+          <div class="image-with-content__subheading">
+            <p>{{ subheading | escape }}</p>
+          </div>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <div class="image-with-content__heading">
+            <h2>{{ heading | escape | newline_to_br }}</h2>
+          </div>
+        {%- endif -%}
+
+        {%- if description != blank -%}
+          <div class="image-with-content__description">
+            {{ description }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Image with Content",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding Top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Media"
+        },
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media Type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "visible_if": "{{ block.settings.media_type == 'image' }}"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video",
+          "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Video URL",
+          "info": "YouTube or Vimeo. Used when no video is uploaded.",
+          "accept": ["youtube", "vimeo"],
+          "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "cover_image",
+          "label": "Cover Image",
+          "info": "Shown before the video plays. Uploaded videos use their own preview by default.",
+          "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "video_autoplay",
+          "label": "Autoplay (Muted, Looping)",
+          "default": false,
+          "visible_if": "{{ block.settings.media_type == 'video' }}"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image Position (Desktop)",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "label": "Layout",
+          "options": [
+            { "value": "panel", "label": "Full Width with Panel" },
+            { "value": "boxed", "label": "Contained" }
+          ],
+          "default": "panel"
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "The Story"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Inspired by Louisiana’s\nsugarcane fields"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>A tribute to the fields that have shaped South Louisiana for generations. Each hand-carved design captures a piece of our state's agricultural heritage.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Content",
+      "blocks": [
+        {
+          "type": "row",
+          "settings": {
+            "image_position": "left",
+            "layout": "panel",
+            "subheading": "The Story",
+            "heading": "Inspired by Louisiana’s\nsugarcane fields",
+            "description": "<p>A tribute to the fields that have shaped South Louisiana for generations. Each hand-carved design captures a piece of our state's agricultural heritage.</p>"
+          }
+        },
+        {
+          "type": "row",
+          "settings": {
+            "image_position": "right",
+            "layout": "boxed",
+            "subheading": "The Balli Process",
+            "heading": "Carved by hand.\nCast in solid metal.",
+            "description": "<p>Each design begins with an original wax carving, then is cast in solid metal using the lost-wax process. Every piece is finished by hand in our New Orleans studio.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

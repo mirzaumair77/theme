@@ -1,0 +1,269 @@
+{% doc %}
+  @prompt
+    {%- liquid
+      assign clean_title = product.title | remove: '™' | strip
+    -%}
+    <div class="jbps-compare">
+      <div class="jbps-compare__head">
+        <h2 class="jbps-compare__title">Two Very Different Ideas of a Pocket Square</h2>
+        <p class="jbps-compare__lede">A folded square of cloth has been the default for a hundred years. Here's what changes when you stop folding it.</p>
+      </div>
+    
+      <div class="jbps-compare__table" role="table" aria-label="Traditional cloth pocket square compared to {{ clean_title }}">
+        <div class="jbps-compare__row jbps-compare__row--header" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="columnheader"></div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="columnheader">Traditional Cloth</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="columnheader">{{ clean_title }}</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Every time you wear it</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Refolded by hand, a little differently each time</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Set once. It doesn't move again</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">By the end of the night</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Wilts, slips, or works its way out of the pocket</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Holds its shape &mdash; the magnetic mount keeps it upright</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Upkeep</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Dry clean, iron, replace once it stains or frays</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Wipe clean. Solid metal doesn't fade, fray, or stain</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">What people notice</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>One of a thousand identical squares</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>A hand-carved, sculptural piece &mdash; the detail people ask about</div>
+        </div>
+    
+        <div class="jbps-compare__row" role="row">
+          <div class="jbps-compare__cell jbps-compare__cell--label" role="rowheader">Ten years from now</div>
+          <div class="jbps-compare__cell jbps-compare__cell--them" role="cell"><span class="jbps-mark jbps-mark--no" aria-hidden="true">&times;</span>Long since replaced</div>
+          <div class="jbps-compare__cell jbps-compare__cell--us" role="cell"><span class="jbps-mark jbps-mark--yes" aria-hidden="true">&#10003;</span>Still on the jacket &mdash; solid sterling silver or bronze, built to be handed down</div>
+        </div>
+      </div>
+    
+      <p class="jbps-compare__foot">Same pocket. A completely different piece of your outfit.</p>
+    </div>
+    
+    <style>
+      .jbps-compare {
+        max-width: 900px;
+        margin-inline: auto;
+        font-family: var(--font-body--family);
+        color: #000;
+      }
+      .jbps-compare__head { text-align: center; margin-bottom: 2.5rem; }
+      .jbps-compare__title {
+        font-family: var(--font-primary--family);
+        font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+        font-weight: 600;
+        margin: 0 0 0.75rem;
+        line-height: 1.15;
+      }
+      .jbps-compare__lede {
+        font-size: 1rem;
+        color: #555555;
+        max-width: 46ch;
+        margin: 0 auto;
+        line-height: 1.5;
+      }
+      .jbps-compare__table { border-top: 1px solid #e7e7e7; }
+      .jbps-compare__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        border-bottom: 1px solid #e7e7e7;
+      }
+      .jbps-compare__row--header { border-bottom: 2px solid #000; }
+      .jbps-compare__cell {
+        padding: 1rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+      .jbps-compare__cell--label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+      }
+      .jbps-compare__row--header .jbps-compare__cell--label { visibility: hidden; }
+      .jbps-compare__cell--them { color: #777777; }
+      .jbps-compare__cell--us 
+{% enddoc %}
+{% liquid
+  assign ai_gen_id = block.id | replace: '_', '' | downcase
+  assign clean_title = product.title | remove: '™' | strip
+%}
+
+{% style %}
+  .jbps-compare-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin-inline: auto;
+    color: {{ block.settings.text_color }};
+    font-family: {{ settings.type_body_font.family }}, sans-serif;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__head {
+    max-width: 680px;
+    margin: 0 auto 36px;
+    text-align: center;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__title {
+    margin: 0 0 12px;
+    color: {{ block.settings.text_color }};
+    font-family: {{ settings.type_heading_font.family }}, serif;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__lede {
+    max-width: 54ch;
+    margin: 0 auto;
+    color: {{ block.settings.muted_color }};
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__table {
+    overflow: hidden;
+    border-top: 1px solid {{ block.settings.border_color }};
+    border-radius: 4px 4px 0 0;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__row {
+    display: grid;
+    grid-template-columns: 0.85fr 1fr 1fr;
+    border-bottom: 1px solid {{ block.settings.border_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__row--header {
+    border-bottom: 2px solid {{ block.settings.text_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__cell {
+    min-width: 0;
+    padding: 18px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__cell--label {
+    display: flex;
+    align-items: center;
+    color: {{ block.settings.text_color }};
+    font-weight: 600;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__cell--them {
+    color: {{ block.settings.muted_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__cell--us {
+    color: {{ block.settings.text_color }};
+    background: {{ block.settings.highlight_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell {
+    font-weight: 600;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell--label {
+    visibility: hidden;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__mark {
+    display: inline-flex;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    border-radius: 50%;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: -2px;
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__mark--no {
+    color: {{ block.settings.muted_color }};
+    background: {{ block.settings.border_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__mark--yes {
+    color: {{ block.settings.text_color }};
+    background: {{ block.settings.accent_color }};
+  }
+
+  .jbps-compare-{{ ai_gen_id }}__foot {
+    margin: 28px auto 0;
+    color: {{ block.settings.text_color }};
+    font-family: {{ settings.type_heading_font.family }}, serif;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .jbps-compare-{{ ai_gen_id }}__head { margin-bottom: 24px; }
+    .jbps-compare-{{ ai_gen_id }}__row { grid-template-columns: 1fr 1fr; }
+    .jbps-compare-{{ ai_gen_id }}__row--header .jbps-compare-{{ ai_gen_id }}__cell--label { display: none; }
+    .jbps-compare-{{ ai_gen_id }}__row:not(.jbps-compare-{{ ai_gen_id }}__row--header) .jbps-compare-{{ ai_gen_id }}__cell--label { grid-column: 1 / -1; padding-bottom: 6px; }
+    .jbps-compare-{{ ai_gen_id }}__cell { padding: 13px 10px; font-size: 13px; }
+  }
+{% endstyle %}
+
+<div class="jbps-compare-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="jbps-compare-{{ ai_gen_id }}__head">
+    {% if block.settings.heading != blank %}<h2 class="jbps-compare-{{ ai_gen_id }}__title">{{ block.settings.heading }}</h2>{% endif %}
+    {% if block.settings.intro != blank %}<p class="jbps-compare-{{ ai_gen_id }}__lede">{{ block.settings.intro }}</p>{% endif %}
+  </div>
+
+  <div class="jbps-compare-{{ ai_gen_id }}__table" role="table" aria-label="{{ block.settings.aria_label }} {{ clean_title }}">
+    <div class="jbps-compare-{{ ai_gen_id }}__row jbps-compare-{{ ai_gen_id }}__row--header" role="row">
+      <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--label" role="columnheader">Comparison</div>
+      <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--them" role="columnheader">{{ block.settings.comparison_label }}</div>
+      <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--us" role="columnheader">{{ clean_title }}</div>
+    </div>
+
+    {% assign comparison_labels = 'Every time you wear it|By the end of the night|Upkeep|What people notice|Ten years from now' | split: '|' %}
+    {% assign traditional_text = 'Refolded by hand, a little differently each time|Wilts, slips, or works its way out of the pocket|Dry clean, iron, replace once it stains or frays|One of a thousand identical squares|Long since replaced' | split: '|' %}
+    {% assign product_text = 'Set once. It does not move again|Holds its shape — the magnetic mount keeps it upright|Wipe clean. Solid metal does not fade, fray, or stain|A hand-carved, sculptural piece — the detail people ask about|Still on the jacket — built to be handed down' | split: '|' %}
+    {% for label in comparison_labels %}
+      {% assign index = forloop.index0 %}
+      <div class="jbps-compare-{{ ai_gen_id }}__row" role="row">
+        <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--label" role="rowheader">{{ label }}</div>
+        <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--them" role="cell"><span class="jbps-compare-{{ ai_gen_id }}__mark jbps-compare-{{ ai_gen_id }}__mark--no" aria-hidden="true">×</span>{{ traditional_text[index] }}</div>
+        <div class="jbps-compare-{{ ai_gen_id }}__cell jbps-compare-{{ ai_gen_id }}__cell--us" role="cell"><span class="jbps-compare-{{ ai_gen_id }}__mark jbps-compare-{{ ai_gen_id }}__mark--yes" aria-hidden="true">✓</span>{{ product_text[index] }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if block.settings.footer_text != blank %}<p class="jbps-compare-{{ ai_gen_id }}__foot">{{ block.settings.footer_text }}</p>{% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Product comparison",
+  "settings": [
+    {"type":"text","id":"heading","label":"Heading","default":"Two very different ideas of a pocket square"},
+    {"type":"textarea","id":"intro","label":"Introduction","default":"A folded square of cloth has been the default for a hundred years. See what changes when you stop folding it."},
+    {"type":"text","id":"comparison_label","label":"Comparison label","default":"Traditional cloth"},
+    {"type":"text","id":"aria_label","label":"Table label","default":"Traditional cloth compared to"},
+    {"type":"text","id":"footer_text","label":"Footer text","default":"Same pocket. A completely different piece of your outfit."},
+    {"type":"range","id":"desktop_width_percent","label":"Desktop width","min":50,"max":100,"step":5,"unit":"%","default":100},
+    {"type":"color","id":"text_color","label":"Text","default":"#000000"},
+    {"type":"color","id":"muted_color","label":"Muted text","default":"#555555"},
+    {"type":"color","id":"border_color","label":"Borders","default":"#D9D9D9"},
+    {"type":"color","id":"highlight_color","label":"Product column","default":"#F5F5F5"},
+    {"type":"color","id":"accent_color","label":"Check mark","default":"#C8D8C5"}
+  ],
+  "presets": [{"name":"Product comparison"}],
+  "tag": null,
+  "class": "product-comparison-block"
+}
+{% endschema %}

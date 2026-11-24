@@ -1,0 +1,538 @@
+{% doc %}
+  @prompt
+    I want a shop by category carousel block, I want the layout to mimic this sites https://www.monicavinader.com/us/. The transparent with the line and white lettering.,  Make the text alignment to the bottom left with the white line above the collection name., I want the white bar almost completely filling the image. and remove the item count number, I want the navigation arrows above the images in the top right corner as simple minimalist arrows, remove the dots at the bottom with a button in the bottom left that says "shop all" that goes to all jewelry page. I want the carousel to be full width and 6 categories total., I want a gap between each card, I want the carousel to fill the screen. Especially on fullscreen view. Let me adjust the width and height of the cards as well as the gap between., I want to be able to adjust the width of the cards and the text color., I want a thin box around the navigation arrows and a title text box. The block title should be top left side with a color text option., The navigation arrows should be two seperate blocks and I want to adjust the width of the blocks
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-category-carousel-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    position: relative;
+    padding: 40px 0;
+  }
+
+  .ai-category-carousel__header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 20px;
+  }
+
+  .ai-category-carousel__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_font_size }}px;
+    color: {{ block.settings.title_color }};
+    margin: 0;
+  }
+
+  .ai-category-carousel__nav-{{ ai_gen_id }} {
+    display: flex;
+    gap: 8px;
+  }
+
+  .ai-category-carousel__nav-button-{{ ai_gen_id }} {
+    background: none;
+    border: {{ block.settings.nav_border_width }}px solid {{ block.settings.nav_border_color }};
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: {{ block.settings.nav_arrow_color }};
+    transition: opacity 0.3s ease;
+    border-radius: 4px;
+    width: {{ block.settings.nav_button_width }}px;
+    height: {{ block.settings.nav_button_height }}px;
+  }
+
+  .ai-category-carousel__nav-button-{{ ai_gen_id }}:hover {
+    opacity: 0.7;
+  }
+
+  .ai-category-carousel__nav-button-{{ ai_gen_id }}:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .ai-category-carousel__nav-button-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-category-carousel__track-wrapper-{{ ai_gen_id }} {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .ai-category-carousel__track-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.card_gap }}px;
+    transition: transform 0.5s ease;
+    padding: 0 20px;
+  }
+
+  .ai-category-carousel__card-{{ ai_gen_id }} {
+    flex: 0 0 calc((100% - ({{ block.settings.card_gap }}px * 5)) / 6);
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    height: {{ block.settings.card_height }}px;
+  }
+
+  .ai-category-carousel__card-link-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .ai-category-carousel__card-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-category-carousel__card-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-category-carousel__card-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 200px;
+  }
+
+  .ai-category-carousel__card-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+  }
+
+  .ai-category-carousel__card-line-{{ ai_gen_id }} {
+    width: {{ block.settings.line_width }}%;
+    height: 1px;
+    background-color: {{ block.settings.text_color }};
+    margin-bottom: 12px;
+  }
+
+  .ai-category-carousel__card-title-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.card_title_size }}px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .ai-category-carousel__footer-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 20px;
+    margin-top: 30px;
+  }
+
+  .ai-category-carousel__shop-all-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-category-carousel__shop-all-{{ ai_gen_id }}:hover {
+    opacity: 0.8;
+  }
+
+  @media screen and (max-width: 1200px) {
+    .ai-category-carousel__card-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - ({{ block.settings.card_gap }}px * 3)) / 4);
+    }
+  }
+
+  @media screen and (max-width: 990px) {
+    .ai-category-carousel__card-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - ({{ block.settings.card_gap }}px * 2)) / 3);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-category-carousel__card-{{ ai_gen_id }} {
+      flex: 0 0 calc((100% - {{ block.settings.card_gap }}px) / 2);
+    }
+
+    .ai-category-carousel__header-{{ ai_gen_id }} {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .ai-category-carousel__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_font_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<category-carousel-{{ ai_gen_id }} class="ai-category-carousel-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-category-carousel__header-{{ ai_gen_id }}">
+    {% if block.settings.block_title != blank %}
+      <h2 class="ai-category-carousel__title-{{ ai_gen_id }}">{{ block.settings.block_title }}</h2>
+    {% endif %}
+    <div class="ai-category-carousel__nav-{{ ai_gen_id }}">
+      <button
+        class="ai-category-carousel__nav-button-{{ ai_gen_id }} ai-category-carousel__prev-{{ ai_gen_id }}"
+        aria-label="Previous"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button
+        class="ai-category-carousel__nav-button-{{ ai_gen_id }} ai-category-carousel__next-{{ ai_gen_id }}"
+        aria-label="Next"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ai-category-carousel__track-wrapper-{{ ai_gen_id }}">
+    <div class="ai-category-carousel__track-{{ ai_gen_id }}">
+      {% for i in (1..6) %}
+        {% liquid
+          assign collection_key = 'collection_' | append: i
+          assign collection = block.settings[collection_key]
+        %}
+        <div class="ai-category-carousel__card-{{ ai_gen_id }}">
+          {% if collection != blank %}
+            <a href="{{ collection.url }}" class="ai-category-carousel__card-link-{{ ai_gen_id }}">
+              {% if collection.featured_image %}
+                <img
+                  src="{{ collection.featured_image | image_url: width: 800 }}"
+                  alt="{{ collection.featured_image.alt | escape }}"
+                  class="ai-category-carousel__card-image-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="800"
+                  height="{{ block.settings.card_height }}"
+                >
+              {% else %}
+                <div class="ai-category-carousel__card-placeholder-{{ ai_gen_id }}">
+                  {{ 'collection-1' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+              <div class="ai-category-carousel__card-overlay-{{ ai_gen_id }}">
+                <div class="ai-category-carousel__card-line-{{ ai_gen_id }}"></div>
+                <h3 class="ai-category-carousel__card-title-{{ ai_gen_id }}">{{ collection.title }}</h3>
+              </div>
+            </a>
+          {% else %}
+            <div class="ai-category-carousel__card-link-{{ ai_gen_id }}">
+              <div class="ai-category-carousel__card-placeholder-{{ ai_gen_id }}">
+                {{ 'collection-1' | placeholder_svg_tag }}
+              </div>
+              <div class="ai-category-carousel__card-overlay-{{ ai_gen_id }}">
+                <div class="ai-category-carousel__card-line-{{ ai_gen_id }}"></div>
+                <h3 class="ai-category-carousel__card-title-{{ ai_gen_id }}">Category {{ i }}</h3>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if block.settings.shop_all_url != blank %}
+    <div class="ai-category-carousel__footer-{{ ai_gen_id }}">
+      <a href="{{ block.settings.shop_all_url }}" class="ai-category-carousel__shop-all-{{ ai_gen_id }}">
+        {{ block.settings.shop_all_text }}
+      </a>
+    </div>
+  {% endif %}
+</category-carousel-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class CategoryCarousel{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.currentIndex = 0;
+        this.itemsPerView = 6;
+      }
+
+      connectedCallback() {
+        this.track = this.querySelector('.ai-category-carousel__track-{{ ai_gen_id }}');
+        this.prevButton = this.querySelector('.ai-category-carousel__prev-{{ ai_gen_id }}');
+        this.nextButton = this.querySelector('.ai-category-carousel__next-{{ ai_gen_id }}');
+        this.cards = this.querySelectorAll('.ai-category-carousel__card-{{ ai_gen_id }}');
+        
+        this.updateItemsPerView();
+        this.updateButtons();
+        
+        this.prevButton.addEventListener('click', () => this.prev());
+        this.nextButton.addEventListener('click', () => this.next());
+        
+        window.addEventListener('resize', () => {
+          this.updateItemsPerView();
+          this.updateCarousel();
+        });
+      }
+
+      updateItemsPerView() {
+        const width = window.innerWidth;
+        if (width <= 749) {
+          this.itemsPerView = 2;
+        } else if (width <= 990) {
+          this.itemsPerView = 3;
+        } else if (width <= 1200) {
+          this.itemsPerView = 4;
+        } else {
+          this.itemsPerView = 6;
+        }
+      }
+
+      prev() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.updateCarousel();
+        }
+      }
+
+      next() {
+        const maxIndex = Math.max(0, this.cards.length - this.itemsPerView);
+        if (this.currentIndex < maxIndex) {
+          this.currentIndex++;
+          this.updateCarousel();
+        }
+      }
+
+      updateCarousel() {
+        const cardWidth = this.cards[0].offsetWidth;
+        const gap = {{ block.settings.card_gap }};
+        const offset = this.currentIndex * (cardWidth + gap);
+        this.track.style.transform = `translateX(-${offset}px)`;
+        this.updateButtons();
+      }
+
+      updateButtons() {
+        const maxIndex = Math.max(0, this.cards.length - this.itemsPerView);
+        this.prevButton.disabled = this.currentIndex === 0;
+        this.nextButton.disabled = this.currentIndex >= maxIndex;
+      }
+    }
+
+    customElements.define('category-carousel-{{ ai_gen_id }}', CategoryCarousel{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop by category carousel",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Block title"
+    },
+    {
+      "type": "text",
+      "id": "block_title",
+      "label": "Title",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title font size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "collection",
+      "id": "collection_1",
+      "label": "Collection 1"
+    },
+    {
+      "type": "collection",
+      "id": "collection_2",
+      "label": "Collection 2"
+    },
+    {
+      "type": "collection",
+      "id": "collection_3",
+      "label": "Collection 3"
+    },
+    {
+      "type": "collection",
+      "id": "collection_4",
+      "label": "Collection 4"
+    },
+    {
+      "type": "collection",
+      "id": "collection_5",
+      "label": "Collection 5"
+    },
+    {
+      "type": "collection",
+      "id": "collection_6",
+      "label": "Collection 6"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "label": "Card title size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "line_width",
+      "label": "Line width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 90
+    },
+    {
+      "type": "header",
+      "content": "Navigation arrows"
+    },
+    {
+      "type": "range",
+      "id": "nav_button_width",
+      "label": "Button width",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "nav_button_height",
+      "label": "Button height",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "nav_arrow_color",
+      "label": "Arrow color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "nav_border_color",
+      "label": "Border color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "nav_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Shop all button"
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Button text",
+      "default": "Shop All"
+    },
+    {
+      "type": "url",
+      "id": "shop_all_url",
+      "label": "Button link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by category carousel"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,418 @@
+{%- liquid
+  assign background_color = section.settings.background_color
+  assign heading = section.settings.heading
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --section-background: {{ background_color | default: 'transparent' }};
+    --section-padding-top: {{ padding_top }}px;
+    --section-padding-bottom: {{ padding_bottom }}px;
+    --section-mobile-padding-top: {{ mobile_padding_top }}px;
+    --section-mobile-padding-bottom: {{ mobile_padding_bottom }}px;
+  }
+
+  .faq {
+    display: block;
+    padding-top: var(--section-mobile-padding-top);
+    padding-bottom: var(--section-mobile-padding-bottom);
+    background: var(--section-background);
+  }
+
+  .faq__container {
+    padding: 0 16px;
+  }
+
+  .faq__heading h2 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    color: #2A2A2A;
+    font-size: 20px;
+    line-height: 23px;
+    letter-spacing: -0.4px;
+    font-weight: 400;
+  }
+
+  .faq__heading + .faq__list {
+    margin-top: 24px;
+  }
+
+  .faq__item {
+    border-block-end: 2px solid #d6d0c6;
+  }
+
+  .faq__question h3 {
+    margin: 0;
+  }
+
+  .faq__button {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: var(--minimum-touch-target, 44px);
+    margin: 0;
+    padding-block: 22.5px;
+    padding-inline: 0 32px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 13px;
+    line-height: 16.875px;
+    letter-spacing: 0.06em;
+    font-weight: 400;
+    text-align: start;
+    text-transform: none;
+    cursor: pointer;
+  }
+
+  /* Plus when closed, X when open. The icon scales with the title's cap height. */
+  .faq__button::before,
+  .faq__button::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    width: 0.75em;
+    height: 1px;
+    background-color: #2a2a2a;
+    transition: transform 0.3s ease;
+  }
+
+  .faq__button::before {
+    transform: rotate(90deg);
+  }
+
+  .faq__item--open .faq__button::before {
+    transform: rotate(45deg);
+  }
+
+  .faq__item--open .faq__button::after {
+    transform: rotate(-45deg);
+  }
+
+  .faq__button:focus-visible {
+    outline: 1px solid #2a2a2a;
+    outline-offset: 4px;
+  }
+
+  .faq__answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.35s ease,
+      margin 0.35s ease,
+      padding 0.35s ease,
+      visibility 0s linear 0.35s;
+  }
+
+  .faq__item--open .faq__answer {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    margin-top: -7.5px;
+    padding-bottom: 22.5px;
+    transition:
+      grid-template-rows 0.35s ease,
+      margin 0.35s ease,
+      padding 0.35s ease,
+      visibility 0s linear 0s;
+  }
+
+  .faq__answer-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding-right: 32px;
+  }
+
+  .faq__answer-inner p {
+    margin: 0;
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 13px;
+    line-height: 19.6px;
+    letter-spacing: 0.04em;
+    font-weight: 400;
+  }
+
+  .faq__answer-inner p + p {
+    margin-top: 1em;
+  }
+
+  .faq__answer-inner a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__button::before,
+    .faq__button::after,
+    .faq__answer,
+    .faq__item--open .faq__answer {
+      transition: none;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .faq {
+      padding-top: var(--section-padding-top);
+      padding-bottom: var(--section-padding-bottom);
+    }
+
+    .faq__container {
+      display: grid;
+      grid-template-columns: 0.975fr 1fr;
+      align-items: start;
+      gap: 24px;
+      padding: 0 clamp(24px, 4vw, 56px);
+    }
+
+    .faq__heading h2 {
+      font-size: 34px;
+      line-height: 37.5px;
+      letter-spacing: -0.937px;
+      font-weight: 400;
+    }
+
+    .faq__heading + .faq__list {
+      margin-top: 0;
+    }
+
+    .faq__list {
+      grid-column: 2;
+    }
+
+    .faq__answer-inner p {
+      font-size: 14px;
+    }
+
+    .faq__button {
+      font-size: 15px;
+      line-height: 18px;
+    }
+  }
+{%- endstyle -%}
+
+<faq-accordion class="faq">
+  <div class="faq__container">
+    {%- if heading != blank -%}
+      <div class="faq__heading">
+        <h2>{{ heading | escape }}</h2>
+      </div>
+    {%- endif -%}
+
+    <div class="faq__list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign question = block.settings.question
+          assign answer = block.settings.answer
+          assign button_id = 'FaqButton-' | append: block.id
+          assign answer_id = 'FaqAnswer-' | append: block.id
+        -%}
+
+        <div class="faq__item" {{ block.shopify_attributes }}>
+          <div class="faq__question">
+            <h3>
+              <button
+                type="button"
+                id="{{ button_id }}"
+                class="faq__button"
+                aria-expanded="false"
+                aria-controls="{{ answer_id }}"
+              >
+                {{- question | escape -}}
+              </button>
+            </h3>
+          </div>
+
+          <div id="{{ answer_id }}" class="faq__answer" role="region" aria-labelledby="{{ button_id }}">
+            <div class="faq__answer-inner">
+              {{ answer }}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</faq-accordion>
+
+{% javascript %}
+  if (!customElements.get('faq-accordion')) {
+    customElements.define(
+      'faq-accordion',
+      class FaqAccordion extends HTMLElement {
+        connectedCallback() {
+          this.addEventListener('click', this.onClick);
+          this.addEventListener('shopify:block:select', this.onBlockSelect);
+        }
+
+        disconnectedCallback() {
+          this.removeEventListener('click', this.onClick);
+          this.removeEventListener('shopify:block:select', this.onBlockSelect);
+        }
+
+        onClick = (event) => {
+          const button = event.target.closest('.faq__button');
+          if (!button || !this.contains(button)) return;
+          this.toggle(button, button.getAttribute('aria-expanded') !== 'true');
+        };
+
+        onBlockSelect = (event) => {
+          const button = event.target.querySelector('.faq__button');
+          if (button) this.toggle(button, true);
+        };
+
+        toggle(button, open) {
+          if (open) {
+            for (const other of this.querySelectorAll('.faq__button')) {
+              if (other !== button) this.setOpen(other, false);
+            }
+          }
+
+          this.setOpen(button, open);
+        }
+
+        setOpen(button, open) {
+          button.setAttribute('aria-expanded', String(open));
+          button.closest('.faq__item').classList.toggle('faq__item--open', open);
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "FAQ"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding Top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Can I get it in time to give as a gift?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Yes. Our silver pieces are solid sterling silver, not plated. Gold accents are 14K yellow gold.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "settings": {
+        "padding_top": 88,
+        "padding_bottom": 64,
+        "mobile_padding_top": 48,
+        "mobile_padding_bottom": 48
+      },
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "Can I get it in time to give as a gift?",
+            "answer": "<p>Yes. Our silver pieces are solid sterling silver, not plated. Gold accents are 14K yellow gold.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How will my jewelry arrive?",
+            "answer": "<p>Every piece ships in our signature gift box, ready to give.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "What if it's not the right size?",
+            "answer": "<p>We offer free resizing on rings within 30 days of delivery.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "What if I change my mind?",
+            "answer": "<p>Unworn pieces can be returned within 30 days for a full refund.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
