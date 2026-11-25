@@ -13,7 +13,7 @@
 <div class="section-background color-custom-{{ section.id }}"></div>
 <aside
   class="announcement-bar spacing-style section section--{{ section.settings.section_width }} color-custom-{{ section.id }}"
-  style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;{% if section.settings.divider_color != blank %} --color-border: {{ section.settings.divider_color }};{% endif %}"
+  style="{% render 'spacing-padding', settings: section.settings %}; --announcement-padding-block-start-desktop: {{ section.settings['padding-block-start-desktop'] }}px; --announcement-padding-block-end-desktop: {{ section.settings['padding-block-end-desktop'] }}px; --border-bottom-width: {{ section.settings.divider_width }}px;{% if section.settings.divider_color != blank %} --color-border: {{ section.settings.divider_color }};{% endif %}"
 >
   {% liquid
     assign autoplay = false
@@ -43,6 +43,14 @@
 {% stylesheet %}
   .announcement-bar {
     border-block-end: var(--border-bottom-width) solid var(--color-border);
+  }
+
+  /* Desktop padding settings; mobile keeps the Padding settings */
+  @media screen and (min-width: 750px) {
+    .announcement-bar.spacing-style {
+      padding-block: calc(var(--announcement-padding-block-start-desktop) + var(--section-top-offset, 0px))
+        var(--announcement-padding-block-end-desktop);
+    }
   }
 
   .announcement-bar__slider {
@@ -210,6 +218,31 @@
     {
       "type": "range",
       "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding_desktop",
+      "info": "t:info.announcement_padding_desktop"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start-desktop",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end-desktop",
       "label": "t:settings.bottom",
       "min": 0,
       "max": 100,

@@ -184,7 +184,7 @@
   endif
 
   if section.settings.show_country or section.settings.show_language
-    if section.settings.localization_row == 'bottom'
+    if section.settings.localization_row == 'bottom' and section.settings.show_localization_desktop
       assign bottom_row_blocks = bottom_row_blocks | append: 'localization,'
     endif
   endif
@@ -347,6 +347,13 @@
     </dropdown-localization-component>
   {% endif %}
 {% endcapture %}
+{% liquid
+  # The desktop header copy can be turned off on its own; the mobile drawer copy
+  # follows show_country / show_language only.
+  unless section.settings.show_localization_desktop
+    assign localization_markup = ''
+  endunless
+%}
 
 <script type="application/ld+json">
   {
@@ -1160,17 +1167,24 @@
     );
   }
 
-  /* Desktop: search precedes header-actions in the right column. Swap the column gap
-     between them for the 16px icon gap. `~`, not `+`: header-actions renders a
-     <script> tag just before its element. */
+  /* Desktop: search precedes header-actions in the right column; keep the icon gap
+     between them. `~`, not `+`: header-actions renders a <script> tag just before
+     its element. */
   @media screen and (min-width: 750px) {
+    /* Desktop with the inline menu: icons sit 28px apart */
+    #header-component[data-menu-style='menu']:not(.header--text-utilities) {
+      --header-icon-gap: 28px;
+    }
+
     #header-component[data-menu-style='menu']:not(.header--text-utilities) .header__column--right {
       .search-action {
         margin-inline-end: 0;
       }
 
+      /* The column gap is already --header-icon-gap; cancel header-actions' own
+         negative offset so search-to-account matches account-to-cart */
       .search-action ~ header-actions {
-        margin-inline-start: calc(var(--header-icon-gap) - var(--gap-xl));
+        margin-inline-start: 0;
       }
     }
   }
@@ -1901,6 +1915,14 @@
       "label": "t:settings.language_selector",
       "info": "t:info.manage_languages",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_localization_desktop",
+      "label": "t:settings.show_in_desktop_header",
+      "info": "t:info.localization_desktop_header",
+      "default": true,
+      "visible_if": "{{ section.settings.show_country or section.settings.show_language }}"
     },
     {
       "type": "select",

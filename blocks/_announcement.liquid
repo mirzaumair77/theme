@@ -18,9 +18,11 @@
       custom-typography
       {% if block_settings.font_size != "" %}custom-font-size{% endif %}
       {% if block_settings.weight != "" %}custom-font-weight{% endif %}
+      {% if block_settings.font_size_desktop != blank %}announcement-bar__slide--desktop-size{% endif %}
     "
     style="
       {% render 'typography-style', settings: block_settings, preset: 'custom' %}
+      {% if block_settings.font_size_desktop != blank %}--announcement-font-size-desktop: {{ block_settings.font_size_desktop }};{% endif %}
       {% if block_settings.text_color != blank %}--color: {{ block_settings.text_color }}; --color-rgb: {{ block_settings.text_color.rgb }};{% endif %}
       --width: 100%;
       --text-align: center;
@@ -45,6 +47,16 @@
     {% endif %}
   </slideshow-slide>
 {%- endunless -%}
+
+{% stylesheet %}
+  /* Optional desktop text size; mobile keeps the Size setting */
+  @media screen and (min-width: 750px) {
+    .announcement-bar__slide.announcement-bar__slide--desktop-size,
+    .announcement-bar__slide.announcement-bar__slide--desktop-size > * {
+      font-size: var(--announcement-font-size-desktop);
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -169,6 +181,51 @@
         }
       ],
       "default": "1rem"
+    },
+    {
+      "type": "select",
+      "id": "font_size_desktop",
+      "label": "t:settings.size_desktop",
+      "info": "t:info.announcement_size_desktop",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.6875rem",
+          "label": "11px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        },
+        {
+          "value": "1.25rem",
+          "label": "20px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "24px"
+        }
+      ],
+      "default": ""
     },
     {
       "type": "select",

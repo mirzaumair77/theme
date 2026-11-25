@@ -21,6 +21,7 @@
             "link": "",
             "font": "var(--font-body--family)",
             "font_size": "0.6875rem",
+            "font_size_desktop": "0.875rem",
             "weight": "600",
             "letter_spacing": "normal",
             "case": "none",
@@ -40,7 +41,9 @@
         "divider_width": 0,
         "divider_color": "",
         "padding-block-start": 12,
-        "padding-block-end": 12
+        "padding-block-end": 12,
+        "padding-block-start-desktop": 16,
+        "padding-block-end-desktop": 16
       }
     },
     "header_section": {
@@ -63,7 +66,7 @@
             "menu": "header-2026-mega-menu",
             "background_color": "#ffffff",
             "text_color": "",
-            "type_font_primary_size": "0.6875rem",
+            "type_font_primary_size": "0.875rem",
             "menu_font_style": "regular",
             "type_font_primary_link": "body",
             "type_case_primary_link": "none",
@@ -160,6 +163,7 @@
         "show_country": true,
         "country_selector_style": true,
         "show_language": false,
+        "show_localization_desktop": false,
         "localization_font": "body",
         "localization_font_size": "0.75rem",
         "localization_position": "right",

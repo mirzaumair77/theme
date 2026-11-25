@@ -863,10 +863,13 @@
     --menu-design-link-hover-color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
   }
 
-  /* Desktop mega menu spec; the drawer keeps the shared values above */
+  /* Desktop mega menu spec; the drawer keeps the shared values above.
+     --mega-menu-align-offset is measured in header-menu.js so the dropdown
+     content starts under the first top-level link's text. */
   .header-menu {
-    --menu-design-heading-size: 0.6875rem;
-    --menu-design-link-size: 0.625rem;
+    --menu-design-heading-size: 0.8125rem;
+    --menu-design-link-size: 0.75rem;
+    --menu-design-row-gap: 18px;
     --menu-design-text-color: #2a2a2a;
     --menu-design-link-hover-color: #7c7c7c;
   }
@@ -953,6 +956,11 @@
     --mega-menu-image-width: min(515px, 35.7639vw); /* 515px at a 1440px viewport */
   }
 
+  /* Top-level dropdowns line their categories up with the first menu link's text */
+  .menu-list__list-item:not([slot='overflow']) > .menu-list__submenu .mega-menu__grid {
+    padding-inline-start: var(--mega-menu-align-offset, 0px);
+  }
+
   .mega-menu__content-list {
     gap: var(--menu-vertical-gap) var(--gap-xl);
   }
@@ -971,9 +979,10 @@
       min-width: 0;
     }
 
+    /* Content-width groups (no 200px minimum) so three groups still fit beside the
+       image card now that the dropdown starts under "Best Sellers" */
     .mega-menu__column {
       flex: 0 1 auto;
-      min-width: 200px;
       max-width: 100%;
     }
 

@@ -57,7 +57,33 @@ class HeaderMenu extends Component {
    */
   #resizeListener = debounce(() => {
     setHeaderMenuStyle();
+    this.#alignSubmenu(findSubmenu(this.#state.activeItem));
   }, 100);
+
+  /**
+   * Start top-level dropdown content under the first top-level link's text. The offset
+   * depends on the logo and menu widths, so it is measured and shared through
+   * `--mega-menu-align-offset` (read by every top-level `.mega-menu__grid`).
+   * @param {HTMLElement | null} submenu - An open top-level submenu to measure against.
+   */
+  #alignSubmenu(submenu) {
+    const grid = submenu?.querySelector('.mega-menu__grid');
+    const firstTitle = this.querySelector('.menu-list__list-item:not([slot="overflow"]) .menu-list__link-title');
+    if (!(grid instanceof HTMLElement) || !(firstTitle instanceof HTMLElement)) return;
+
+    const gridRect = grid.getBoundingClientRect();
+    const titleRect = firstTitle.getBoundingClientRect();
+    if (!gridRect.width || !titleRect.width) return;
+
+    // The title's inline padding is part of its box; the text starts after it.
+    const titleStyle = getComputedStyle(firstTitle);
+    const isRtl = titleStyle.direction === 'rtl';
+    const offset = isRtl
+      ? gridRect.right - (titleRect.right - parseFloat(titleStyle.paddingRight))
+      : titleRect.left + parseFloat(titleStyle.paddingLeft) - gridRect.left;
+
+    this.style.setProperty('--mega-menu-align-offset', `${Math.max(0, Math.round(offset))}px`);
+  }
 
   #overflowSubmenuListener = () => {
     this.#deactivate();
@@ -321,6 +347,9 @@ class HeaderMenu extends Component {
 
       // Mark submenu as active for content-visibility optimization
       submenu.dataset.active = '';
+
+      // Align before the height below is measured; overflow panels keep their own layout
+      if (isDefaultSlot) this.#alignSubmenu(submenu);
 
       // Expose the open submenu to focus and assistive tech. Collapsed submenus stay
       // inert so their contents cannot be reached (visibility:hidden alone can be
