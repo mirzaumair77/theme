@@ -1570,43 +1570,43 @@
         "slide_eU6RT3": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/moment-matters__image-1.png",
+            "image": "shopify://shop_images/alligator-pocket-square-gilded-bronze-jacket.jpg",
             "product_display": "disabled",
-            "product": "eagle-pocket-square™",
+            "product": "alligator-pocket-square",
             "link": ""
           }
         },
         "slide_RfDkjW": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/moment-matters__image-2.png",
+            "image": "shopify://shop_images/kraken-pocket-square-gilded-bronze-jacket..png",
             "product_display": "disabled",
-            "product": "eagle-sapphire-eye-pocket-square™",
+            "product": "kraken-pocket-square",
             "link": ""
           }
         },
         "slide_xCf4Ui": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/moment-matters__image-3.png",
+            "image": "shopify://shop_images/Q103-YZGildedBronzeTigerPocketSquareinsidesuitjacketvertical-edited_b18a89ba-76dc-4f95-be66-538a3c18f57b.jpg",
             "product_display": "disabled",
-            "product": "lion-pocket-square™",
+            "product": "tiger-pocket-square",
             "link": ""
           }
         },
         "slide_x6atge": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/how-it-work__step-3.png",
+            "image": "shopify://shop_images/Q104-YZGildedBronzeLionPocketSquareinsidesuitjacket-edited_b36a59e3-e8d7-4bbc-93fa-d45cb04010ed.jpg",
             "product_display": "disabled",
-            "product": "alligator-pocket-square",
+            "product": "lion-pocket-square™",
             "link": ""
           }
         },
         "slide_UyTQxk": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/Kraken_Pocket_Square_03_On_Model.jpg",
+            "image": "shopify://shop_images/kraken-pocket-square-gilded-bronze-jacket..png",
             "product_display": "disabled",
             "product": "kraken-pocket-square",
             "link": ""
@@ -1615,7 +1615,7 @@
         "slide_tAKcYt": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/EXTENDEDSUITwAddedButton-GildedBronzeDragonPocketSquare-6000px.jpg",
+            "image": "shopify://shop_images/FINALwEXTENDEDBACKGROUND-Lightroom_Photoshop-GildedBronzeDragonPocketSquareCloseUp.jpg",
             "product_display": "disabled",
             "product": "dragon-pocket-square™",
             "link": ""
@@ -1624,9 +1624,54 @@
         "slide_aEDTiz": {
           "type": "slide",
           "settings": {
-            "image": "shopify://shop_images/HorsePocketSquare-WhiteBronze-Wornonamodelatthederby.png",
+            "image": "shopify://shop_images/HorsePocketSquare-GildedBronze-Closeupingreyjacket.png",
             "product_display": "disabled",
             "product": "horse-pocket-square",
+            "link": ""
+          }
+        },
+        "slide_UDqqLL": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/GildedBronzeEaglePocketSquareinsuitjacket-edited_5ccf83e5-870b-4115-8fec-dc59c0f71e2d.jpg",
+            "product_display": "disabled",
+            "product": "eagle-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_JnGwP6": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/BronzeMermaidPocketSquareinsidesuitjacket-edited.jpg",
+            "product_display": "disabled",
+            "product": "mermaid-pocket-square",
+            "link": ""
+          }
+        },
+        "slide_7WWXQK": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/GildedTigerRubyEyePocketSquareinsidesuitjacket-edited_82e16a4d-935c-4bb3-8126-be54c9b9c959.jpg",
+            "product_display": "disabled",
+            "product": "pelican-deco-pocket-square",
+            "link": ""
+          }
+        },
+        "slide_DLtrVw": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/BronzePelicanPocketSquare-edited2.jpg",
+            "product_display": "disabled",
+            "product": "tiger-ruby-eye-pocket-square™",
+            "link": ""
+          }
+        },
+        "slide_tetpUg": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/EagleSapphireEyePocketSquareinsuitjacket-edited.jpg",
+            "product_display": "disabled",
+            "product": "eagle-sapphire-eye-pocket-square™",
             "link": ""
           }
         }
@@ -1638,7 +1683,12 @@
         "slide_x6atge",
         "slide_UyTQxk",
         "slide_tAKcYt",
-        "slide_aEDTiz"
+        "slide_aEDTiz",
+        "slide_UDqqLL",
+        "slide_JnGwP6",
+        "slide_7WWXQK",
+        "slide_DLtrVw",
+        "slide_tetpUg"
       ],
       "name": "Meaningful Moments",
       "settings": {
