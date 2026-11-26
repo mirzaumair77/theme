@@ -1,0 +1,131 @@
+{% doc %}
+  Renders one "You might also like" product card in the cart drawer. The card is a native
+  `/cart/add` form so it works before JavaScript loads; `cart-drawer-upsell` enhances it.
+  Single-option products with several values (e.g. metal finish) show swatches as variant
+  radios; products with more options link to their page to choose.
+
+  @param {object} product - The product to render.
+  @param {boolean} [currency_code] - Whether to format prices with the currency code.
+
+  @example
+  {% render 'cart-drawer-upsell-card', product: product, currency_code: false %}
+{% enddoc %}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign option = product.options_with_values.first
+  assign show_swatches = false
+  if product.options.size == 1 and product.has_only_default_variant == false
+    assign show_swatches = true
+  endif
+  assign can_quick_add = true
+  if product.options.size > 1
+    assign can_quick_add = false
+  endif
+
+  if currency_code
+    assign price = variant.price | money_with_currency
+  else
+    assign price = variant.price | money
+  endif
+-%}
+
+<li class="cart-drawer__card">
+  <form
+    class="cart-drawer__card-form"
+    action="{{ routes.cart_add_url }}"
+    method="post"
+    data-upsell-form
+  >
+    <input
+      type="hidden"
+      name="quantity"
+      value="1"
+    >
+    {%- unless show_swatches -%}
+      <input
+        type="hidden"
+        name="id"
+        value="{{ variant.id }}"
+      >
+    {%- endunless -%}
+
+    <div class="cart-drawer__card-media">
+      {%- if product.featured_image -%}
+        {{
+          product.featured_image
+          | image_url: width: 360
+          | image_tag:
+            widths: '120, 240, 360',
+            sizes: '(min-width: 769px) 118px, 112px',
+            loading: 'lazy',
+            alt: product.title
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag }}
+      {%- endif -%}
+
+      <div class="cart-drawer__card-add">
+        {%- if can_quick_add -%}
+          <button
+            type="submit"
+            aria-label="{{ 'cart_drawer.add_to_bag' | t: title: product.title | escape }}"
+          >
+            {{- 'icon-add-to-cart-v2.svg' | inline_asset_content -}}
+          </button>
+        {%- else -%}
+          <a
+            href="{{ product.url }}"
+            aria-label="{{ 'cart_drawer.choose_options' | t: title: product.title | escape }}"
+          >
+            {{- 'icon-add-to-cart-v2.svg' | inline_asset_content -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="cart-drawer__card-title">
+      <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    </div>
+
+    {%- if show_swatches -%}
+      <fieldset class="cart-drawer__card-swatches">
+        <legend class="visually-hidden">{{ option.name | escape }}</legend>
+        {%- for value in option.values limit: 4 -%}
+          {%- liquid
+            assign value_variant = value.variant
+            if currency_code
+              assign value_price = value_variant.price | money_with_currency
+            else
+              assign value_price = value_variant.price | money
+            endif
+          -%}
+          <label
+            class="cart-drawer__card-swatch"
+            title="{{ value.name | escape }}"
+          >
+            <input
+              type="radio"
+              class="cart-drawer__card-swatch-input"
+              name="id"
+              value="{{ value_variant.id }}"
+              data-price="{{ value_price | escape }}"
+              aria-label="{{ value.name | escape }}"
+              {% if value_variant.id == variant.id %}
+                checked
+              {% endif %}
+              {% unless value_variant.available %}
+                disabled
+              {% endunless %}
+            >
+            {%- render 'finish-swatch', name: value.name, swatch: value.swatch -%}
+          </label>
+        {%- endfor -%}
+      </fieldset>
+    {%- endif -%}
+
+    <div class="cart-drawer__card-price">
+      <p data-upsell-price>{{ price }}</p>
+    </div>
+  </form>
+</li>

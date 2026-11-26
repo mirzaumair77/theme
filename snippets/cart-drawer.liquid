@@ -1,17 +1,194 @@
 {% doc %}
-  Renders reusable cart drawer markup for both initial page loads and Section Rendering API responses.
+  Renders the custom cart drawer for initial page loads and Section Rendering API responses
+  (`sections/cart-drawer-section.liquid`). All options live in Theme settings > Cart drawer.
+
+  The line list, quantity selectors and remove buttons follow the `cart-items-component`
+  contract (`ref="cartItemRows[]"`, `ref="quantitySelectors[]"`, `onLineItemRemove`), so
+  add/update/remove, section morphs and bfcache restores reuse `component-cart-items.js`.
+  Every cart line renders a row in cart order to keep those refs aligned with line numbers;
+  free gift and package protection rows stay `hidden` and are shown in their own UI.
 
   @param {boolean} [render_wrapper] - When true, wraps the drawer in the section wrapper that the Section Rendering API adds automatically.
+
+  @example
+  {% render 'cart-drawer', render_wrapper: true %}
 {% enddoc %}
 
 {%- liquid
   assign render_wrapper = render_wrapper | default: true, allow_false: true
+  assign section_id = 'cart-drawer-section'
+
+  assign cart_type = settings.cart_type
+  assign auto_open = settings.auto_open_cart_drawer
+  assign show_note = settings.show_cart_note
+  assign note_open = settings.cart_note_open_by_default
+  assign show_discount_field = settings.show_add_discount_code
+  assign show_accelerated = settings.show_accelerated_checkout_buttons
+  assign currency_code_items = settings.currency_code_enabled_cart_items
+  assign currency_code_total = settings.currency_code_enabled_cart_total
+
+  assign accent_background = settings.cart_drawer_accent_background
+  assign empty_heading = settings.cart_drawer_empty_heading
+  assign empty_text = settings.cart_drawer_empty_text
+  assign empty_primary_label = settings.cart_drawer_empty_primary_label
+  assign empty_primary_link = settings.cart_drawer_empty_primary_link | default: routes.all_products_collection_url
+  assign empty_secondary_label = settings.cart_drawer_empty_secondary_label
+  assign empty_secondary_link = settings.cart_drawer_empty_secondary_link
+
+  assign progress_enabled = settings.cart_drawer_progress_enable
+  assign progress_type = settings.cart_drawer_progress_type
+  assign progress_collection = settings.cart_drawer_progress_collection
+  assign progress_quantity = settings.cart_drawer_progress_quantity
+  assign progress_amount = settings.cart_drawer_progress_amount
+  assign progress_message = settings.cart_drawer_progress_message
+  assign progress_success = settings.cart_drawer_progress_success
+
+  assign upsell_heading = settings.cart_drawer_upsell_heading
+  assign upsell_source = settings.cart_drawer_upsell_source
+  assign upsell_collection = settings.cart_drawer_upsell_collection
+  assign upsell_products = settings.cart_drawer_upsell_products
+  assign upsell_limit = settings.cart_drawer_upsell_limit
+
+  assign gift_enabled = settings.cart_drawer_gift_enable
+  assign gift_product = settings.cart_drawer_gift_product
+  assign gift_image = settings.cart_drawer_gift_image
+  assign gift_title = settings.cart_drawer_gift_title
+  assign gift_description = settings.cart_drawer_gift_description
+  assign gift_toggle_label = settings.cart_drawer_gift_toggle_label
+
+  assign note_label = settings.cart_drawer_note_label
+  assign delivery_min_days = settings.cart_drawer_delivery_min_days | default: 0
+  assign shipping_value = settings.cart_drawer_shipping_value
+
+  # Classify cart lines: free gift, package protection (SavedBy) and purchased products.
+  assign gift_variant = gift_product.selected_or_first_available_variant
+  assign gift_quantity = 0
+  assign gift_line_count = 0
+  assign gift_key = ''
+  assign purchased_count = 0
+  assign qualifying_count = 0
+  assign qualifying_value = 0
+  assign cart_product_ids = ','
+
+  for item in cart.items
+    assign item_vendor = item.vendor | downcase
+    if item.properties['_free_gift'] != blank
+      assign gift_quantity = gift_quantity | plus: item.quantity
+      assign gift_line_count = gift_line_count | plus: 1
+      if gift_key == ''
+        assign gift_key = item.key
+      endif
+    elsif item_vendor contains 'savedby'
+      continue
+    else
+      assign purchased_count = purchased_count | plus: item.quantity
+      assign cart_product_ids = cart_product_ids | append: item.product_id | append: ','
+
+      assign item_qualifies = true
+      if progress_collection != blank
+        assign item_qualifies = false
+        for item_collection in item.product.collections
+          if item_collection.id == progress_collection.id
+            assign item_qualifies = true
+            break
+          endif
+        endfor
+      endif
+
+      if item_qualifies
+        assign qualifying_count = qualifying_count | plus: item.quantity
+        assign qualifying_value = qualifying_value | plus: item.final_line_price
+      endif
+    endif
+  endfor
+
+  # Free gift: one gift line whenever the feature is on and the bag holds purchased products,
+  # unless the shopper switched it off (cart attribute). `cart-free-gift` applies the action.
+  assign gift_opted_out = false
+  if cart.attributes['_free_gift_opt_out'] == 'true'
+    assign gift_opted_out = true
+  endif
+
+  assign gift_offered = false
+  if gift_enabled and gift_variant.available and purchased_count > 0
+    assign gift_offered = true
+  endif
+
+  assign gift_action = 'none'
+  if gift_offered and gift_opted_out == false
+    if gift_quantity == 0
+      assign gift_action = 'add'
+    elsif gift_line_count > 1
+      assign gift_action = 'remove'
+    elsif gift_quantity > 1
+      assign gift_action = 'set'
+    endif
+  elsif gift_quantity > 0
+    assign gift_action = 'remove'
+  endif
+
+  assign gift_display_title = gift_title | default: gift_product.title
+  assign gift_display_image = gift_image | default: gift_product.featured_image
+
+  # Discount progress (quantity of qualifying items or their value, in cents).
+  assign show_progress = false
+  if progress_type == 'amount'
+    assign progress_threshold = progress_amount | times: 100 | round
+    assign progress_current = qualifying_value
+  else
+    assign progress_threshold = progress_quantity
+    assign progress_current = qualifying_count
+  endif
+
+  if progress_enabled and purchased_count > 0 and progress_threshold > 0
+    assign show_progress = true
+    assign progress_remaining = progress_threshold | minus: progress_current | at_least: 0
+    assign progress_percent = progress_current | times: 100 | divided_by: progress_threshold | at_most: 100
+
+    if progress_type == 'amount'
+      assign progress_remaining_display = progress_remaining | money
+    else
+      assign progress_remaining_display = progress_remaining
+    endif
+  endif
+
+  # You might also like: products from the chosen source, minus unavailable or in-bag products.
+  if upsell_source == 'products'
+    assign upsell_candidates = upsell_products
+    assign upsell_max = 12
+  else
+    assign upsell_candidates = upsell_collection.products
+    assign upsell_max = upsell_limit
+  endif
+
+  assign upsell_count = 0
+  capture upsell_cards
+    for product in upsell_candidates
+      if upsell_count >= upsell_max
+        break
+      endif
+
+      assign product_marker = ',' | append: product.id | append: ','
+      if product.available == false or cart_product_ids contains product_marker or product.id == gift_product.id
+        continue
+      endif
+
+      assign upsell_count = upsell_count | plus: 1
+      render 'cart-drawer-upsell-card', product: product, currency_code: currency_code_items
+    endfor
+  endcapture
+
+  if currency_code_total
+    assign total_price = cart.total_price | money_with_currency
+  else
+    assign total_price = cart.total_price | money
+  endif
 -%}
 
-{%- if settings.cart_type == 'drawer' and template.name != 'cart' -%}
+{%- if cart_type == 'drawer' and template.name != 'cart' -%}
   {% if render_wrapper %}
     <div
-      id="shopify-section-cart-drawer-section"
+      id="shopify-section-{{ section_id }}"
       class="shopify-section"
     >
   {% endif %}
@@ -21,109 +198,716 @@
     src="{{ 'cart-drawer.js' | asset_url }}"
     fetchpriority="low"
   ></script>
+  <script
+    type="module"
+    src="{{ 'component-cart-items.js' | asset_url }}"
+    fetchpriority="low"
+  ></script>
+  <script
+    type="module"
+    src="{{ 'component-cart-quantity-selector.js' | asset_url }}"
+    fetchpriority="low"
+  ></script>
 
-  {% capture empty_cart_drawer_content %}
+  {% render 'quantity-selector-styles' %}
+
+  {%- capture empty_state -%}
     <div
-      class="cart-drawer__content"
-      aria-label="{{ 'accessibility.cart' | t }}"
+      class="cart-drawer__empty"
+      data-cart-drawer-empty
     >
-      <h2
-        class="theme-drawer__title h4"
-        id="cart-drawer-heading"
-      >
-        {{ 'content.your_cart_is_empty' | t }}
-      </h2>
-
-      <div class="cart-drawer__items">
-        {% render 'cart-products', force_empty: true, context: 'drawer' %}
+      {%- if empty_heading != blank -%}
+        <div class="cart-drawer__empty-heading">
+          <h3>{{ empty_heading | escape }}</h3>
+        </div>
+      {%- endif -%}
+      {%- if empty_text != blank -%}
+        <div class="cart-drawer__empty-text">
+          <p>{{ empty_text | escape }}</p>
+        </div>
+      {%- endif -%}
+      <div class="cart-drawer__empty-actions">
+        {%- if empty_primary_label != blank -%}
+          <div class="cart-drawer__empty-button">
+            <a href="{{ empty_primary_link }}">{{ empty_primary_label | escape }}</a>
+          </div>
+        {%- endif -%}
+        {%- if empty_secondary_label != blank and empty_secondary_link != blank -%}
+          <div class="cart-drawer__empty-button cart-drawer__empty-button--secondary">
+            <a href="{{ empty_secondary_link }}">{{ empty_secondary_label | escape }}</a>
+          </div>
+        {%- endif -%}
       </div>
     </div>
-  {% endcapture %}
+  {%- endcapture -%}
 
   <theme-drawer
     id="cart-drawer"
+    modal
+    no-persist
     data-skip-node-update
   >
     <dialog
       ref="panel"
-      class="theme-drawer__dialog color-custom-drawer"
-      aria-labelledby="cart-drawer-heading"
-      cart-summary-sticky="true"
+      class="theme-drawer__dialog cart-drawer color-custom-drawer"
+      aria-labelledby="CartDrawer-Title"
     >
       <cart-drawer-component
-        {% if settings.auto_open_cart_drawer and template.name != 'cart' %}
+        class="cart-drawer__component"
+        style="--cart-drawer-accent: {{ accent_background }};"
+        {% if auto_open %}
           auto-open
         {% endif %}
       >
         <template id="empty-cart-template">
-          {{ empty_cart_drawer_content }}
+          {{ empty_state }}
         </template>
 
         <div
-          class="cart-drawer__inner{% if cart.empty? %} cart-drawer--empty{% endif %}"
+          class="cart-drawer__inner"
           data-hydration-key="cart-drawer-inner"
         >
-          {%- if cart.empty? -%}
-            <div class="theme-drawer__header">
-              <button
-                on:click="#cart-drawer/close"
-                class="theme-drawer__close-button cart-drawer__close-button--empty"
-                type="button"
-                aria-label="{{ 'actions.close' | t }}"
-              >
-                <span class="svg-wrapper">
-                  {{- 'icon-close.svg' | inline_asset_content -}}
-                </span>
-              </button>
+          <div class="cart-drawer__header">
+            <div
+              class="cart-drawer__icon"
+              aria-hidden="true"
+            >
+              {{- 'icon-bell.svg' | inline_asset_content -}}
+              <div class="cart-drawer__icon-count">{{ purchased_count }}</div>
             </div>
-          {%- else -%}
-            {% capture cart_badge_html %}
-              <span
-                class="theme-drawer__badge{% if cart.item_count == 0 %} visually-hidden{% endif %}"
-                aria-hidden="true"
-                {% if cart.item_count <= 99 %}
-                  data-maintain-ratio
-                {% endif %}
+
+            <div class="cart-drawer__title">
+              <h2 id="CartDrawer-Title">
+                {{ 'cart_drawer.title' | t }}
+                <span>({{ purchased_count }})</span>
+              </h2>
+            </div>
+
+            <button
+              type="button"
+              class="cart-drawer__close theme-drawer__close-button"
+              on:click="#cart-drawer/close"
+              aria-label="{{ 'actions.close' | t }}"
+            >
+              {{- 'icon-close.svg' | inline_asset_content -}}
+            </button>
+          </div>
+
+          {%- if show_progress -%}
+            <div
+              class="cart-drawer__progress"
+              style="--cart-drawer-progress: {{ progress_percent | divided_by: 100.0 }};"
+            >
+              <div
+                class="cart-drawer__progress-message"
+                aria-live="polite"
               >
-                {{- cart.item_count -}}
-              </span>
-              {% if cart.item_count > 0 %}
-                <span class="visually-hidden">
-                  {{ 'accessibility.cart_count' | t }}: {{ cart.item_count }}
-                </span>
-              {% endif %}
-            {% endcapture %}
-            {% assign cart_drawer_title = 'content.cart_title' | t %}
-            {% render 'theme-drawer-header',
-              title: cart_drawer_title,
-              drawer_id: 'cart-drawer',
-              heading_id: 'cart-drawer-heading',
-              title_append: cart_badge_html
-            %}
+                {%- if progress_remaining > 0 -%}
+                  <p>{{ progress_message | replace: '[remaining]', progress_remaining_display }}</p>
+                {%- else -%}
+                  <p>{{ progress_success }}</p>
+                {%- endif -%}
+              </div>
+              <div
+                class="cart-drawer__progress-bar"
+                aria-hidden="true"
+              ></div>
+            </div>
           {%- endif -%}
 
-          {% capture cart_items_children %}
-            {%- if cart.empty? -%}
-              {{ empty_cart_drawer_content }}
-            {%- else -%}
-              <scroll-hint
-                class="cart-drawer__content"
-                aria-label="{{ 'accessibility.cart' | t }}"
-              >
-                <scroll-hint class="cart-drawer__items">
-                  {% render 'cart-products', context: 'drawer' %}
-                </scroll-hint>
+          {%- capture gift_sync -%}
+            <cart-free-gift
+              class="cart-drawer__gift-sync"
+              data-action="{{ gift_action }}"
+              data-key="{{ gift_key }}"
+              data-variant-id="{{ gift_variant.id }}"
+            >
+              {%- if gift_offered and purchased_count > 0 -%}
+                <div class="cart-drawer__gift">
+                  {%- if gift_display_image != blank -%}
+                    <div class="cart-drawer__gift-media">
+                      {{
+                        gift_display_image
+                        | image_url: width: 240
+                        | image_tag:
+                          widths: '80, 160, 240',
+                          sizes: '(min-width: 769px) 64px, 56px',
+                          loading: 'lazy',
+                          alt: gift_display_image.alt
+                      }}
+                    </div>
+                  {%- endif -%}
 
-                <div class="cart-drawer__summary">
-                  {% render 'cart-summary', section_id: 'cart-drawer-section' %}
+                  <div class="cart-drawer__gift-content">
+                    <div class="cart-drawer__gift-title">
+                      <h3>{{ gift_display_title | escape }}</h3>
+                    </div>
+                    {%- if gift_description != blank -%}
+                      <div class="cart-drawer__gift-description">{{ gift_description }}</div>
+                    {%- endif -%}
+                    <div class="cart-drawer__gift-toggle">
+                      <label for="CartDrawer-Gift">{{ gift_toggle_label | escape }}</label>
+                      <input
+                        type="checkbox"
+                        role="switch"
+                        id="CartDrawer-Gift"
+                        class="cart-drawer__switch"
+                        name="free_gift"
+                        {% unless gift_opted_out %}
+                          checked
+                        {% endunless %}
+                      >
+                    </div>
+                  </div>
+
+                  <div class="cart-drawer__gift-price">
+                    <p>{{ 'cart_drawer.free' | t }}</p>
+                  </div>
                 </div>
-              </scroll-hint>
+              {%- endif -%}
+            </cart-free-gift>
+          {%- endcapture -%}
+
+          {%- capture cart_items_children -%}
+
+            {%- if purchased_count == 0 -%}
+              {{ gift_sync }}
+              {{ empty_state }}
+            {%- else -%}
+              <div class="cart-drawer__body">
+                <ul
+                  class="cart-drawer__lines"
+                  role="list"
+                  aria-label="{{ 'accessibility.cart' | t }}"
+                >
+                  {%- for item in cart.items -%}
+                    {%- liquid
+                      assign line_number = item.index | plus: 1
+                      assign item_vendor = item.vendor | downcase
+                      assign is_hidden_line = false
+                      if item.properties['_free_gift'] != blank or item_vendor contains 'savedby'
+                        assign is_hidden_line = true
+                      endif
+
+                      if currency_code_items
+                        assign line_price = item.final_line_price | money_with_currency
+                        assign original_line_price = item.original_line_price | money_with_currency
+                      else
+                        assign line_price = item.final_line_price | money
+                        assign original_line_price = item.original_line_price | money
+                      endif
+                    -%}
+                    <li
+                      class="cart-drawer__line"
+                      ref="cartItemRows[]"
+                      data-key="{{ item.key }}"
+                      data-parent-key="{{ item.parent_relationship.parent.key }}"
+                      {% if is_hidden_line %}
+                        hidden
+                      {% endif %}
+                    >
+                      {%- unless is_hidden_line -%}
+                        <div class="cart-drawer__line-media">
+                          {%- if item.image -%}
+                            {{
+                              item.image
+                              | image_url: width: 240
+                              | image_tag:
+                                widths: '80, 160, 240',
+                                sizes: '(min-width: 769px) 80px, 68px',
+                                loading: 'lazy',
+                                alt: item.product.title
+                            }}
+                          {%- else -%}
+                            {{ 'product-1' | placeholder_svg_tag }}
+                          {%- endif -%}
+                        </div>
+
+                        <div class="cart-drawer__line-details">
+                          <div class="cart-drawer__line-title">
+                            <a href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                          </div>
+                          {%- unless item.product.has_only_default_variant -%}
+                            {%- for option in item.options_with_values -%}
+                              <div class="cart-drawer__line-option">
+                                <p>{{ option.value | escape }}</p>
+                              </div>
+                            {%- endfor -%}
+                          {%- endunless -%}
+                          {%- for property in item.properties -%}
+                            {%- assign property_first_char = property.first | slice: 0 -%}
+                            {%- if property.last != blank and property_first_char != '_' -%}
+                              <div class="cart-drawer__line-option">
+                                <p>{{ property.first | escape }}: {{ property.last | escape }}</p>
+                              </div>
+                            {%- endif -%}
+                          {%- endfor -%}
+                          {%- if item.selling_plan_allocation -%}
+                            <div class="cart-drawer__line-option">
+                              <p>{{ item.selling_plan_allocation.selling_plan.name | escape }}</p>
+                            </div>
+                          {%- endif -%}
+                          <div class="cart-drawer__line-price">
+                            {%- if item.original_line_price > item.final_line_price -%}
+                              <s>{{ original_line_price }}</s>
+                            {%- endif -%}
+                            <p>{{ line_price }}</p>
+                          </div>
+                        </div>
+
+                        <div class="cart-drawer__line-remove">
+                          <button
+                            type="button"
+                            on:click="/onLineItemRemove/{{ line_number }}"
+                            aria-label="{{ 'cart_drawer.remove' | t: title: item.product.title | escape }}"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 11 11" fill="none">
+                              <path d="M0.412109 0.412476L10.4121 10.4125M10.4121 0.412476L0.412109 10.4125" stroke-width="1.16667" stroke="currentColor"/>
+                            </svg>
+                          </button>
+                        </div>
+                      {%- endunless -%}
+
+                      <div class="cart-drawer__line-quantity">
+                        {% render 'quantity-selector',
+                          product: item.product,
+                          variant: item.variant,
+                          in_cart_quantity: item.quantity,
+                          line_index: item.index,
+                          class: 'cart-drawer__quantity-selector'
+                        %}
+                      </div>
+
+                      <div
+                        class="cart-drawer__line-error hidden"
+                        ref="cartItemErrorContainer-{{ line_number }}"
+                        role="alert"
+                      >
+                        <small ref="cartItemError-{{ line_number }}"></small>
+                      </div>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+
+                {{ gift_sync }}
+
+                {%- if upsell_count > 0 -%}
+                  <cart-drawer-upsell
+                    class="cart-drawer__upsell"
+                    data-swiper-src="{{ 'swiper-bundle.min.js' | asset_url }}"
+                  >
+                    <div class="cart-drawer__upsell-top">
+                      {%- if upsell_heading != blank -%}
+                        <div class="cart-drawer__upsell-heading">
+                          <h3>{{ upsell_heading | escape }}</h3>
+                        </div>
+                      {%- endif -%}
+                      <div class="cart-drawer__upsell-nav">
+                        <button
+                          type="button"
+                          class="cart-drawer__upsell-arrow cart-drawer__upsell-arrow--prev"
+                          data-direction="-1"
+                          aria-label="{{ 'cart_drawer.previous' | t }}"
+                          disabled
+                        >
+                          {{- 'icon-arrow-v2.svg' | inline_asset_content -}}
+                        </button>
+                        <button
+                          type="button"
+                          class="cart-drawer__upsell-arrow"
+                          data-direction="1"
+                          aria-label="{{ 'cart_drawer.next' | t }}"
+                        >
+                          {{- 'icon-arrow-v2.svg' | inline_asset_content -}}
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="cart-drawer__upsell-slider"
+                      data-upsell-slider
+                    >
+                      <ul
+                        class="cart-drawer__upsell-track"
+                        role="list"
+                        data-upsell-track
+                      >
+                        {{ upsell_cards }}
+                      </ul>
+                    </div>
+                  </cart-drawer-upsell>
+                {%- endif -%}
+
+                {%- if show_note -%}
+                  {%- liquid
+                    # Earliest selectable delivery date: today (store timezone) plus the minimum gap.
+                    # The script re-checks against the shopper's own date in case this markup is stale.
+                    assign delivery_min_seconds = delivery_min_days | times: 86400
+                    assign delivery_min_date = 'now' | date: '%s' | plus: delivery_min_seconds | date: '%Y-%m-%d'
+                    assign delivery_date = cart.attributes['Delivery date']
+                    if delivery_date != blank and delivery_date < delivery_min_date
+                      assign delivery_date = ''
+                    endif
+                  -%}
+                  <div class="cart-drawer__note">
+                    <details
+                      {% if note_open %}
+                        open
+                      {% endif %}
+                    >
+                      <summary class="cart-drawer__note-summary">
+                        {{ note_label | escape }}
+                        <span class="cart-drawer__note-icon cart-drawer__note-icon--closed">
+                          {{- 'icon-plus.svg' | inline_asset_content -}}
+                        </span>
+                        <span class="cart-drawer__note-icon cart-drawer__note-icon--open">
+                          {{- 'icon-minus.svg' | inline_asset_content -}}
+                        </span>
+                      </summary>
+                      <div class="cart-drawer__note-field">
+                        {% comment %}
+                          Without JavaScript the native date input is shown and submits with the cart form.
+                          The script hides it, keeps it as the value holder and shows the calendar instead.
+                        {% endcomment %}
+                        <cart-delivery-date
+                          class="cart-drawer__date"
+                          data-min-days="{{ delivery_min_days }}"
+                          data-min-date="{{ delivery_min_date }}"
+                          data-placeholder="{{ 'cart_drawer.select_date' | t | escape }}"
+                          data-error-template="{{ 'cart_drawer.delivery_date_error' | t: date: '[date]' | escape }}"
+                          data-save-error="{{ 'cart_drawer.delivery_date_save_error' | t | escape }}"
+                          data-skip-subtree-update
+                        >
+                          <label
+                            id="CartDrawer-DeliveryDate-Label"
+                            for="CartDrawer-DeliveryDate"
+                            class="cart-drawer__date-label"
+                          >
+                            {{- 'cart_drawer.pick_date' | t -}}
+                          </label>
+                          <input
+                            type="date"
+                            id="CartDrawer-DeliveryDate"
+                            class="cart-drawer__date-input"
+                            name="attributes[Delivery date]"
+                            form="CartDrawer-Form"
+                            min="{{ delivery_min_date }}"
+                            value="{{ delivery_date | escape }}"
+                            aria-describedby="CartDrawer-DeliveryDate-Error"
+                          >
+                          <button
+                            type="button"
+                            class="cart-drawer__date-trigger"
+                            aria-expanded="false"
+                            aria-controls="CartDrawer-Calendar"
+                            aria-labelledby="CartDrawer-DeliveryDate-Label CartDrawer-DeliveryDate-Value"
+                            aria-describedby="CartDrawer-DeliveryDate-Error"
+                            hidden
+                          >
+                            <span class="cart-drawer__date-icon">
+                              {{- 'icon-calendar.svg' | inline_asset_content -}}
+                            </span>
+                            <span
+                              id="CartDrawer-DeliveryDate-Value"
+                              class="cart-drawer__date-value"
+                            >
+                              {{- 'cart_drawer.select_date' | t -}}
+                            </span>
+                            <span class="cart-drawer__date-caret">
+                              {{- 'icon-caret.svg' | inline_asset_content -}}
+                            </span>
+                          </button>
+                          <div
+                            id="CartDrawer-Calendar"
+                            class="cart-drawer__calendar"
+                            hidden
+                          >
+                            <div class="cart-drawer__calendar-header">
+                              <button
+                                type="button"
+                                class="cart-drawer__calendar-nav"
+                                data-month-step="-1"
+                                aria-label="{{ 'cart_drawer.previous_month' | t }}"
+                              >
+                                {{- 'icon-chevron-left.svg' | inline_asset_content -}}
+                              </button>
+                              <h3
+                                id="CartDrawer-Calendar-Month"
+                                class="cart-drawer__calendar-month"
+                                aria-live="polite"
+                              ></h3>
+                              <button
+                                type="button"
+                                class="cart-drawer__calendar-nav"
+                                data-month-step="1"
+                                aria-label="{{ 'cart_drawer.next_month' | t }}"
+                              >
+                                {{- 'icon-chevron-right.svg' | inline_asset_content -}}
+                              </button>
+                            </div>
+                            <table
+                              class="cart-drawer__calendar-grid"
+                              role="grid"
+                              aria-labelledby="CartDrawer-Calendar-Month"
+                            >
+                              <thead>
+                                <tr data-calendar-weekdays></tr>
+                              </thead>
+                              <tbody data-calendar-days></tbody>
+                            </table>
+                          </div>
+                          <p
+                            id="CartDrawer-DeliveryDate-Error"
+                            class="cart-drawer__date-error"
+                            aria-live="polite"
+                          ></p>
+                        </cart-delivery-date>
+                      </div>
+                    </details>
+                  </div>
+                {%- endif -%}
+              </div>
+
+
+              <div class="cart-drawer__footer">
+                <form
+                  id="CartDrawer-Form"
+                  action="{{ routes.cart_url }}"
+                  method="post"
+                  hidden
+                ></form>
+
+                <div class="cart-drawer__shipping">
+                  <div class="cart-drawer__shipping-country">
+                    <p>
+                      {{ 'cart_drawer.shipping_to' | t: country: localization.country.name }}
+                      {{
+                        localization.country
+                        | image_url: width: 32
+                        | image_tag: width: 16, height: 12, alt: '', loading: 'lazy'
+                      }}
+                    </p>
+                  </div>
+                  {%- if localization.available_countries.size > 1 -%}
+                    {%- form 'localization', id: 'CartDrawer-Localization', class: 'cart-drawer__shipping-change' -%}
+                      <input
+                        type="hidden"
+                        name="return_to"
+                        value="{{ request.path }}"
+                      >
+                      <label for="CartDrawer-Country">({{ 'cart_drawer.change' | t }})</label>
+                      <select
+                        id="CartDrawer-Country"
+                        class="cart-drawer__country-select"
+                        name="country_code"
+                        aria-label="{{ 'cart_drawer.change_country' | t }}"
+                        on:change="cart-drawer-component/submitCountry"
+                      >
+                        {%- for country in localization.available_countries -%}
+                          <option
+                            value="{{ country.iso_code }}"
+                            {% if country.iso_code == localization.country.iso_code %}
+                              selected
+                            {% endif %}
+                          >
+                            {{- country.name -}}
+                          </option>
+                        {%- endfor -%}
+                      </select>
+                    {%- endform -%}
+                  {%- endif -%}
+                </div>
+
+                {%- if show_discount_field -%}
+                  {%- assign discount_codes = cart.cart_level_discount_applications | where: 'type', 'discount_code' | map: 'title' -%}
+                  <cart-discount-component
+                    class="cart-drawer__discount"
+                    data-section-id="{{ section_id }}"
+                  >
+                    <form
+                      class="cart-drawer__discount-form"
+                      on:submit="/applyDiscount"
+                      onsubmit="return false;"
+                    >
+                      <label
+                        for="CartDrawer-Discount"
+                        class="visually-hidden"
+                      >
+                        {{- 'accessibility.discount' | t -}}
+                      </label>
+                      <input
+                        id="CartDrawer-Discount"
+                        class="cart-drawer__discount-input"
+                        type="text"
+                        name="discount"
+                        placeholder="{{ 'cart_drawer.discount_placeholder' | t }}"
+                        autocomplete="off"
+                        required
+                        data-skip-node-update
+                      >
+                      <button
+                        type="submit"
+                        class="cart-drawer__discount-button"
+                      >
+                        {{ 'cart_drawer.apply_code' | t }}
+                      </button>
+                    </form>
+                    <div
+                      class="cart-drawer__discount-error hidden"
+                      role="alert"
+                      ref="cartDiscountError"
+                    >
+                      <small
+                        class="hidden"
+                        ref="cartDiscountErrorDiscountCode"
+                      >
+                        {{- 'content.discount_code_error' | t -}}
+                      </small>
+                      <small
+                        class="hidden"
+                        ref="cartDiscountErrorShipping"
+                      >
+                        {{- 'content.shipping_discount_error' | t -}}
+                      </small>
+                    </div>
+                    {%- if discount_codes.size > 0 -%}
+                      <ul
+                        class="cart-drawer__discount-codes"
+                        role="list"
+                      >
+                        {%- for discount_code in discount_codes -%}
+                          <li
+                            class="cart-drawer__discount-code cart-discount__pill"
+                            data-discount-code="{{ discount_code | escape }}"
+                          >
+                            <bdi>{{ discount_code | escape }}</bdi>
+                            <button
+                              type="button"
+                              on:click="/removeDiscount"
+                              aria-label="{{ 'actions.remove_discount' | t: code: discount_code | escape }}"
+                            >
+                              {{- 'icon-close.svg' | inline_asset_content -}}
+                            </button>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </cart-discount-component>
+                {%- endif -%}
+
+                <dl class="cart-drawer__totals">
+                  {%- if gift_quantity > 0 -%}
+                    <div class="cart-drawer__total-row">
+                      <dt>{{ 'cart_drawer.gift_packaging' | t }}</dt>
+                      <dd>{{ 'cart_drawer.free' | t }}</dd>
+                    </div>
+                  {%- endif -%}
+                  {%- for discount_application in cart.cart_level_discount_applications -%}
+                    <div class="cart-drawer__total-row">
+                      <dt>{{ discount_application.title | escape }}</dt>
+                      <dd>-{{ discount_application.total_allocated_amount | money }}</dd>
+                    </div>
+                  {%- endfor -%}
+                  {%- if shipping_value != blank -%}
+                    <div class="cart-drawer__total-row">
+                      <dt>{{ 'cart_drawer.shipping' | t }}</dt>
+                      <dd>{{ shipping_value | escape }}</dd>
+                    </div>
+                  {%- endif -%}
+                  <div class="cart-drawer__total-row cart-drawer__total-row--grand">
+                    <dt>{{ 'cart_drawer.total' | t }}</dt>
+                    <dd>{{ total_price }}</dd>
+                  </div>
+                </dl>
+
+                {%- comment -%}
+                  SavedBy attaches to `button[name='checkout']` (the visually hidden target below): it hides
+                  it and inserts <savedby-checkout-plus> after it with its own Checkout+ and opt-out controls.
+                  Those stay in the DOM but visually hidden; `cart-drawer-checkout` renders the design's
+                  protection switch and keeps the cart in step with it (one SavedBy line of SavedBy's fee
+                  tier when on, none when off), queued and awaited before checkout. SavedBy's own controls
+                  are only a fallback when it exposes no fee tiers.
+                  Skipping morphs keeps the injected nodes and the switch state across re-renders.
+                {%- endcomment -%}
+                <cart-drawer-checkout
+                  class="cart-drawer__checkout"
+                  data-skip-subtree-update
+                >
+                  <div
+                    class="cart-drawer__protection"
+                    hidden
+                  >
+                    <div class="cart-drawer__protection-text">
+                      <div class="cart-drawer__protection-title">
+                        <label for="CartDrawer-Protection">
+                          {{- 'cart_drawer.protection_title' | t }} • <bdi data-protection-fee></bdi>
+                        </label>
+                      </div>
+                      <div class="cart-drawer__protection-description">
+                        <p id="CartDrawer-Protection-Description">{{ 'cart_drawer.protection_description' | t }}</p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      role="switch"
+                      id="CartDrawer-Protection"
+                      class="cart-drawer__switch cart-drawer__switch--large"
+                      aria-describedby="CartDrawer-Protection-Description"
+                      checked
+                    >
+                  </div>
+
+                  <button
+                    type="submit"
+                    id="CartDrawer-Checkout"
+                    class="cart-drawer__savedby-target"
+                    name="checkout"
+                    form="CartDrawer-Form"
+                    tabindex="-1"
+                    aria-hidden="true"
+                  >
+                    {{ 'cart_drawer.checkout' | t }}
+                  </button>
+
+                  <button
+                    type="submit"
+                    class="cart-drawer__checkout-button"
+                    form="CartDrawer-Form"
+                    formaction="/checkout"
+                    formmethod="get"
+                    data-checkout
+                  >
+                    {{ 'cart_drawer.checkout' | t }}
+                    {{- 'icon-arrow-v2.svg' | inline_asset_content -}}
+                  </button>
+
+                  {%- comment -%}
+                    Shopify-rendered accelerated checkout. Branding, eligibility and checkout are
+                    owned by Shopify; <cart-drawer-wallets> keeps only the Shop Pay wallet visible
+                    (assets/cart-drawer.js). assets/morph.js skips
+                    <shopify-accelerated-checkout-cart> on drawer re-renders.
+                  {%- endcomment -%}
+                  {%- if show_accelerated and additional_checkout_buttons and shop.enabled_payment_types contains 'shopify_pay' -%}
+                    <cart-drawer-wallets class="cart-drawer__accelerated">
+                      {{ content_for_additional_checkout_buttons }}
+                      {%- comment -%}
+                        Design face over Shopify's Shop Pay button. pointer-events: none, so clicks
+                        and keyboard focus reach Shopify's own button underneath.
+                      {%- endcomment -%}
+                      <span class="cart-drawer__shop-pay-face" aria-hidden="true">
+                        {{- 'cart_drawer.buy_with' | t }}
+                        <b>Shop Pay</b>
+                      </span>
+                    </cart-drawer-wallets>
+                  {%- endif -%}
+                </cart-drawer-checkout>
+              </div>
             {%- endif -%}
-          {% endcapture %}
+          {%- endcapture -%}
+
           {% render 'cart-items-component',
             children: cart_items_children,
             is_drawer: true,
-            section_id: 'cart-drawer-section'
+            section_id: section_id
           %}
         </div>
       </cart-drawer-component>
@@ -136,143 +920,1632 @@
 {%- endif -%}
 
 {% stylesheet %}
-  cart-drawer-component {
-    --cart-drawer-padding: var(--theme-drawer-padding);
-    --font-paragraph--line-height: 1;
-    display: contents;
+  #cart-drawer .theme-drawer__dialog.cart-drawer {
+    background-color: #FFF;
+    border-inline-start: none;
+  }
+
+  .cart-drawer {
+    --theme-drawer-width: 100%;
+    --cart-drawer-gutter: 16px;
+    --cart-drawer-muted: #6b6760;
+    --cart-drawer-border: #e6e2da;
+    --cart-drawer-speed: var(--animation-speed-medium);
+
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .theme-drawer__dialog.cart-drawer {
+    overflow: hidden;
+  }
+
+  .theme-drawer__dialog.cart-drawer::backdrop {
+    background: #14141459;
+  }
+
+  .cart-drawer__component {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .cart-drawer__inner {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
+    flex: 1;
+    min-height: 0;
   }
 
+  /* Fixed-footer column: only .cart-drawer__body scrolls; the order note and footer stay pinned
+     below it. When they would take most of a short drawer, cart-drawer.js sets
+     [data-footer-static] and the whole column scrolls instead, so no content is unreachable. */
   .cart-drawer__inner > .cart-items-component {
     flex: 1;
     min-height: 0;
     height: auto;
+    overflow: hidden;
+    transition: opacity var(--cart-drawer-speed) var(--animation-easing);
   }
 
-  .cart-drawer__content {
+  .cart-drawer__component[data-footer-static] .cart-drawer__inner > .cart-items-component {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .cart-drawer__inner > .cart-items-component.cart-items-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .cart-drawer h2,
+  .cart-drawer h3,
+  .cart-drawer p,
+  .cart-drawer dl,
+  .cart-drawer dd {
+    margin: 0;
+  }
+
+  .cart-drawer svg {
+    flex-shrink: 0;
+  }
+
+  /* Header */
+  .cart-drawer__header {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    align-items: center;
+    padding: 15.5px var(--cart-drawer-gutter);
+    border-block-end: 0.8px solid var(--cart-drawer-border);
+  }
+
+  .cart-drawer__icon {
+    position: relative;
+    width: 15px;
+    height: 17px;
+  }
+
+  .cart-drawer__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cart-drawer__icon-count {
+    position: absolute;
+    inset-block-start: -6px;
+    inset-inline-end: -8px;
+    min-width: 15px;
+    height: 15px;
+    padding-inline: 3px;
+    border-radius: 15px;
+    background-color: var(--color-foreground);
+    color: #FFF;
+    font-size: 9px;
+    line-height: 15px;
+    text-align: center;
+  }
+
+  .cart-drawer__title {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .cart-drawer__title h2 {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    color: #1A1A1A;
+    font-size: 16px;
+    line-height: 19.2px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .cart-drawer__title span {
+    margin-inline-start: 8px;
+    color: var(--cart-drawer-muted);
+    font-size: 16px;
+  }
+
+  .cart-drawer__close.theme-drawer__close-button {
+    --private-button-size: 32px;
+
+    margin-inline-end: -8px;
+    border: 0;
+    box-shadow: none;
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+  .cart-drawer__close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Discount progress */
+  .cart-drawer__progress {
+    padding: 12px var(--cart-drawer-gutter);
+    text-align: center;
+  }
+
+  .cart-drawer__progress-message {
+    color: #1A1A1A;
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .cart-drawer__progress-message strong {
+    font-weight: 600;
+  }
+
+  .cart-drawer__progress-bar {
+    position: relative;
+    height: 4px;
+    margin-block-start: 9px;
+    border-radius: 4px;
+    background-color: var(--cart-drawer-accent);
+    overflow: hidden;
+  }
+
+  .cart-drawer__progress-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: #1A1A1A;
+    transform: scaleX(var(--cart-drawer-progress, 0));
+    transform-origin: left center;
+    transition: transform var(--animation-speed-slow) var(--animation-easing);
+  }
+
+  .cart-drawer__progress-bar:dir(rtl)::before {
+    transform-origin: right center;
+  }
+
+  /* Line items */
+  .cart-drawer__body {
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cart-drawer-accent) transparent;
+  }
+
+  .cart-drawer__body::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  .cart-drawer__body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .cart-drawer__body::-webkit-scrollbar-thumb {
+    background-color: var(--cart-drawer-accent);
+  }
+
+  .cart-drawer__component[data-footer-static] .cart-drawer__body {
+    flex: none;
+    overflow: visible;
+  }
+
+  .cart-drawer__lines {
+    margin: 0;
+    padding: 0 var(--cart-drawer-gutter);
+    list-style: none;
+  }
+
+  .cart-drawer__line {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'media details remove'
+      'media details quantity'
+      'error error error';
+    column-gap: 12px;
+    padding-block: 20px;
+    border-block-end: 0.8px solid var(--cart-drawer-border);
+  }
+
+  .cart-drawer__line[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__line.removing {
+    animation: cart-drawer-line-out var(--cart-drawer-speed) var(--animation-easing) forwards;
+  }
+
+  .cart-drawer__line.adding {
+    animation: cart-drawer-line-in var(--cart-drawer-speed) var(--animation-easing);
+  }
+
+  @keyframes cart-drawer-line-out {
+    to {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+  }
+
+  @keyframes cart-drawer-line-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  .cart-drawer__line-media {
+    grid-area: media;
+    aspect-ratio: 1;
+    background-color: var(--cart-drawer-accent);
+    overflow: hidden;
+  }
+
+  .cart-drawer__line-media img,
+  .cart-drawer__line-media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-drawer__line-details {
+    grid-area: details;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+  }
+
+  .cart-drawer__line-title {
+    color: #1A1A1A;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .cart-drawer__line-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .cart-drawer__line-title a:hover {
+    text-decoration: underline;
+  }
+
+  .cart-drawer__line-option,
+  .cart-drawer__line-price {
+    color: #737373;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  .cart-drawer__line-price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .cart-drawer__line-remove {
+    grid-area: remove;
+    justify-self: end;
+  }
+
+  .cart-drawer__line-remove button,
+  .cart-drawer__discount-code button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-block-start: -4px;
+    margin-inline-end: -6px;
     padding: 0;
-    background-color: var(--color-background);
-    flex-grow: 1;
-    overflow-y: auto;
+    border: 0;
+    background: none;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-40));
+    cursor: pointer;
+    transition: color var(--animation-speed-fast) var(--animation-easing);
   }
 
-  .cart-drawer__items {
+  .cart-drawer__line-remove button:hover,
+  .cart-drawer__discount-code button:hover {
+    color: var(--color-foreground);
+  }
+
+  .cart-drawer__line-remove svg,
+  .cart-drawer__discount-code svg {
+    color: #CFC8BC;
+    width: 10px;
+    height: 10px;
+  }
+
+  .cart-drawer__line-quantity {
+    grid-area: quantity;
+    align-self: end;
+    justify-self: end;
+  }
+
+  .cart-drawer__line-quantity .quantity-selector-wrapper {
+    display: flex;
+  }
+
+  /* Compact "– 1 +" stepper. The doubled class outranks the shared quantity-selector-styles. */
+  .quantity-selector.cart-drawer__quantity-selector {
+    flex: 0 0 auto;
+    align-self: auto;
+    gap: 2px;
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    color: #1A1A1A;
+  }
+
+  .quantity-selector.cart-drawer__quantity-selector :is(.quantity-minus, .quantity-plus) {
+    width: 26px;
+    height: 26px;
+    color: #1A1A1A;
+  }
+
+  .quantity-selector.cart-drawer__quantity-selector :is(.quantity-minus, .quantity-plus):disabled {
+    cursor: default;
+  }
+
+  .quantity-selector.cart-drawer__quantity-selector svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .quantity-selector.cart-drawer__quantity-selector input[type='number'] {
+    width: 22px;
+    min-width: 2ch;
+    height: 26px;
+    padding: 0;
+    color: #1A1A1A;
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .cart-drawer__line-error {
+    grid-area: error;
+    margin-block-start: 8px;
+    color: var(--color-error);
+    font-size: 12px;
+  }
+
+  /* Free gift */
+  .cart-drawer__gift-sync {
+    display: block;
+  }
+
+  .cart-drawer__gift {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    margin-block-start: 24px;
+    padding: 20px var(--cart-drawer-gutter);
+    background-color: var(--cart-drawer-accent);
+  }
+
+  .cart-drawer__gift-media {
+    grid-row: span 2;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .cart-drawer__gift-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-drawer__gift-content {
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    padding-inline: var(--cart-drawer-padding);
-    overflow-y: auto;
+    row-gap: 8px;
   }
 
-  .cart-drawer__items .cart-items__table-row {
-    padding-bottom: var(--gap-xl);
-    border-bottom: var(--style-border-width) solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
-    margin-bottom: var(--gap-xl);
+  .cart-drawer__gift-title h3 {
+    font-family: var(--font-body--family);
+    color: #1A1A1A;
+    font-size: 14px;
+    line-height: 16.8px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
   }
 
-  .cart-drawer__items .cart-items__table-row:has(+ .cart-items__nested-line) {
-    border-bottom: none;
-    margin-bottom: 0;
+  .cart-drawer__gift-description {
+    color: #737373;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
   }
 
-  .cart-drawer__items .cart-items__table-row:last-child {
-    border-bottom: none;
-    padding-block-end: 0;
-    margin-block-end: 0;
+  .cart-drawer__gift-description p {
+    margin: 0;
   }
 
-  .cart-drawer__close-button--empty {
+  .cart-drawer__gift-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #737373;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__gift-toggle label {
+    cursor: pointer;
+  }
+
+  .cart-drawer__gift-price {
+    grid-column: 2;
+    color: #1A1A1A;
+    font-size: 14px;
+    line-height: 16.8px;
+    letter-spacing: 1.4px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  /* Switch (gift box, package protection). Resets the theme's global checkbox look
+     (border, checkmark) and centres the thumb vertically with a transform. */
+  .cart-drawer__switch {
+    --cart-drawer-switch-width: 28px;
+    --cart-drawer-switch-height: 16px;
+    --cart-drawer-switch-inset: 2px;
+    --cart-drawer-switch-thumb: calc(var(--cart-drawer-switch-height) - var(--cart-drawer-switch-inset) * 2);
+    --cart-drawer-switch-travel: calc(
+      var(--cart-drawer-switch-width) - var(--cart-drawer-switch-thumb) - var(--cart-drawer-switch-inset) * 2
+    );
+    --cart-drawer-switch-shift: 0px;
+
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    width: var(--cart-drawer-switch-width);
+    height: var(--cart-drawer-switch-height);
+    aspect-ratio: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--cart-drawer-switch-height);
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    vertical-align: middle;
+    appearance: none;
+    cursor: pointer;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__switch::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    inset-inline-start: var(--cart-drawer-switch-inset);
+    width: var(--cart-drawer-switch-thumb);
+    height: var(--cart-drawer-switch-thumb);
+    border-radius: 50%;
+    background-color: #FFF;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+    transform: translate(var(--cart-drawer-switch-shift), -50%);
+    transition: transform var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__switch::after,
+  .cart-drawer__switch:checked::after,
+  .cart-drawer__switch:disabled:checked::after {
+    content: none;
+  }
+
+  .cart-drawer__switch:checked,
+  .cart-drawer__switch:not(:disabled):hover:checked {
+    --cart-drawer-switch-shift: var(--cart-drawer-switch-travel);
+
+    border: 0;
+    background-color: var(--color-foreground);
+  }
+
+  .cart-drawer__switch:checked:dir(rtl) {
+    --cart-drawer-switch-shift: calc(var(--cart-drawer-switch-travel) * -1);
+  }
+
+  .cart-drawer__switch:not(:disabled):hover:not(:checked) {
+    border: 0;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-30));
+  }
+
+  .cart-drawer__switch:disabled {
+    border: 0;
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    opacity: 0.6;
+    cursor: progress;
+  }
+
+  .cart-drawer__switch:checked:disabled {
+    background-color: var(--color-foreground);
+  }
+
+  .cart-drawer__switch:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .cart-drawer__switch--large {
+    --cart-drawer-switch-width: 36px;
+    --cart-drawer-switch-height: 20px;
+  }
+
+  /* You might also like */
+  .cart-drawer__upsell {
+    --cart-drawer-card-width: calc((100% - var(--cart-drawer-gutter)) / 2.6 - 10px);
+
+    display: block;
+    margin-block-start: 24px;
+    padding: 20px 0;
+    background-color: var(--cart-drawer-accent);
+  }
+
+  .cart-drawer__upsell-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-inline: var(--cart-drawer-gutter);
+    margin-block-end: 12px;
+  }
+
+  .cart-drawer__upsell-heading {
+    min-width: 0;
+  }
+
+  .cart-drawer__upsell-heading h3 {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: 16px;
+    line-height: 19.2px;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .cart-drawer__upsell-nav {
+    display: flex;
+    gap: 4px;
     margin-inline-start: auto;
   }
 
-  .cart-drawer__summary {
-    --cart-drawer-summary-padding: var(--padding-lg);
+  .cart-drawer__upsell-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: color var(--animation-speed-fast) var(--animation-easing);
+  }
 
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
+  .cart-drawer__upsell-arrow:disabled {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-30));
+    cursor: default;
+  }
+
+  .cart-drawer__upsell-arrow svg {
+    width: 16px;
+    height: 12px;
+  }
+
+  .cart-drawer__upsell-arrow--prev svg,
+  .cart-drawer__upsell-arrow:dir(rtl) svg {
+    transform: scaleX(-1);
+  }
+
+  .cart-drawer__upsell-arrow--prev:dir(rtl) svg {
+    transform: none;
+  }
+
+  .cart-drawer__upsell-slider {
+    overflow: hidden;
+  }
+
+  .cart-drawer__upsell-track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transition-property: transform;
+  }
+
+  /* Before Swiper starts (or if it cannot load) the track scrolls natively. */
+  .cart-drawer__upsell-slider:not(.swiper-initialized) .cart-drawer__upsell-track {
+    gap: 10px;
+    padding-inline: var(--cart-drawer-gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--cart-drawer-gutter);
+    scrollbar-width: none;
+  }
+
+  .cart-drawer__upsell-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cart-drawer__card {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: var(--cart-drawer-card-width);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .cart-drawer__card-media {
+    position: relative;
+    aspect-ratio: 1;
+    margin-block-end: 8px;
+    background-color: #FFF;
+    overflow: hidden;
+  }
+
+  .cart-drawer__card-media img,
+  .cart-drawer__card-media svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform var(--animation-speed-slow) var(--animation-easing);
+  }
+
+  .cart-drawer__card:hover .cart-drawer__card-media img {
+    transform: scale(1.04);
+  }
+
+  .cart-drawer__card-add {
+    position: absolute;
+    inset-block-end: -0.27px;
+    inset-inline-end: -0.27px;
+  }
+
+  .cart-drawer__card-add :is(button, a) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    border-radius: 8px 0 0 0;
+    background-color: var(--cart-drawer-accent);
+    color: #2A2A2A;
+    cursor: pointer;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing),
+      color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__card-add :is(button, a):hover {
+    background-color: var(--color-foreground);
+    color: #FFF;
+  }
+
+  .cart-drawer__card-add button:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+
+  .cart-drawer__card-add svg {
+    width: 11px;
+    height: 12px;
+  }
+
+  .cart-drawer__card-title {
+    display: -webkit-box;
+    color: #2A2A2A;
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .cart-drawer__card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .cart-drawer__card-title a:hover {
+    text-decoration: underline;
+  }
+
+  .cart-drawer__card-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+    margin: 8px 0 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .cart-drawer__card-swatch {
+    position: relative;
+    display: flex;
+    padding: 2px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: border-color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__card-swatch:has(:checked) {
+    border-color: var(--color-foreground);
+  }
+
+  .cart-drawer__card-swatch:has(:focus-visible) {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 1px;
+  }
+
+  .cart-drawer__card-swatch:has(:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* The radio covers the swatch invisibly: it stays clickable and focusable, and unlike
+     .visually-hidden it does not reappear while focused. */
+  .cart-drawer__card-swatch-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 50%;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  .cart-drawer__card-swatch .swatch {
+    --swatch-width: 20px !important;
+    --swatch-height: 20px !important;
+
+    border-radius: 50%;
+  }
+
+  .cart-drawer__card-price {
+    margin-block-start: 8px;
+    color: #2A2A2A;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
+  }
+
+  /* Order note */
+  .cart-drawer__note {
+    margin-block-start: 24px;
+    display: block;
+    flex-shrink: 0;
+    background-color: var(--cart-drawer-accent);
+  }
+
+  .cart-drawer__note-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px var(--cart-drawer-gutter);
+    color: #1A1A1A;
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .cart-drawer__note-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cart-drawer__note-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .cart-drawer__note-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .cart-drawer__note details[open] .cart-drawer__note-icon--closed,
+  .cart-drawer__note details:not([open]) .cart-drawer__note-icon--open {
+    display: none;
+  }
+
+  /* The open panel scrolls inside itself, capped by cart-drawer.js to the room above the pinned
+     footer, so the delivery calendar never makes the drawer column scroll. */
+  .cart-drawer__note-field {
+    padding: 0 var(--cart-drawer-gutter) 20px;
+  }
+
+  /* The note is pinned at the bottom, so it opens upward; easing that in reads as the panel
+     opening rather than the drawer jumping. Browsers without ::details-content open instantly. */
+  .cart-drawer__note details {
+    interpolate-size: allow-keywords;
+  }
+
+  .cart-drawer__note details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition: block-size var(--animation-speed) var(--animation-easing),
+      content-visibility var(--animation-speed) allow-discrete;
+  }
+
+  .cart-drawer__note details[open]::details-content {
+    block-size: auto;
+  }
+
+  /* Delivery date picker */
+  .cart-drawer__date {
+    --cart-drawer-date-ink: #303030;
+    --cart-drawer-date-surface: #ffffff80;
+    --cart-drawer-date-border: #D3CEC5;
+    --cart-drawer-date-line: #e6e2da;
+    --cart-drawer-date-radius: 4px;
+    --cart-drawer-date-row: 44px;
+    --cart-drawer-date-dot: 40px;
+
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    color: var(--cart-drawer-date-ink);
+  }
+
+  .cart-drawer__date-label {
+    margin-block: 0px 12px;
+    color: var(--cart-drawer-date-ink);
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 600;
+  }
+
+  /* Native fallback (no JavaScript) and the enhanced trigger share the field look. */
+  .cart-drawer__date-input,
+  .cart-drawer__date-trigger {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    border: 1px solid var(--cart-drawer-date-border);
+    border-radius: var(--cart-drawer-date-radius);
+    background-color: var(--cart-drawer-date-surface);
+    color: var(--cart-drawer-date-ink);
+    font: inherit;
+  }
+
+  .cart-drawer__date-input {
+    display: none;
+    padding: 10px 16px;
+    /* 16px stops iOS zooming the page when the field is focused. */
+    font-size: 16px;
+  }
+
+  .cart-drawer__date[data-enhanced] .cart-drawer__date-input {
+    display: none;
+  }
+
+  .cart-drawer__date-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    color: var(--cart-drawer-date-ink);
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .cart-drawer__date-trigger[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .cart-drawer__date-icon,
+  .cart-drawer__date-caret {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .cart-drawer__date-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .cart-drawer__date-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .cart-drawer__date-trigger:not([data-has-value]) .cart-drawer__date-value {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+  }
+
+  .cart-drawer__date-caret svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__date-trigger[aria-expanded='true'] .cart-drawer__date-caret svg {
+    transform: rotate(180deg);
+  }
+
+  .cart-drawer__calendar {
+    margin-block-start: 12px;
+    padding: 12px;
+    border: 1px solid var(--cart-drawer-date-line);
+    border-radius: 6px;
+    background-color: var(--cart-drawer-date-surface);
+  }
+
+  .cart-drawer__calendar[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-end: 12px;
+  }
+
+  .cart-drawer__calendar-nav {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--cart-drawer-date-line);
+    border-radius: var(--cart-drawer-date-radius);
+    background-color: var(--cart-drawer-date-surface);
+    color: var(--cart-drawer-date-ink);
+    cursor: pointer;
+  }
+
+  .cart-drawer__calendar-nav svg {
+    width: 5px;
+    height: 8px;
+  }
+
+  .cart-drawer__calendar-nav:disabled {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-30));
+    cursor: default;
+  }
+
+  .cart-drawer__calendar-month {
+    margin: 0;
+    font-family: inherit;
+    color: var(--cart-drawer-date-ink);
+    font-size: 14px;
+    line-height: 16.8px;
+    letter-spacing: normal;
+    font-weight: 600;
+    text-align: center;
+    text-transform: none;
+  }
+
+  .cart-drawer__calendar-grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .cart-drawer__calendar-grid :is(th, td) {
+    padding: 0;
+    border: 0;
+    text-align: center;
+  }
+
+  .cart-drawer__calendar-grid th {
+    padding-block-end: 12px;
+    color: var(--cart-drawer-date-ink);
+    font-size: 11px;
+    line-height: 13.2px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__calendar-grid td {
+    height: var(--cart-drawer-date-row);
+  }
+
+  .cart-drawer__day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--cart-drawer-date-dot);
+    height: var(--cart-drawer-date-dot);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font: inherit;
+    color: var(--cart-drawer-date-ink);
+    font-size: 12px;
+    line-height: 14.4px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__day:not(:disabled):hover {
+    background-color: var(--cart-drawer-date-line);
+  }
+
+  .cart-drawer__day[aria-pressed='true'] {
+    background-color: var(--cart-drawer-date-ink);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .cart-drawer__day:disabled {
+    cursor: default;
+  }
+
+  .cart-drawer__date-error {
+    margin: 0;
+    color: var(--color-error);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .cart-drawer__date-error:not(:empty) {
+    margin-block-start: 8px;
+  }
+
+  @media (min-width: 769px) {
+    .cart-drawer__date {
+      --cart-drawer-date-row: 50px;
+      --cart-drawer-date-dot: 44px;
+    }
+  }
+
+  /* Footer */
+  .cart-drawer__footer {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 12px;
+    padding: 20px var(--cart-drawer-gutter);
+    border-block-start: 0.8px solid #e6e2da;
+    background-color: #FFF;
+  }
+
+  /* The checkout element is display: contents, so its children join the footer's flex order:
+     protection switch above the totals, buttons below. */
+  .cart-drawer__footer > *,
+  .cart-drawer__checkout > * {
+    order: 5;
+    min-width: 0;
+  }
+
+  .cart-drawer__footer > .cart-drawer__shipping {
+    order: 1;
+  }
+
+  .cart-drawer__footer > .cart-drawer__discount {
+    order: 2;
+  }
+
+  .cart-drawer__footer > .cart-drawer__totals {
+    order: 4;
+  }
+
+  .cart-drawer__checkout {
+    display: contents;
+  }
+
+  .cart-drawer__checkout > .cart-drawer__protection {
+    order: 3;
+  }
+
+  /* SavedBy's target button and its injected controls stay in the DOM (they run its checkout)
+     but are never shown; the switch and buttons below replace them visually. */
+  .cart-drawer__checkout > :is(.cart-drawer__savedby-target, savedby-checkout-plus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .cart-drawer__checkout[aria-busy] > [data-checkout] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .cart-drawer__protection {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .cart-drawer__protection[hidden] {
+    display: none;
+  }
+
+  .cart-drawer__protection-text {
+    min-width: 0;
+  }
+
+  .cart-drawer__protection-title {
+    color: #1a1a1a;
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__protection-title label {
+    cursor: pointer;
+  }
+
+  .cart-drawer__protection-description {
+    padding-block-start: 4px;
+    color: #737373;
+    font-size: 11px;
+    line-height: 15.4px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__shipping {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    color: #1A1A1A;
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__shipping-country img {
+    display: inline-block;
+    vertical-align: -1px;
+    width: 16px;
+    height: auto;
+  }
+
+  .cart-drawer__shipping-change {
+    position: relative;
+  }
+
+  .cart-drawer__shipping-change label {
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cart-drawer__shipping-change:has(:focus-visible) {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .cart-drawer__country-select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .cart-drawer__discount {
+    display: block;
+  }
+
+  .cart-drawer__discount-form {
+    display: flex;
+    min-height: 44px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  }
+
+  .cart-drawer__discount-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 0;
+    background-color: #FFF;
+    color: var(--color-foreground);
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .cart-drawer__discount-input::placeholder {
+    color: var(--cart-drawer-muted);
+  }
+
+  .cart-drawer__discount-input:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: -2px;
+  }
+
+  .cart-drawer__discount-button {
+    flex-shrink: 0;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 0;
+    background-color: #EFEAE1;
+    font: inherit;
+    color: #1A1A1A;
+    font-size: 12px;
+    line-height: 14.4px;
+    letter-spacing: 0.96px;
+    font-weight: 400;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__discount-button:hover {
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+  }
+
+  .cart-drawer__discount-error {
+    margin-block-start: 6px;
+    color: var(--color-error);
+    font-size: 12px;
+  }
+
+  .cart-drawer__discount-codes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cart-drawer__discount-code {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 4px 4px 10px;
+    background-color: var(--cart-drawer-accent);
+    font-size: 12px;
+  }
+
+  .cart-drawer__discount-code button {
+    margin: 0;
+  }
+
+  .cart-drawer__totals {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-block-start: 12px;
+    border-block-start: 0.8px solid #e6e2da;
+  }
+
+  .cart-drawer__total-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .cart-drawer__total-row dd {
+    color: var(--cart-drawer-muted);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: end;
+  }
+
+  .cart-drawer__total-row--grand,
+  .cart-drawer__total-row--grand dd {
+    color: #1a1a1a;
+    font-size: 14px;
+    line-height: 16.8px;
+    font-weight: 600;
+  }
+
+  .cart-drawer__checkout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 0;
+    background-color: #2A2A2A;
+    font: inherit;
+    color: #FFF;
+    font-size: 12px;
+    line-height: 14.4px;
+    letter-spacing: 0.96px;
+    font-weight: 400;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  .cart-drawer__checkout-button:hover {
+    opacity: 0.88;
+  }
+
+  .cart-drawer__checkout-button:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .cart-drawer__checkout-button svg {
+    width: 13px;
+    height: 9px;
+  }
+
+  .cart-drawer__checkout-button svg:dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  /* Shopify's wallet grid lives in a closed shadow root, so hidden wallets keep their rows.
+     The wrapper is clipped to one button row (Shop Pay renders first) and the design face sits
+     on top; it ignores pointer events so Shopify's button handles the click. */
+  .cart-drawer__accelerated {
+    --cart-drawer-shop-pay-height: 48px;
+
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    block-size: var(--cart-drawer-shop-pay-height);
+    margin-block-start: -4px;
+    overflow: hidden;
+  }
+
+  /* Hidden until the script has found Shop Pay, so other wallets never flash in. */
+  .cart-drawer__accelerated:not([data-shop-pay-ready]) {
+    display: none;
+  }
+
+  .cart-drawer__accelerated:focus-within {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .cart-drawer__accelerated shopify-accelerated-checkout-cart {
+    --shopify-accelerated-checkout-inline-alignment: center;
+    --shopify-accelerated-checkout-button-border-radius: 0;
+    --shopify-accelerated-checkout-button-block-size: var(--cart-drawer-shop-pay-height);
+    --shopify-accelerated-checkout-row-gap: 0px;
+
+    display: block;
+    width: 100%;
+  }
+
+  .cart-drawer__shop-pay-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3em;
+    padding: 0 20px;
+    background-color: #5a31f4;
+    color: #fff;
+    font-size: 16px;
+    pointer-events: none;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing);
+  }
+
+  /* While the protection line is being added or removed, Shop Pay waits so it never checks out a
+     cart that does not match the switch yet (cart-drawer.js). */
+  .cart-drawer__checkout[data-protection-syncing] .cart-drawer__accelerated {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Quantity changes address lines by position; adding the protection line shifts positions. */
+  .cart-drawer__component[data-protection-syncing] .cart-drawer__lines {
+    pointer-events: none;
+  }
+
+  .cart-drawer__accelerated:hover .cart-drawer__shop-pay-face {
+    background-color: #390ced;
+  }
+
+  .cart-drawer__shop-pay-face b {
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  /* Empty state */
+  .cart-drawer__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--gap-xl);
-    padding: var(--cart-drawer-summary-padding);
-    margin-top: auto;
-    background-color: var(--color-background);
-    /* stylelint-disable-next-line color-named */
-    mask-image: linear-gradient(to bottom, transparent, black var(--cart-drawer-summary-padding));
-
-    @media screen and (min-width: 750px) {
-      --cart-drawer-summary-padding: var(--padding-2xl);
-    }
-  }
-
-  .theme-drawer__dialog[cart-summary-sticky='false'] .cart-drawer__summary {
-    position: static;
-    mask-image: none;
-  }
-
-  .theme-drawer__dialog[cart-summary-sticky='false'] .cart-drawer__items {
-    overflow: unset;
-  }
-
-  .cart-actions summary {
-    padding-inline: 0;
-    padding-block: var(--padding-sm);
-    line-height: 1.2;
-    min-height: var(--minimum-touch-target);
-  }
-
-  .cart-drawer__summary .cart__summary-totals:not(:has(.cart__subtotal-container:empty)) {
-    border-block-start: var(--style-border-width) solid rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
-    padding-block-start: var(--padding-2xl);
-  }
-
-  .cart-drawer__summary .cart-note {
-    @media screen and (min-width: 750px) {
-      margin-block-start: var(--margin-3xs);
-    }
-  }
-
-  .cart-drawer--empty .cart-drawer__content {
+    justify-content: center;
+    flex: 1;
+    min-height: 100%;
+    padding: 32px 20px;
     text-align: center;
+  }
+
+  .cart-drawer__empty-heading h3 {
+    font-family: var(--font-heading--family);
+    color: #1A1A1A;
+    font-size: 24px;
+    line-height: 33.6px;
+    letter-spacing: -0.48px;
+    font-weight: var(--font-heading--weight);
+    text-transform: capitalize;
+  }
+
+  .cart-drawer__empty-text {
+    margin-block-start: 4px;
+  }
+
+  .cart-drawer__empty-text p {
+    color: var(--cart-drawer-muted);
+    font-size: 12px;
+    line-height: 16.8px;
+    font-weight: 400;
+  }
+
+  .cart-drawer__empty-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 326px;
+    margin-block-start: 24px;
+  }
+
+  .cart-drawer__empty-button a {
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-height: auto;
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid #2A2A2A;
+    background-color: #2A2A2A;
+    color: #FFF;
+    font-size: 12px;
+    line-height: 14.4px;
+    letter-spacing: 1.8px;
+    font-weight: 400;
+    text-transform: capitalize;
+    text-decoration: none;
+    transition: background-color var(--animation-speed-fast) var(--animation-easing),
+      color var(--animation-speed-fast) var(--animation-easing);
   }
 
-  .cart-drawer--empty .cart-drawer__items {
-    padding-inline: 0;
+  .cart-drawer__empty-button a:hover,
+  .cart-drawer__empty-button--secondary a {
+    background-color: #FFF;
+    color: #2A2A2A;
   }
 
-  cart-drawer-component:not(:has(.cart-form)) .cart-drawer__content {
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+  .cart-drawer__empty-button--secondary a:hover {
+    background-color: #2A2A2A;
+    color: #FFF;
   }
 
-  cart-drawer-component:not(:has(.cart-form)) .cart-drawer__items {
-    padding-inline: 0;
-  }
+  @media (min-width: 769px) {
+    .cart-drawer {
+      --theme-drawer-width: 440px;
+      --cart-drawer-gutter: 20px;
+    }
 
-  @media screen and (prefers-reduced-motion: no-preference) {
-    html:active-view-transition-type(empty-cart-drawer) {
-      .theme-drawer__close-button {
-        view-transition-name: cart-drawer-close-button;
-      }
+    .cart-drawer__title h2 {
+      font-size: 20px;
+      line-height: 26px;
+      letter-spacing: -0.4px;
+    }
+
+    .cart-drawer__progress-message {
+      font-size: 14px;
+    }
+
+    .cart-drawer__line {
+      grid-template-columns: 84px minmax(0, 1fr) auto;
+      column-gap: 16px;
+      padding-block: 18px;
+    }
+
+    .cart-drawer__line + .cart-drawer__line {
+      margin-block-start: 16px;
+    }
+
+    .cart-drawer__gift {
+      grid-template-columns: 84px minmax(0, 1fr) auto;
+      margin-block-start: 16px;
+    }
+
+    .cart-drawer__gift-media {
+      grid-row: auto;
+    }
+
+    .cart-drawer__line-title {
+      font-size: 14px;
+      line-height: 16.8px;
+    }
+
+    .cart-drawer__line-option,
+    .cart-drawer__line-price {
+      font-size: 14px;
+      line-height: 16.8px;
+    }
+
+    .cart-drawer__gift-price {
+      grid-column: auto;
+    }
+
+    .cart-drawer__upsell {
+      margin-block-start: 16px;
+      --cart-drawer-card-width: calc((100% - var(--cart-drawer-gutter)) / 3.3 - 10px);
+    }
+    
+    .cart-drawer__note {
+      margin-block-start: 16px;
+    }
+
+    .cart-drawer__note-summary {
+      padding: 22.3px var(--cart-drawer-gutter);
+      font-size: 14px;
+      line-height: 16.8px;
+    }
+
+    .cart-drawer__protection-title {
+      font-size: 14px;
+      line-height: 16.8px;
+    }
+
+    .cart-drawer__protection-description {
+      font-size: 12px;
+      line-height: 16.8px;
+    }
+
+    .cart-drawer__total-row--grand,
+    .cart-drawer__total-row--grand dd {
+      font-size: 16px;
+      line-height: 19.2px;
+    }
+
+    .cart-drawer__checkout-button {
+      min-height: 52px;
     }
   }
 
-  :active-view-transition {
-    .cart-drawer__header,
-    .cart-drawer__content {
-      background: transparent;
+  @media (prefers-reduced-motion: reduce) {
+    .cart-drawer *,
+    .cart-drawer *::before,
+    .cart-drawer__note details::details-content {
+      transition: none;
+      animation: none;
     }
   }
 {% endstylesheet %}

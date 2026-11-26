@@ -86,23 +86,25 @@
   const squeezeQuery = window.matchMedia('(min-width: 990px)');
 
   // ── Squeeze coordination ──
-  // Listens to all drawers. Only squeezes on wide viewports.
-  document.addEventListener('theme-drawer:open', () => {
+  // Listens to all drawers. Only squeezes on wide viewports, and never for
+  // drawers marked `modal` (they overlay the page with a backdrop instead).
+  const openSqueezeDrawer = () => document.querySelector('theme-drawer[open]:not([modal])');
+
+  document.addEventListener('theme-drawer:open', (event) => {
+    if (event.target instanceof Element && event.target.hasAttribute('modal')) return;
     if (squeezeQuery.matches) {
       pageWrapper?.classList.add('page-wrapper--drawer-open');
     }
   });
 
   document.addEventListener('theme-drawer:close', () => {
-    const openDrawer = document.querySelector('theme-drawer[open]');
-    if (!openDrawer) {
+    if (!openSqueezeDrawer()) {
       pageWrapper?.classList.remove('page-wrapper--drawer-open');
     }
   });
 
   squeezeQuery.addEventListener('change', () => {
-    const openDrawer = document.querySelector('theme-drawer[open]');
-    pageWrapper?.classList.toggle('page-wrapper--drawer-open', Boolean(openDrawer) && squeezeQuery.matches);
+    pageWrapper?.classList.toggle('page-wrapper--drawer-open', Boolean(openSqueezeDrawer()) && squeezeQuery.matches);
   });
 
   // ── State persistence ──

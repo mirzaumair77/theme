@@ -226,9 +226,7 @@
     "work_quickly_to_ship": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
   },
   "info": {
-    "announcement_size_desktop": "Screens 750px and wider. Default uses the size above.",
-    "announcement_padding_desktop": "Screens 750px and wider. Top and bottom padding above apply to mobile.",
-    "mega_menu_item":"Enter the exact title of a top-level menu item, for example Best Sellers. The image shows only in that item's mega menu.",
+    "mega_menu_item": "Enter the exact title of a top-level menu item, for example Best Sellers. The image shows only in that item's mega menu.",
     "product_title_accent_text": "Enter one value per line, for example ™. Matching text in the product title gets the custom style. Upper and lower case both match.",
     "default_size": "Selected when the page opens without a chosen variant and this size is available, for example 7.",
     "drawer_accent_color": "Fills the mobile drawer search field and submenu title bar.",
@@ -260,10 +258,10 @@
     "hover_effects": "Applies to product and collection cards",
     "logo_font": "Applies only when a logo is not selected",
     "logo_height": "Only affects header logo",
-    "localization_desktop_header": "When off, the selector is removed from the desktop header only. The mobile menu keeps it.",
     "page_text_color_default_info": "Default for theme sections",
     "manage_countries_regions": "[Manage countries/regions](/admin/settings/markets)",
     "manage_languages": "[Manage languages](/admin/settings/languages)",
+    "localization_desktop_header": "Desktop only. The mobile menu keeps its currency and language selectors.",
     "transparent_background": "Review each template where transparent background is applied for readability",
     "video_alt_text": "Describe the video for assistive tech users",
     "video_autoplay": "Videos will be muted by default",
@@ -1035,6 +1033,7 @@
     "items_to_show": "Items to show",
     "label": "Label",
     "language_selector": "Language selector",
+    "show_in_desktop_header": "Show currency selector on desktop",
     "large": "Large",
     "layout": "Layout",
     "layout_gap": "Layout gap",
@@ -1207,7 +1206,6 @@
     "show_powered_by_shopify": "Show \"Powered by Shopify\"",
     "show_sale_price_first": "Show sale price first",
     "show_search": "Show search",
-    "show_in_desktop_header": "Show in desktop header",
     "show_second_image_on_hover": "Show second image on hover",
     "show_swatch_label": "Text labels for swatches",
     "show_tax_info": "Tax information",
@@ -1351,5 +1349,67 @@
     "when_will_order_arrive": "When will I get my order?",
     "where_are_products_made": "Where are your products manufactured?",
     "disclosures": "Disclosures"
+  },
+  "cart_drawer": {
+    "names": {
+      "cart_drawer": "Cart drawer"
+    },
+    "content": {
+      "appearance": "Appearance",
+      "empty_cart": "Empty cart",
+      "discount_progress": "Discount progress",
+      "upsell": "You may also like",
+      "free_gift": "Free gift",
+      "footer": "Order note and totals"
+    },
+    "settings": {
+      "accent_background": "Panel background",
+      "heading": "Heading",
+      "header": "Header",
+      "text": "Text",
+      "primary_button_label": "Primary button label",
+      "primary_button_link": "Primary button link",
+      "secondary_button_label": "Secondary button label",
+      "secondary_button_link": "Secondary button link",
+      "show_discount_progress": "Show discount progress",
+      "threshold_type": "Threshold type",
+      "qualifying_collection": "Qualifying collection",
+      "threshold_quantity": "Items required",
+      "threshold_amount": "Cart value required",
+      "progress_message": "Progress message",
+      "success_message": "Unlocked message",
+      "product_source": "Product source",
+      "collection": "Collection",
+      "product_limit": "Maximum products",
+      "products": "Products",
+      "enable_free_gift": "Enable free gift",
+      "gift_product": "Gift product",
+      "featured_image": "Featured image",
+      "title": "Title",
+      "description": "Description",
+      "toggle_label": "Gift switch label",
+      "note_label": "Order note label",
+      "delivery_min_days": "Minimum days before delivery date",
+      "days_unit": "d",
+      "shipping_value": "Shipping row value"
+    },
+    "options": {
+      "item_quantity": "Item quantity",
+      "cart_value": "Cart value",
+      "collection": "Collection",
+      "product_list": "Product list"
+    },
+    "info": {
+      "accent_background": "Used for the free gift, recommendations and order note panels.",
+      "discount_progress": "Shows shoppers how close they are to a discount. The bar only displays progress: create a matching automatic discount in Discounts with the same minimum so the price drops at the threshold.",
+      "qualifying_collection": "Only products in this collection count toward the threshold. Leave empty to count every product.",
+      "threshold_amount": "In your store currency, e.g. 200.",
+      "progress_message": "Use [remaining] for the items or amount still needed.",
+      "free_gift": "When enabled, the gift product is added once to every bag that contains a purchased product, and removed when it is disabled or the bag is emptied. To charge $0, create an automatic discount (Amount off products, 100%) for the gift product.",
+      "gift_image": "Leave empty to use the product image.",
+      "gift_title": "Leave empty to use the product title.",
+      "delivery_min_days": "Shoppers can only pick a delivery date at least this many days after they order. The chosen date is saved on the order as the \"Delivery date\" attribute (Orders > order > Additional details).",
+      "shipping_value": "For example \"Free\". Leave empty to hide the shipping row."
+    }
   }
 }

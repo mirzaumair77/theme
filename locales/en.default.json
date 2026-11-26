@@ -404,5 +404,32 @@
       "previous": "Previous products",
       "next": "Next products"
     }
+  },
+  "cart_drawer": {
+    "title": "Your Shopping Bag",
+    "free": "Free",
+    "remove": "Remove {{ title }}",
+    "add_to_bag": "Add {{ title }} to bag",
+    "choose_options": "Choose options for {{ title }}",
+    "previous": "Previous products",
+    "next": "Next products",
+    "shipping_to": "Shipping to {{ country }}",
+    "change": "Change",
+    "change_country": "Change shipping country",
+    "discount_placeholder": "Offer codes & gift cards",
+    "apply_code": "Apply code",
+    "gift_packaging": "Gift Packaging",
+    "shipping": "Shipping",
+    "total": "Total",
+    "checkout": "Continue to checkout",
+    "buy_with": "Buy with",
+    "protection_title": "Package protection",
+    "protection_description": "Covers loss, theft and damage in transit. By SavedBy.",
+    "pick_date": "Pick a date",
+    "select_date": "Select a date",
+    "previous_month": "Previous month",
+    "next_month": "Next month",
+    "delivery_date_error": "Please choose {{ date }} or later.",
+    "delivery_date_save_error": "We couldn’t save your delivery date. Please try again."
   }
 }

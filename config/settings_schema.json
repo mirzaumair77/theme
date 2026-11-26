@@ -1622,6 +1622,255 @@
     ]
   },
   {
+    "name": "t:cart_drawer.names.cart_drawer",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.appearance"
+      },
+      {
+        "type": "color",
+        "id": "cart_drawer_accent_background",
+        "label": "t:cart_drawer.settings.accent_background",
+        "info": "t:cart_drawer.info.accent_background",
+        "default": "#F7F5F0"
+      },
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.empty_cart"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_empty_heading",
+        "label": "t:cart_drawer.settings.heading",
+        "default": "Your Bag Is Empty"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_empty_text",
+        "label": "t:cart_drawer.settings.text",
+        "default": "Discover original designs, handcrafted in New Orleans."
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_empty_primary_label",
+        "label": "t:cart_drawer.settings.primary_button_label",
+        "default": "Shop Best Sellers"
+      },
+      {
+        "type": "url",
+        "id": "cart_drawer_empty_primary_link",
+        "label": "t:cart_drawer.settings.primary_button_link",
+        "default": "/collections/all"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_empty_secondary_label",
+        "label": "t:cart_drawer.settings.secondary_button_label",
+        "default": "Shop Metal Pocket Squares™"
+      },
+      {
+        "type": "url",
+        "id": "cart_drawer_empty_secondary_link",
+        "label": "t:cart_drawer.settings.secondary_button_link"
+      },
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.discount_progress"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:cart_drawer.info.discount_progress"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_progress_enable",
+        "label": "t:cart_drawer.settings.show_discount_progress",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "cart_drawer_progress_type",
+        "label": "t:cart_drawer.settings.threshold_type",
+        "options": [
+          {
+            "value": "quantity",
+            "label": "t:cart_drawer.options.item_quantity"
+          },
+          {
+            "value": "amount",
+            "label": "t:cart_drawer.options.cart_value"
+          }
+        ],
+        "default": "quantity",
+        "visible_if": "{{ settings.cart_drawer_progress_enable }}"
+      },
+      {
+        "type": "collection",
+        "id": "cart_drawer_progress_collection",
+        "label": "t:cart_drawer.settings.qualifying_collection",
+        "info": "t:cart_drawer.info.qualifying_collection"
+      },
+      {
+        "type": "range",
+        "id": "cart_drawer_progress_quantity",
+        "label": "t:cart_drawer.settings.threshold_quantity",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 4,
+        "visible_if": "{{ settings.cart_drawer_progress_enable and settings.cart_drawer_progress_type == 'quantity' }}"
+      },
+      {
+        "type": "number",
+        "id": "cart_drawer_progress_amount",
+        "label": "t:cart_drawer.settings.threshold_amount",
+        "info": "t:cart_drawer.info.threshold_amount",
+        "default": 200,
+        "visible_if": "{{ settings.cart_drawer_progress_enable and settings.cart_drawer_progress_type == 'amount' }}"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "cart_drawer_progress_message",
+        "label": "t:cart_drawer.settings.progress_message",
+        "info": "t:cart_drawer.info.progress_message",
+        "default": "Add <strong>[remaining] more</strong> Metal Pocket Squares to unlock <strong>20% off.</strong>",
+        "visible_if": "{{ settings.cart_drawer_progress_enable }}"
+      },
+      {
+        "type": "inline_richtext",
+        "id": "cart_drawer_progress_success",
+        "label": "t:cart_drawer.settings.success_message",
+        "default": "You've <strong>unlocked 20% off</strong> all Metal Pocket Squares!",
+        "visible_if": "{{ settings.cart_drawer_progress_enable }}"
+      },
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.upsell"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_upsell_heading",
+        "label": "t:cart_drawer.settings.heading",
+        "default": "You might also like"
+      },
+      {
+        "type": "select",
+        "id": "cart_drawer_upsell_source",
+        "label": "t:cart_drawer.settings.product_source",
+        "options": [
+          {
+            "value": "collection",
+            "label": "t:cart_drawer.options.collection"
+          },
+          {
+            "value": "products",
+            "label": "t:cart_drawer.options.product_list"
+          }
+        ],
+        "default": "collection"
+      },
+      {
+        "type": "collection",
+        "id": "cart_drawer_upsell_collection",
+        "label": "t:cart_drawer.settings.collection"
+      },
+      {
+        "type": "range",
+        "id": "cart_drawer_upsell_limit",
+        "label": "t:cart_drawer.settings.product_limit",
+        "min": 2,
+        "max": 12,
+        "step": 1,
+        "default": 8,
+        "visible_if": "{{ settings.cart_drawer_upsell_source == 'collection' }}"
+      },
+      {
+        "type": "product_list",
+        "id": "cart_drawer_upsell_products",
+        "label": "t:cart_drawer.settings.products",
+        "limit": 12
+      },
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.free_gift"
+      },
+      {
+        "type": "paragraph",
+        "content": "t:cart_drawer.info.free_gift"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_gift_enable",
+        "label": "t:cart_drawer.settings.enable_free_gift",
+        "default": false
+      },
+      {
+        "type": "product",
+        "id": "cart_drawer_gift_product",
+        "label": "t:cart_drawer.settings.gift_product"
+      },
+      {
+        "type": "image_picker",
+        "id": "cart_drawer_gift_image",
+        "label": "t:cart_drawer.settings.featured_image",
+        "info": "t:cart_drawer.info.gift_image",
+        "visible_if": "{{ settings.cart_drawer_gift_enable }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_gift_title",
+        "label": "t:cart_drawer.settings.title",
+        "info": "t:cart_drawer.info.gift_title",
+        "visible_if": "{{ settings.cart_drawer_gift_enable }}"
+      },
+      {
+        "type": "richtext",
+        "id": "cart_drawer_gift_description",
+        "label": "t:cart_drawer.settings.description",
+        "default": "<p>Pouch included with every piece.</p>",
+        "visible_if": "{{ settings.cart_drawer_gift_enable }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_gift_toggle_label",
+        "label": "t:cart_drawer.settings.toggle_label",
+        "default": "Add Gift Box",
+        "visible_if": "{{ settings.cart_drawer_gift_enable }}"
+      },
+      {
+        "type": "header",
+        "content": "t:cart_drawer.content.footer"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_note_label",
+        "label": "t:cart_drawer.settings.note_label",
+        "default": "Need it by a certain date?",
+        "visible_if": "{{ settings.show_cart_note }}"
+      },
+      {
+        "type": "range",
+        "id": "cart_drawer_delivery_min_days",
+        "label": "t:cart_drawer.settings.delivery_min_days",
+        "info": "t:cart_drawer.info.delivery_min_days",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "unit": "t:cart_drawer.settings.days_unit",
+        "default": 3,
+        "visible_if": "{{ settings.show_cart_note }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_drawer_shipping_value",
+        "label": "t:cart_drawer.settings.shipping_value",
+        "info": "t:cart_drawer.info.shipping_value",
+        "default": "Free"
+      }
+    ]
+  },
+  {
     "name": "t:names.drawers",
     "settings": [
       {

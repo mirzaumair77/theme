@@ -1,4 +1,11 @@
-{% # SRA target for /cart endpoints. The Section Rendering API provides the section wrapper. %}
+{% comment %}
+  Section contract.
+  Section Rendering API target for the custom cart drawer. Cart mutations request
+  `sections=cart-drawer-section` and morph the response into the live drawer; the API supplies
+  the section wrapper. Settings live in Theme settings > Cart drawer (`config/settings_schema.json`).
+  @example
+  <!-- Rendered by layout/theme.liquid via snippets/cart-drawer.liquid; fetched with ?sections=cart-drawer-section -->
+{% endcomment %}
 {% render 'cart-drawer', render_wrapper: false %}
 
 {% schema %}

@@ -9,6 +9,20 @@ const CART_COUNT_EVENT = 'cart-icon:count';
 const CART_MUTATION_PATH = /\/cart\/(add|change|update|clear)(\.js|\.json)?\/?$/;
 
 /**
+ * Item count without package protection (SavedBy) lines, which are a fee rather than a product.
+ * Matches `snippets/cart-bubble.liquid`.
+ * @param {{ item_count: number, items?: Array<{ vendor?: string, quantity?: number }> }} cart - A /cart.js response.
+ * @returns {number}
+ */
+function productCount(cart) {
+  const protection = (cart.items ?? []).reduce(
+    (sum, item) => (String(item?.vendor ?? '').toLowerCase().includes('savedby') ? sum + (item.quantity ?? 0) : sum),
+    0
+  );
+  return Math.max(0, cart.item_count - protection);
+}
+
+/**
  * Keeps every <cart-icon> in sync with the real cart, however the cart was changed.
  *
  * The theme's own add-to-cart flows announce changes with `CartLinesUpdateEvent`, but the store's
@@ -52,7 +66,7 @@ const cartSync = (() => {
       const cart = await response.json();
       if (controller.signal.aborted || typeof cart?.item_count !== 'number') return;
 
-      document.dispatchEvent(new CustomEvent(CART_COUNT_EVENT, { detail: { count: cart.item_count } }));
+      document.dispatchEvent(new CustomEvent(CART_COUNT_EVENT, { detail: { count: productCount(cart) } }));
     } catch (error) {
       if (/** @type {Error} */ (error)?.name !== 'AbortError') console.warn('[cart-icon] Cart refresh failed:', error);
     }
@@ -166,11 +180,10 @@ class CartIcon extends Component {
    * @param {CartLinesUpdateEvent} event - The cart update event.
    */
   onCartUpdate = (event) => {
+    // The event's totals include package protection lines, so the count is re-read from /cart.js
+    // (`productCount`) instead; the read is debounced with the mutation-triggered one.
     event.promise
-      ?.then(({ cart, detail }) => {
-        const itemCount = cart?.totalQuantity ?? detail?.itemCount;
-        if (typeof itemCount === 'number') this.renderCartBubble(itemCount);
-      })
+      ?.then(() => cartSync.schedule(0))
       .catch((error) => {
         if (error?.name !== 'AbortError') console.warn('[cart-icon] Event promise rejected:', error);
         // The event failed, but the cart may still have changed: re-read it.

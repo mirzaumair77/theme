@@ -10,13 +10,22 @@
 {% liquid
   assign bubble_bg_fallback = settings.page_text_color
   assign bubble_text_fallback = settings.page_background_color
+
+  # Package protection (SavedBy) is a fee line, not a product; keep it out of the count.
+  # Matches assets/cart-icon.js and the cart drawer's line classification.
+  assign item_count = cart.item_count
+  for item in cart.items
+    assign item_vendor = item.vendor | downcase
+    if item_vendor contains 'savedby'
+      assign item_count = item_count | minus: item.quantity
+    endif
+  endfor
 %}
 
 <div
   ref="cartBubble"
-  class="cart-bubble{% if cart == empty %} visually-hidden{% endif %}"
+  class="cart-bubble{% if item_count == 0 %} visually-hidden{% endif %}"
   style="--cart-bubble-background-fallback: {{ bubble_bg_fallback }}; --cart-bubble-text-fallback: {{ bubble_text_fallback }};"
-  {% assign item_count = cart.item_count %}
   {% if item_count <= 99 %}
     data-maintain-ratio
   {% endif %}
@@ -28,13 +37,13 @@
     class="cart-bubble__text"
   >
     <span
-      class="cart-bubble__text-count{% if cart == empty %} hidden{% endif %}"
+      class="cart-bubble__text-count{% if item_count == 0 %} hidden{% endif %}"
       ref="cartBubbleCount"
       aria-hidden="true"
       data-testid="cart-bubble"
     >
-      {%- if limit == blank or cart.item_count < limit %}
-        {{- cart.item_count -}}
+      {%- if limit == blank or item_count < limit %}
+        {{- item_count -}}
       {%- endif -%}
     </span>
   </span>

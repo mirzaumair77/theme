@@ -216,7 +216,7 @@
       },
       "6810535121229352664": {
         "type": "shopify://apps/monster-cart-upsell-free-gifts/blocks/app-embed/a1b8e58a-bf1d-4e0f-8768-a387c3f643c0",
-        "disabled": false,
+        "disabled": true,
         "settings": {
           "markets_rounding": false,
           "send_gtag_atc": false,
@@ -238,12 +238,12 @@
       },
       "15683396631634586217": {
         "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
-        "disabled": true,
+        "disabled": false,
         "settings": {
           "greeting_message": "",
           "show_featured_products": true,
           "featured_products": [],
-          "background_color": "#ffffff",
+          "background_color": "#FFFFFF",
           "font_color": "#000000",
           "agent_invert_activator_colors": true,
           "button_color": "#000000",
@@ -268,7 +268,12 @@
       "color5": "#CFC8BC",
       "color3": "#125233",
       "color4": "#BFA66B"
-    }
+    },
+    "cart_drawer_empty_primary_link": "shopify://collections/best-sellers",
+    "cart_drawer_empty_secondary_link": "shopify://collections/all-pocket-squares",
+    "cart_drawer_progress_collection": "all-pocket-squares",
+    "cart_drawer_upsell_source": "collection",
+    "cart_drawer_upsell_collection": "best-sellers"
   },
   "presets": {
     "Horizon": {
