@@ -127,6 +127,10 @@
     assign gift_action = 'remove'
   endif
 
+  # Displayed count: purchased products plus the free gift, minus package protection.
+  # Matches the header bubble (`snippets/cart-bubble.liquid`, `assets/cart-icon.js`).
+  assign cart_count = purchased_count | plus: gift_quantity
+
   assign gift_display_title = gift_title | default: gift_product.title
   assign gift_display_image = gift_image | default: gift_product.featured_image
 
@@ -273,13 +277,13 @@
               aria-hidden="true"
             >
               {{- 'icon-bell.svg' | inline_asset_content -}}
-              <div class="cart-drawer__icon-count">{{ purchased_count }}</div>
+              <div class="cart-drawer__icon-count">{{ cart_count }}</div>
             </div>
 
             <div class="cart-drawer__title">
               <h2 id="CartDrawer-Title">
                 {{ 'cart_drawer.title' | t }}
-                <span>({{ purchased_count }})</span>
+                <span>({{ cart_count }})</span>
               </h2>
             </div>
 
