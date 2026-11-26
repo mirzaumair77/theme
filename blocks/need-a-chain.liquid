@@ -1,0 +1,367 @@
+{%- doc -%}
+  "Need a chain?" (Pendants PDP).
+
+  Custom front end for the chain offers configured in the Selleasy app. Selleasy renders
+  its add-on widget into the hidden `.lb-widget-<type>` container below and remains the
+  data source. The chosen chain is added by the product form in the same cart request as
+  the pendant (`data-cart-add-on` / `getCartLines()` in add-ons.js), with Selleasy's
+  attribution property. Shoppers can choose one chain, or none. The chosen chain's title
+  and price show next to the heading.
+
+  Use this block instead of (not alongside) the Selleasy app block of the same widget type.
+
+  @example
+  {% content_for 'block', type: 'need-a-chain', id: 'need-a-chain' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign widget_type = block.settings.selleasy_widget | default: 'pal'
+  assign heading_id = 'NeedAChain-' | append: block.id
+-%}
+
+<script
+  src="{{ 'add-ons.js' | asset_url }}"
+  type="module"
+></script>
+
+<need-a-chain-component
+  class="need-a-chain spacing-style"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  data-widget-type="{{ widget_type }}"
+  data-cart-add-on
+  data-add-label="{{ 'products.add_ons.add' | t: title: '[title]' | escape }}"
+  data-price-template="{{ 'products.add_ons.price_addition' | t: price: '[price]' | escape }}"
+  data-money-format="{{ shop.money_format | strip_html | escape }}"
+  data-currency="{{ cart.currency.iso_code }}"
+  {% unless request.design_mode %}
+    hidden
+  {% endunless %}
+  {{ block.shopify_attributes }}
+>
+  <p
+    class="need-a-chain__header"
+    id="{{ heading_id }}"
+  >
+    <span class="need-a-chain__heading">{{ block.settings.heading | escape }}</span>
+    <span
+      class="need-a-chain__selection"
+      aria-live="polite"
+    >
+      <span
+        class="need-a-chain__selection-title"
+        ref="selectionTitle"
+      ></span>
+      <span
+        class="need-a-chain__selection-price"
+        ref="selectionPrice"
+      ></span>
+    </span>
+  </p>
+
+  <div class="need-a-chain__viewport">
+    <div
+      id="{{ heading_id }}-options"
+      class="need-a-chain__options"
+      role="group"
+      aria-labelledby="{{ heading_id }}"
+      ref="options"
+    ></div>
+
+    <button
+      type="button"
+      class="need-a-chain__arrow need-a-chain__arrow--previous button-unstyled"
+      aria-label="{{ 'products.add_ons.previous' | t }}"
+      aria-controls="{{ heading_id }}-options"
+      ref="previous"
+      on:click="/scrollPrevious"
+      hidden
+    >
+      <span class="svg-wrapper" aria-hidden="true">{{- 'icon-slider-arrow.svg' | inline_asset_content -}}</span>
+    </button>
+    <button
+      type="button"
+      class="need-a-chain__arrow need-a-chain__arrow--next button-unstyled"
+      aria-label="{{ 'products.add_ons.next' | t }}"
+      aria-controls="{{ heading_id }}-options"
+      ref="next"
+      on:click="/scrollNext"
+      hidden
+    >
+      <span class="svg-wrapper" aria-hidden="true">{{- 'icon-slider-arrow.svg' | inline_asset_content -}}</span>
+    </button>
+  </div>
+
+  <template ref="optionTemplate">
+    <label class="need-a-chain__option">
+      <input
+        type="checkbox"
+        class="need-a-chain__input"
+        on:change="/selectChain"
+      >
+      <span
+        class="need-a-chain__check svg-wrapper"
+        aria-hidden="true"
+      >
+        {{- 'icon-checkmark.svg' | inline_asset_content -}}
+      </span>
+      <span
+        class="need-a-chain__media"
+        data-option-media
+      ></span>
+    </label>
+  </template>
+
+  {%- comment -%} Selleasy mounts its widget here; it stays the data source and add-to-cart path. {%- endcomment -%}
+  <div
+    class="lb-widget-{{ widget_type }} need-a-chain__source"
+    ref="source"
+    hidden
+  ></div>
+</need-a-chain-component>
+
+{% stylesheet %}
+  .need-a-chain {
+    --need-a-chain-gap: 8px;
+    --need-a-chain-arrow-width: 2rem;
+
+    /* The fraction always leaves part of the next chain showing */
+    --need-a-chain-visible: 3.6;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .need-a-chain[hidden] {
+    display: none;
+  }
+
+  .need-a-chain__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 20px;
+    margin: 0;
+    color: #2A2A2A;
+    font-family: var(--font-body--family);
+    font-size: calc(10px * var(--product-design-type-scale, 1.25));
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .need-a-chain__heading,
+  .need-a-chain__selection-price {
+    font-weight: 600;
+  }
+
+  .need-a-chain__selection {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 6px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* One scrolling row, with the arrows in a reserved end column */
+  .need-a-chain__viewport {
+    position: relative;
+    min-width: 0;
+    padding-inline-end: var(--need-a-chain-arrow-width);
+  }
+
+  .need-a-chain__options {
+    display: flex;
+    gap: var(--need-a-chain-gap);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline-start: var(--need-a-chain-arrow-width);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .need-a-chain__option {
+    position: relative;
+    display: block;
+    flex: 0 0 calc(100% / var(--need-a-chain-visible) - var(--need-a-chain-gap));
+    min-width: 0;
+    aspect-ratio: 1;
+    overflow: hidden;
+    cursor: pointer;
+    scroll-snap-align: start;
+
+    /* Inset so the scrolling row can't clip the focus ring */
+    &:has(:focus-visible) {
+      outline: var(--focus-outline-width) solid var(--color-foreground);
+      outline-offset: calc(var(--focus-outline-width) * -1);
+    }
+  }
+
+  .need-a-chain__arrow {
+    position: absolute;
+    inset-block: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--need-a-chain-arrow-width);
+    background-color: var(--color-background);
+    cursor: pointer;
+
+    .svg-wrapper {
+      display: flex;
+      width: 9px;
+      height: 17px;
+    }
+
+    &:focus-visible {
+      outline: var(--focus-outline-width) solid currentcolor;
+      outline-offset: calc(var(--focus-outline-width) * -1);
+    }
+  }
+
+  .need-a-chain__arrow[hidden] {
+    display: none;
+  }
+
+  .need-a-chain__arrow--previous {
+    inset-inline-start: 0;
+  }
+
+  .need-a-chain__arrow--next {
+    inset-inline-end: 0;
+  }
+
+  /* One right-pointing icon: flipped for "previous", and for "next" in RTL */
+  .need-a-chain__arrow--previous .svg-wrapper,
+  [dir='rtl'] .need-a-chain__arrow--next .svg-wrapper {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .need-a-chain__arrow--previous .svg-wrapper {
+    transform: none;
+  }
+
+  /* The native checkbox covers the card so the whole card is the hit target */
+  .need-a-chain__input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .need-a-chain__check {
+    position: absolute;
+    inset-block-start: var(--padding-xs);
+    inset-inline-start: var(--padding-xs);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.2rem;
+    border: 1px solid #2a2a2a;
+    border-radius: 50%;
+    background-color: #fff;
+    color: transparent;
+  }
+
+  .need-a-chain__option:has(:checked) .need-a-chain__check {
+    color: #2a2a2a;
+  }
+
+  .need-a-chain__media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .need-a-chain__media .add-on-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .need-a-chain__check {
+      transition: color var(--animation-speed) var(--animation-easing);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.need_a_chain",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Need a chain?"
+    },
+    {
+      "type": "select",
+      "id": "selleasy_widget",
+      "label": "t:settings.selleasy_widget",
+      "info": "t:info.selleasy_widget",
+      "options": [
+        {
+          "value": "pal",
+          "label": "t:options.selleasy_add_on_list"
+        },
+        {
+          "value": "pac",
+          "label": "t:options.selleasy_add_on_carousel"
+        },
+        {
+          "value": "pag",
+          "label": "t:options.selleasy_add_on_grid"
+        }
+      ],
+      "default": "pal"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.need_a_chain",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,288 @@
+{%- liquid
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign background = section.settings.background
+  assign show_border = section.settings.show_border
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+    background: #FFF;
+  --gb-padding-top: {{ mobile_padding_top }}px;
+  --gb-padding-bottom: {{ mobile_padding_bottom }}px;
+}
+
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    --gb-padding-top: {{ padding_top }}px;
+    --gb-padding-bottom: {{ padding_bottom }}px;
+  }
+}
+
+.guarantee-bar {
+  margin-block: 40px;
+  display: grid;
+  gap: 32px;
+  padding: var(--gb-padding-top) 20px var(--gb-padding-bottom);
+  color: #121212;
+}
+{%- if background != blank %}
+  #shopify-section-{{ section.id }} .guarantee-bar {
+    background: {{ background }};
+  }
+{%- endif %}
+{%- if show_border %}
+  #shopify-section-{{ section.id }} .guarantee-bar {
+    position: relative;
+  }
+
+  #shopify-section-{{ section.id }} .guarantee-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 0.469px solid #000;
+    pointer-events: none;
+  }
+{%- endif %}
+
+.guarantee-bar p {
+  margin: 0;
+}
+
+.guarantee-bar__item {
+  display: grid;
+  gap: 11.25px;
+}
+
+.guarantee-bar__title h2 {
+  font-family: Inter, var(--font-paragraph--family);
+  color: #000;
+  font-size: 12px;
+  line-height: 14.063px;
+  letter-spacing: -0.244px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.guarantee-bar__text p {
+  color: #121212b3;
+  font-size: 13px;
+  line-height: 19.688px;
+  letter-spacing: 0.131px;
+  font-weight: 400;
+}
+
+.guarantee-bar__text a {
+  color: inherit;
+}
+
+.guarantee-bar__link a {
+  display: block;
+  font-family: var(--font-roboto);
+  color: #000;
+  font-size: 11px;
+  line-height: 14.063px;
+  letter-spacing: 0.469px;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.3s ease;
+}
+
+.guarantee-bar__link a:hover {
+  opacity: 0.6;
+}
+
+.guarantee-bar__link a:focus-visible {
+  outline: 2px solid #121212;
+  outline-offset: 3px;
+}
+
+@media (min-width: 769px) {
+  .guarantee-bar {
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 22.25px;
+    padding-right: 30px;
+    padding-left: 30px;
+  }
+}
+</style>
+
+<div class="guarantee-bar">
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign title = block.settings.title
+      assign text = block.settings.text
+      assign link_label = block.settings.link_label
+      assign link = block.settings.link
+    -%}
+    <div class="guarantee-bar__item" {{ block.shopify_attributes }}>
+      {%- if title != blank -%}
+        <div class="guarantee-bar__title">
+          <h2>{{ title | escape }}</h2>
+        </div>
+      {%- endif -%}
+
+      {%- if text != blank -%}
+        <div class="guarantee-bar__text">
+          <p>{{ text }}</p>
+        </div>
+      {%- endif -%}
+
+      {%- if link_label != blank -%}
+        <div class="guarantee-bar__link">
+          <a
+            {% if link != blank %}
+              href="{{ link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            {{- link_label | escape -}}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Guarantee bar",
+  "tag": "section",
+  "class": "section-guarantee-bar",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background",
+      "default": "#FEFDFC"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Show border",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Guarantee",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free shipping"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping on all US orders."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label",
+          "default": "Shipping policy"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Guarantee bar",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "title": "Free shipping",
+            "text": "Free shipping on all US orders.",
+            "link_label": "Shipping policy"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "title": "100-day exchanges",
+            "text": "Eligible items may be returned or exchanged within 100 days of the original purchase.",
+            "link_label": "Returns & exchanges"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "title": "Contact us",
+            "text": "Shopping for the perfect piece, have a question about an order, or need a repair? We’d love to hear from you.",
+            "link_label": "Contact the studio"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

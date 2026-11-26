@@ -1,0 +1,874 @@
+{%- liquid
+  assign background_image = section.settings.background_image
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign background = section.settings.background
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign tab_prefix = 'CraftsmanshipTab-' | append: section.id
+  assign panel_prefix = 'CraftsmanshipPanel-' | append: section.id
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+  --cs-padding-top: {{ mobile_padding_top }}px;
+  --cs-padding-bottom: {{ mobile_padding_bottom }}px;
+}
+
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    --cs-padding-top: {{ padding_top }}px;
+    --cs-padding-bottom: {{ padding_bottom }}px;
+  }
+}
+
+.craftsmanship-story {
+  position: relative;
+  display: block;
+  padding: var(--cs-padding-top) 16px var(--cs-padding-bottom);
+  overflow: hidden;
+  background-color: #2b2b2b;
+  color: #2a2a2a;
+}
+{%- if background != blank %}
+  #shopify-section-{{ section.id }},
+  #shopify-section-{{ section.id }} .craftsmanship-story {
+    background: {{ background }};
+  }
+{%- endif %}
+
+.craftsmanship-story p,
+.craftsmanship-story h2 {
+  margin: 0;
+}
+
+.craftsmanship-story__background {
+  position: absolute;
+  inset: 0;
+}
+
+.craftsmanship-story__background img,
+.craftsmanship-story__image img,
+.craftsmanship-story__media-item img,
+.craftsmanship-story__media-item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.craftsmanship-story__card {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  border-radius: 24px;
+  background-color: #ffffff;
+}
+
+.craftsmanship-story__tabs {
+  width: min-content;
+  display: flex;
+  box-sizing: border-box;
+  padding: 4px;
+  border-radius: 999px;
+  background-color: #EFEAE1;
+}
+
+.craftsmanship-story__tab {
+  flex: 1;
+  padding: 12px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 18px;
+  line-height: 21.6px;
+  letter-spacing: -0.36px;
+  font-weight: 400;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.craftsmanship-story__tab[aria-selected='true'] {
+  background-color: #ffffff;
+}
+
+.craftsmanship-story__tab:focus-visible {
+  outline: 2px solid #2a2a2a;
+  outline-offset: -2px;
+}
+
+.craftsmanship-story__panel:focus-visible {
+  outline: 2px solid #2a2a2a;
+  outline-offset: 4px;
+}
+
+.craftsmanship-story__image {
+  margin-top: 12px;
+  aspect-ratio: 300 / 200;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.craftsmanship-story__heading {
+  padding-block-start: 12px;
+  text-wrap: balance;
+}
+
+.craftsmanship-story__heading h2 {
+  font-family: var(--font-heading--family);
+  color: #2A2A2A;
+  font-size: 24px;
+  line-height: 33.6px;
+  letter-spacing: -0.48px;
+  font-weight: 400;
+}
+
+.craftsmanship-story__heading em {
+  font-style: italic;
+}
+
+.craftsmanship-story__text {
+  padding-block-start: 12px;
+}
+
+.craftsmanship-story__text p {
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 16px;
+  line-height: 22.4px;
+  font-weight: 400;
+}
+
+.craftsmanship-story__link {
+  padding-block-start: 20px;
+}
+
+.craftsmanship-story__link a {
+  display: inline-block;
+  padding-block-end: 4px;
+  border-bottom: 2px solid currentColor;
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 14px;
+  line-height: 16.8px;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.craftsmanship-story__link a:hover {
+  opacity: 0.7;
+}
+
+.craftsmanship-story__media {
+  display: none;
+}
+
+.craftsmanship-story__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  padding: 27.457px 24.456px 27.456px 30.457px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s ease;
+}
+
+.craftsmanship-story__play:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.craftsmanship-story__play:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.craftsmanship-story__play svg {
+  width: 100%;
+  height: 100%;
+  margin-inline-start: 5px;
+}
+
+.craftsmanship-story__media-item[data-playing] .craftsmanship-story__play {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .craftsmanship-story__panel,
+  .craftsmanship-story__media-item {
+    animation: craftsmanship-story-fade 0.4s ease both;
+  }
+}
+
+@keyframes craftsmanship-story-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fit screen: fill the viewport below the sticky header; the content image absorbs the difference.
+   min-height lets the section grow rather than clip when the text needs more room. */
+.craftsmanship-story--fit {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: calc(100svh - var(--header-height, 0px));
+}
+
+.craftsmanship-story--fit .craftsmanship-story__card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+}
+
+.craftsmanship-story--fit .craftsmanship-story__content,
+.craftsmanship-story--fit .craftsmanship-story__panel:not([hidden]) {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.craftsmanship-story--fit .craftsmanship-story__image {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 160px;
+  aspect-ratio: auto;
+}
+
+.craftsmanship-story--fit .craftsmanship-story__image img {
+  position: absolute;
+  inset: 0;
+}
+
+@media (min-width: 769px) {
+  .craftsmanship-story {
+    padding-right: 50px;
+    padding-left: 50px;
+  }
+
+  .craftsmanship-story__card,
+  .craftsmanship-story--fit .craftsmanship-story__card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+    padding: 32px;
+    border-radius: 24px;
+  }
+
+  .craftsmanship-story__tab {
+    flex: none;
+  }
+
+  .craftsmanship-story__image {
+    margin-top: 20px;
+    aspect-ratio: 502 / 280;
+    border-radius: 9px;
+  }
+
+  .craftsmanship-story__heading {
+    padding-block-start: 20px;
+  }
+
+  .craftsmanship-story__heading h2 {
+    font-size: 40px;
+    line-height: 48px;
+    letter-spacing: -0.8px;
+  }
+
+  .craftsmanship-story__text {
+    padding-block-start: 20px;
+  }
+
+  .craftsmanship-story__text p {
+    font-size: 18px;
+    line-height: 25.2px;
+  }
+
+  .craftsmanship-story__link {
+    padding-block-start: 20px;
+  }
+
+  .craftsmanship-story__link a {
+    padding-block-end: 3px;
+    border-bottom-width: 1px;
+    font-size: 16px;
+    line-height: 19.2px;
+  }
+
+  .craftsmanship-story__media {
+    position: relative;
+    display: block;
+    min-height: 480px;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f2f2f2;
+  }
+
+  .craftsmanship-story--fit .craftsmanship-story__media {
+    min-height: 0;
+  }
+
+  .craftsmanship-story__media-item {
+    position: absolute;
+    inset: 0;
+  }
+}
+</style>
+
+<craftsmanship-story class="craftsmanship-story{% if section.settings.section_height == 'fit_screen' %} craftsmanship-story--fit{% endif %}">
+  {%- if background_image != blank -%}
+    <div class="craftsmanship-story__background">
+      {{
+        background_image
+        | image_url: width: 3840
+        | image_tag:
+          widths: '750, 1100, 1500, 1920, 2560, 3840',
+          sizes: '100vw',
+          loading: 'lazy',
+          alt: ''
+      }}
+    </div>
+  {%- endif -%}
+
+  <div class="craftsmanship-story__card">
+    <div class="craftsmanship-story__content">
+      <div class="craftsmanship-story__tabs" role="tablist" aria-label="Our craftsmanship">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign tab_label = block.settings.tab_label | default: block.settings.heading | strip_html
+          -%}
+          <button
+            type="button"
+            class="craftsmanship-story__tab"
+            role="tab"
+            id="{{ tab_prefix }}-{{ forloop.index0 }}"
+            aria-controls="{{ panel_prefix }}-{{ forloop.index0 }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+            data-index="{{ forloop.index0 }}"
+          >
+            {{- tab_label | escape -}}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign image = block.settings.image
+          assign heading = block.settings.heading
+          assign text = block.settings.text
+          assign link_label = block.settings.link_label
+          assign link = block.settings.link
+          assign image_alt = image.alt | default: heading | strip_html | escape
+        -%}
+        <div
+          class="craftsmanship-story__panel"
+          role="tabpanel"
+          id="{{ panel_prefix }}-{{ forloop.index0 }}"
+          aria-labelledby="{{ tab_prefix }}-{{ forloop.index0 }}"
+          tabindex="0"
+          data-index="{{ forloop.index0 }}"
+          {% unless forloop.first %}hidden{% endunless %}
+          {{ block.shopify_attributes }}
+        >
+          {%- if image != blank -%}
+            <div class="craftsmanship-story__image">
+              {{
+                image
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '375, 550, 750, 1100, 1400',
+                  sizes: '(min-width: 769px) min(440px, 40vw), calc(100vw - 76px)',
+                  loading: 'lazy',
+                  alt: image_alt
+              }}
+            </div>
+          {%- endif -%}
+
+          {%- if heading != blank -%}
+            <div class="craftsmanship-story__heading">
+              {{ heading }}
+            </div>
+          {%- endif -%}
+
+          {%- if text != blank -%}
+            <div class="craftsmanship-story__text">
+              {{ text }}
+            </div>
+          {%- endif -%}
+
+          {%- if link_label != blank -%}
+            <div class="craftsmanship-story__link">
+              <a
+                {% if link != blank %}
+                  href="{{ link }}"
+                {% else %}
+                  role="link" aria-disabled="true"
+                {% endif %}
+              >
+                {{- link_label | escape -}}
+              </a>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="craftsmanship-story__media">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign side_media_type = block.settings.side_media_type | default: 'image'
+          assign side_image = block.settings.side_image
+          assign side_video = block.settings.side_video
+          assign video_autoplay = block.settings.side_video_autoplay
+
+          if side_media_type == 'video' and side_video != blank
+            assign show_video = true
+            assign video_poster = block.settings.side_video_poster | default: side_video.preview_image
+
+            # Largest MP4 rendition up to 1080p; the smallest one is the fallback.
+            assign video_sources = side_video.sources | where: 'format', 'mp4' | sort: 'height' | reverse
+            assign video_source = video_sources.last
+            for source in video_sources
+              if source.height <= 1080
+                assign video_source = source
+                break
+              endif
+            endfor
+          else
+            assign show_video = false
+          endif
+        -%}
+        <div
+          class="craftsmanship-story__media-item"
+          data-index="{{ forloop.index0 }}"
+          {% if show_video and video_autoplay %}
+            data-autoplay
+          {% endif %}
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          {%- if show_video -%}
+            {%- # Autoplay runs from the script, so hidden tabs and mobile (where this column is hidden) never play. -%}
+            <video
+              class="craftsmanship-story__video"
+              playsinline
+              preload="{% if video_autoplay %}metadata{% else %}none{% endif %}"
+              {% if video_poster != blank %}
+                poster="{{ video_poster | image_url: width: 1600 }}"
+              {% endif %}
+              {% if block.settings.side_video_muted %}
+                muted
+              {% endif %}
+              {% if block.settings.side_video_loop %}
+                loop
+              {% endif %}
+              aria-label="{{ side_video.alt | default: block.settings.tab_label | escape }}"
+            >
+              {%- if video_source != blank -%}
+                <source src="{{ video_source.url }}" type="{{ video_source.mime_type }}">
+              {%- endif -%}
+            </video>
+            <button
+              type="button"
+              class="craftsmanship-story__play"
+              aria-label="{{ 'accessibility.play_video' | t | escape }}"
+            >
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 28">
+                <path d="M0 0v28l24-14z" fill="currentColor"/>
+              </svg>
+            </button>
+          {%- elsif side_media_type != 'video' and side_image != blank -%}
+            {{
+              side_image
+              | image_url: width: 1600
+              | image_tag:
+                widths: '550, 750, 1100, 1400, 1600',
+                sizes: '50vw',
+                loading: 'lazy',
+                alt: ''
+            }}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</craftsmanship-story>
+
+<script>
+  (() => {
+    if (customElements.get('craftsmanship-story')) return;
+
+    class CraftsmanshipStory extends HTMLElement {
+      connectedCallback() {
+        // Later instances connect before their children are parsed; wait for the markup first.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => this.init(), { once: true });
+        } else {
+          this.init();
+        }
+      }
+
+      disconnectedCallback() {
+        this.abortController?.abort();
+        this.abortController = null;
+      }
+
+      init() {
+        if (!this.isConnected || this.abortController) return;
+
+        this.abortController = new AbortController();
+        const { signal } = this.abortController;
+
+        this.tabs = [...this.querySelectorAll('.craftsmanship-story__tab')];
+        this.panels = [...this.querySelectorAll('.craftsmanship-story__panel')];
+        this.mediaItems = [...this.querySelectorAll('.craftsmanship-story__media-item')];
+
+        this.tabs.forEach((tab) => {
+          tab.addEventListener('click', () => this.select(Number(tab.dataset.index)), { signal });
+          tab.addEventListener('keydown', this.onKeydown, { signal });
+        });
+
+        // The side video starts from its poster; the play button hands over to the native controls.
+        for (const button of this.querySelectorAll('.craftsmanship-story__play')) {
+          button.addEventListener('click', () => this.playVideo(button.closest('.craftsmanship-story__media-item')), {
+            signal,
+          });
+        }
+
+        this.addEventListener(
+          'shopify:block:select',
+          (event) => {
+            this.select(Number(event.target.dataset.index));
+          },
+          { signal }
+        );
+
+        // The side column only shows on desktop; start or stop autoplay as the viewport crosses it.
+        this.desktopQuery = window.matchMedia('(min-width: 769px)');
+        this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.desktopQuery.addEventListener('change', () => this.syncVideos(), { signal });
+        this.syncVideos();
+      }
+
+      /** Pauses videos outside the visible tab and autoplays the visible one when it is set to. */
+      syncVideos() {
+        for (const item of this.mediaItems) {
+          const video = item.querySelector('video');
+          if (!video) continue;
+
+          if (item.hidden || !this.desktopQuery.matches) {
+            video.pause();
+          } else if (item.hasAttribute('data-autoplay') && !this.reducedMotionQuery.matches) {
+            this.autoplay(item, video);
+          }
+        }
+      }
+
+      /**
+       * Browsers only allow autoplay with sound after the visitor interacts with the page.
+       * If playing with sound is refused, fall back to muted playback with controls to unmute.
+       * If even that is refused (e.g. low-power mode), the play button stays visible.
+       */
+      async autoplay(item, video) {
+        try {
+          await video.play();
+        } catch (error) {
+          // A pause from switching tabs also rejects play(); only retry a blocked autoplay.
+          if (error?.name !== 'NotAllowedError' || video.muted || item.hidden) return;
+          video.muted = true;
+          video.controls = true;
+          try {
+            await video.play();
+          } catch {
+            return;
+          }
+        }
+        item.toggleAttribute('data-playing', true);
+      }
+
+      select(index, focus = false) {
+        this.tabs.forEach((tab, i) => {
+          const active = i === index;
+          tab.setAttribute('aria-selected', active);
+          tab.tabIndex = active ? 0 : -1;
+          if (active && focus) tab.focus();
+        });
+
+        [...this.panels, ...this.mediaItems].forEach((item) => {
+          item.hidden = Number(item.dataset.index) !== index;
+        });
+
+        this.syncVideos();
+      }
+
+      playVideo(item) {
+        const video = item?.querySelector('video');
+        if (!video) return;
+
+        item.toggleAttribute('data-playing', true);
+        video.controls = true;
+        video.play().catch(() => {});
+        video.focus();
+      }
+
+      onKeydown = (event) => {
+        const current = this.tabs.indexOf(event.currentTarget);
+        const last = this.tabs.length - 1;
+        const keys = {
+          ArrowRight: current === last ? 0 : current + 1,
+          ArrowLeft: current === 0 ? last : current - 1,
+          Home: 0,
+          End: last
+        };
+
+        if (!(event.key in keys)) return;
+
+        event.preventDefault();
+        this.select(keys[event.key], true);
+      };
+    }
+
+    customElements.define('craftsmanship-story', CraftsmanshipStory);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Craftsmanship story",
+  "tag": "section",
+  "class": "section-craftsmanship-story",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image",
+      "info": "Recommended: 2880 x 1760px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "info": "Fit screen fills the screen below the header by resizing the content image.",
+      "options": [
+        {
+          "value": "fit_screen",
+          "label": "Fit screen"
+        },
+        {
+          "value": "auto",
+          "label": "Auto"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label",
+          "default": "Our Process"
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended: 1320 x 750px"
+        },
+        {
+          "type": "richtext",
+          "id": "heading",
+          "label": "Heading",
+          "info": "Use italic for the emphasized words.",
+          "default": "<h2>Carved by <em>hand.</em> Made to <em>last.</em></h2>"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Each design begins as an original carving by Jose Balli, then is cast in solid metal and finished by hand in our New Orleans studio.</p>"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Link label",
+          "default": "How it's made"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Desktop side media"
+        },
+        {
+          "type": "select",
+          "id": "side_media_type",
+          "label": "Media type",
+          "options": [
+            { "value": "image", "label": "Image" },
+            { "value": "video", "label": "Video" }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "side_image",
+          "label": "Side image",
+          "info": "Shown on desktop beside the content. Recommended: 1500 x 1700px",
+          "visible_if": "{{ block.settings.side_media_type == 'image' }}"
+        },
+        {
+          "type": "video",
+          "id": "side_video",
+          "label": "Video",
+          "info": "Shown on desktop beside the content.",
+          "visible_if": "{{ block.settings.side_media_type == 'video' }}"
+        },
+        {
+          "type": "image_picker",
+          "id": "side_video_poster",
+          "label": "Cover image",
+          "info": "Shown before the video plays. Defaults to the video's own preview image.",
+          "visible_if": "{{ block.settings.side_media_type == 'video' }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "side_video_muted",
+          "label": "Muted",
+          "default": true,
+          "visible_if": "{{ block.settings.side_media_type == 'video' }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "side_video_autoplay",
+          "label": "Autoplay",
+          "info": "Browsers only autoplay muted videos. With sound on, it starts muted and shows controls to unmute.",
+          "default": false,
+          "visible_if": "{{ block.settings.side_media_type == 'video' }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "side_video_loop",
+          "label": "Loop",
+          "default": true,
+          "visible_if": "{{ block.settings.side_media_type == 'video' }}"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Craftsmanship story",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": { "tab_label": "Our Process" }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "tab_label": "Our Story",
+            "heading": "<h2>One family. <em>One studio.</em></h2>",
+            "link_label": "Meet the family"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

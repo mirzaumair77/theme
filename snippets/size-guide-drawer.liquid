@@ -1,0 +1,925 @@
+{%- doc -%}
+  Ring size guide drawer: a modal dialog-component anchored to the viewport edge, with three tabs (size finder, size chart and
+  fit tips). The finder suggests a size from a finger circumference, and the result
+  and chart rows select that size in the product's variant picker when the product
+  has a size option. All copy, steps, chart rows and tips come from the calling
+  block's settings.
+
+  Rows in `finder_steps`, `chart_rows` and `tips` are one per line, with cells
+  separated by `|`.
+
+  @param {string} drawer_id - Unique ID for the dialog-component element
+  @param {object} settings - Settings of the size guide block
+  @param {string} [size_option_name] - Name of the product option holding ring sizes
+  @param {string} [selected_size] - Currently selected value of that option
+
+  @example
+  {% render 'size-guide-drawer',
+    drawer_id: 'size-guide-drawer-abc123',
+    settings: block.settings,
+    size_option_name: 'Ring size',
+    selected_size: '7'
+  %}
+{%- enddoc -%}
+
+{%- liquid
+  assign heading_id = drawer_id | append: '-heading'
+  assign size_prefix = settings.size_prefix | strip
+  assign chart_headers = settings.chart_headers | split: '|'
+  assign chart_rows = settings.chart_rows | newline_to_br | split: '<br />'
+  assign finder_steps = settings.finder_steps | newline_to_br | split: '<br />'
+  assign tips = settings.tips | newline_to_br | split: '<br />'
+
+  assign select_template = 'products.size_guide.select_size' | t: size: '[size]'
+  assign match_template = 'products.size_guide.match' | t: circumference: '[circumference]', size: '[size]'
+  assign range_template = 'products.size_guide.out_of_range' | t: min: '[min]', max: '[max]'
+  assign selected_template = 'products.size_guide.size_selected' | t: size: '[size]'
+-%}
+
+<dialog-component
+  id="{{ drawer_id }}"
+  class="size-guide-drawer"
+>
+  <dialog
+    ref="dialog"
+    class="size-guide-drawer__dialog"
+    aria-labelledby="{{ heading_id }}"
+    scroll-lock
+  >
+    <size-guide-drawer-component
+      class="size-guide-drawer__content"
+      data-drawer-id="{{ drawer_id }}"
+      data-option-name="{{ size_option_name | escape }}"
+      data-size-prefix="{{ size_prefix | escape }}"
+      data-result-note="{{ settings.result_note | escape }}"
+      data-select-template="{{ select_template | escape }}"
+      data-match-template="{{ match_template | escape }}"
+      data-range-template="{{ range_template | escape }}"
+      data-selected-template="{{ selected_template | escape }}"
+    >
+      <div class="size-guide-drawer__header">
+        <div class="size-guide-drawer__heading">
+          {%- if settings.eyebrow != blank -%}
+            <p class="size-guide-drawer__eyebrow">{{ settings.eyebrow | escape }}</p>
+          {%- endif -%}
+          <h2
+            id="{{ heading_id }}"
+            class="size-guide-drawer__title"
+          >
+            {{ settings.heading | escape }}
+          </h2>
+        </div>
+        <button
+          type="button"
+          class="button-unstyled size-guide-drawer__close"
+          on:click="#{{ drawer_id }}/closeDialog"
+          autofocus
+          aria-label="{{ 'actions.close' | t }}"
+        >
+          <span
+            class="svg-wrapper"
+            aria-hidden="true"
+          >
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </span>
+        </button>
+      </div>
+
+      <div
+        class="size-guide-drawer__tabs"
+        role="tablist"
+        aria-labelledby="{{ heading_id }}"
+      >
+        {%- for tab in (1..3) -%}
+          {%- liquid
+            case tab
+              when 1
+                assign tab_name = 'finder'
+                assign tab_label = settings.finder_label
+              when 2
+                assign tab_name = 'chart'
+                assign tab_label = settings.chart_label
+              when 3
+                assign tab_name = 'tips'
+                assign tab_label = settings.tips_label
+            endcase
+          -%}
+          <button
+            type="button"
+            role="tab"
+            id="{{ drawer_id }}-tab-{{ tab_name }}"
+            class="button-unstyled size-guide-drawer__tab"
+            aria-controls="{{ drawer_id }}-panel-{{ tab_name }}"
+            aria-selected="{% if tab_name == 'chart' %}true{% else %}false{% endif %}"
+            {% unless tab_name == 'chart' %}
+              tabindex="-1"
+            {% endunless %}
+            data-tab="{{ tab_name }}"
+            ref="tabs[]"
+            on:click="/selectTab"
+            on:keydown="/handleTabKeydown"
+          >
+            {{ tab_label | escape }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      <div class="size-guide-drawer__body">
+        {%- comment -%} Size finder {%- endcomment -%}
+        <div
+          role="tabpanel"
+          id="{{ drawer_id }}-panel-finder"
+          class="size-guide-drawer__panel"
+          aria-labelledby="{{ drawer_id }}-tab-finder"
+          data-tab="finder"
+          ref="panels[]"
+          tabindex="0"
+          hidden
+        >
+          {%- if settings.finder_intro != blank -%}
+            <p class="size-guide-drawer__intro">{{ settings.finder_intro | escape }}</p>
+          {%- endif -%}
+
+          {%- if settings.finder_steps != blank -%}
+            <dl class="size-guide-drawer__steps">
+              {%- for line in finder_steps -%}
+                {%- assign step = line | strip_newlines | split: '|' -%}
+                {%- assign step_label = step[0] | strip -%}
+                {%- if step_label != blank -%}
+                  <div class="size-guide-drawer__step">
+                    <dt class="size-guide-drawer__step-label">{{ step_label | escape }}</dt>
+                    <dd class="size-guide-drawer__step-text">{{ step[1] | strip | escape }}</dd>
+                  </div>
+                {%- endif -%}
+              {%- endfor -%}
+            </dl>
+          {%- endif -%}
+
+          <form
+            class="size-guide-drawer__finder"
+            novalidate
+            on:submit="/findSize"
+          >
+            <label
+              class="size-guide-drawer__field-label"
+              for="{{ drawer_id }}-circumference"
+            >
+              {{- settings.input_label | escape -}}
+            </label>
+            <div class="size-guide-drawer__field">
+              <input
+                id="{{ drawer_id }}-circumference"
+                class="size-guide-drawer__input"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                min="0"
+                autocomplete="off"
+                aria-describedby="{{ drawer_id }}-error"
+                ref="input"
+              >
+              <button
+                type="submit"
+                class="size-guide-drawer__submit"
+              >
+                {{ settings.button_label | escape }}
+              </button>
+            </div>
+            <p
+              id="{{ drawer_id }}-error"
+              class="size-guide-drawer__error"
+              ref="error"
+              hidden
+            ></p>
+          </form>
+
+          <div
+            class="size-guide-drawer__result"
+            ref="result"
+            aria-live="polite"
+            hidden
+          >
+            {%- if settings.result_label != blank -%}
+              <p class="size-guide-drawer__result-label">{{ settings.result_label | escape }}</p>
+            {%- endif -%}
+            <p
+              class="size-guide-drawer__result-size"
+              ref="resultSize"
+            ></p>
+            <p
+              class="size-guide-drawer__result-text"
+              ref="resultText"
+            ></p>
+            {%- if size_option_name != blank -%}
+              <button
+                type="button"
+                class="size-guide-drawer__select"
+                ref="selectButton"
+                on:click="/selectResult"
+              ></button>
+            {%- endif -%}
+          </div>
+
+          {% render 'size-guide-drawer-resources', drawer_id: drawer_id, settings: settings %}
+        </div>
+
+        {%- comment -%} Size chart {%- endcomment -%}
+        <div
+          role="tabpanel"
+          id="{{ drawer_id }}-panel-chart"
+          class="size-guide-drawer__panel"
+          aria-labelledby="{{ drawer_id }}-tab-chart"
+          data-tab="chart"
+          ref="panels[]"
+          tabindex="0"
+        >
+          {%- if settings.chart_intro != blank -%}
+            <p class="size-guide-drawer__intro">{{ settings.chart_intro | escape }}</p>
+          {%- endif -%}
+
+          <table class="size-guide-drawer__table">
+            <thead>
+              <tr>
+                {%- for header in chart_headers -%}
+                  <th scope="col">{{ header | strip | escape }}</th>
+                {%- endfor -%}
+              </tr>
+            </thead>
+            <tbody>
+              {%- for line in chart_rows -%}
+                {%- assign cells = line | strip_newlines | split: '|' -%}
+                {%- assign row_size = cells[0] | strip -%}
+                {%- if row_size != blank -%}
+                  {%- assign row_selected = false -%}
+                  {%- if size_option_name != blank and row_size == selected_size -%}
+                    {%- assign row_selected = true -%}
+                  {%- endif -%}
+                  <tr
+                    class="size-guide-drawer__row{% if row_selected %} size-guide-drawer__row--selected{% endif %}"
+                    data-size="{{ row_size | escape }}"
+                    data-circumference="{{ cells[2] | strip | escape }}"
+                    ref="rows[]"
+                    {% if size_option_name != blank %}
+                      on:click="/selectRow"
+                    {% endif %}
+                  >
+                    {%- for cell in cells -%}
+                      {%- if forloop.first -%}
+                        <th scope="row">
+                          {%- if size_option_name != blank -%}
+                            <button
+                              type="button"
+                              class="button-unstyled size-guide-drawer__size-button"
+                              aria-pressed="{{ row_selected }}"
+                            >
+                              {{- row_size | escape -}}
+                            </button>
+                          {%- else -%}
+                            {{- row_size | escape -}}
+                          {%- endif -%}
+                        </th>
+                      {%- else -%}
+                        <td>{{ cell | strip | escape }}</td>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </tr>
+                {%- endif -%}
+              {%- endfor -%}
+            </tbody>
+          </table>
+
+          {%- if settings.chart_note != blank -%}
+            <p class="size-guide-drawer__note">{{ settings.chart_note | escape }}</p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Fit tips {%- endcomment -%}
+        <div
+          role="tabpanel"
+          id="{{ drawer_id }}-panel-tips"
+          class="size-guide-drawer__panel size-guide-drawer__panel--tips"
+          aria-labelledby="{{ drawer_id }}-tab-tips"
+          data-tab="tips"
+          ref="panels[]"
+          tabindex="0"
+          hidden
+        >
+          {%- if settings.tips_intro != blank -%}
+            <p class="size-guide-drawer__intro">{{ settings.tips_intro | escape }}</p>
+          {%- endif -%}
+
+          {%- if settings.tips != blank -%}
+            <ul class="size-guide-drawer__tips">
+              {%- for line in tips -%}
+                {%- assign tip = line | strip_newlines | split: '|' -%}
+                {%- assign tip_title = tip[0] | strip -%}
+                {%- if tip_title != blank -%}
+                  <li class="size-guide-drawer__tip">
+                    <p class="size-guide-drawer__tip-title">{{ tip_title | escape }}</p>
+                    <p class="size-guide-drawer__tip-text">{{ tip[1] | strip | escape }}</p>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <p
+        class="visually-hidden"
+        role="status"
+        ref="status"
+      ></p>
+    </size-guide-drawer-component>
+  </dialog>
+</dialog-component>
+
+<script
+  type="module"
+  src="{{ 'dialog.js' | asset_url }}"
+></script>
+<script
+  type="module"
+  src="{{ 'size-guide-drawer.js' | asset_url }}"
+></script>
+
+{% stylesheet %}
+  .size-guide-drawer {
+    --size-guide-ink: #121212;
+    --size-guide-ink-soft: #2a2a2a;
+    --size-guide-muted: #737373;
+    --size-guide-rule: #E5E5E5;
+    --size-guide-surface: #F6F6F6;
+  }
+
+  /* Modal drawer anchored to the viewport's inline-end edge, above an overlay */
+  .size-guide-drawer__dialog {
+    --size-guide-padding: 16px;
+
+    position: fixed;
+    inset-block: 0;
+    inset-inline: auto 0;
+    width: min(480px, 100%);
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    padding-block: var(--safe-area-inset-top, 0) var(--safe-area-inset-bottom, 0);
+    border: none;
+    border-radius: 0;
+    background-color: #fff;
+    box-shadow: none;
+    color: var(--size-guide-ink-soft);
+    overflow: hidden;
+  }
+
+  .size-guide-drawer__dialog[open] {
+    display: flex;
+    flex-direction: column;
+    animation: size-guide-drawer-in var(--animation-speed, 0.3s) var(--animation-easing, ease) forwards;
+  }
+
+  .size-guide-drawer__dialog.dialog-closing {
+    animation: size-guide-drawer-out var(--animation-speed, 0.3s) var(--animation-easing, ease) forwards;
+  }
+
+  .size-guide-drawer__dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    animation: size-guide-drawer-fade var(--animation-speed, 0.3s) ease forwards;
+  }
+
+  .size-guide-drawer__dialog.dialog-closing::backdrop {
+    animation-direction: reverse;
+  }
+
+  @keyframes size-guide-drawer-in {
+    from {
+      transform: translateX(var(--size-guide-offset, 100%));
+    }
+
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes size-guide-drawer-out {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(var(--size-guide-offset, 100%));
+    }
+  }
+
+  @keyframes size-guide-drawer-fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  [dir='rtl'] .size-guide-drawer__dialog {
+    --size-guide-offset: -100%;
+  }
+
+  .size-guide-drawer__content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+  }
+
+  /* Header */
+  .size-guide-drawer__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 32px var(--size-guide-padding) 24px;
+  }
+
+  .size-guide-drawer__heading {
+    min-width: 0;
+  }
+
+  .size-guide-drawer__eyebrow {
+    margin: 0 0 8px;
+    color: var(--size-guide-muted);
+    font-family: var(--font-body--family);
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: 0.055px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__title {
+    margin: 0;
+    color: var(--size-guide-ink-soft);
+    font-family: var(--font-heading--family);
+    font-size: 28px;
+    line-height: normal;
+    letter-spacing: -0.56px;
+    font-weight: 400;
+    text-transform: none;
+    overflow-wrap: anywhere;
+  }
+
+  /* Plain × instead of the theme drawer's round close button */
+  .size-guide-drawer .size-guide-drawer__close,
+  .size-guide-drawer .size-guide-drawer__close:hover:not(:active) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    margin-block-start: -6px;
+    margin-inline-end: -8px;
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    color: var(--size-guide-ink-soft);
+    outline: none;
+  }
+
+  /* Tabs */
+  .size-guide-drawer__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    padding-block-start: 12px;
+    padding-inline: var(--size-guide-padding);
+    border-block-end: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer .size-guide-drawer__tab {
+    position: relative;
+    min-width: 0;
+    overflow: visible;
+    padding-block: 0 12px;
+    color: var(--size-guide-muted);
+    font-family: var(--font-inter, var(--font-body--family));
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.036px;
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .size-guide-drawer .size-guide-drawer__tab:hover,
+  .size-guide-drawer .size-guide-drawer__tab[aria-selected='true'] {
+    color: var(--size-guide-ink-soft);
+  }
+
+  .size-guide-drawer__tab::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -1px;
+    height: 2px;
+    background-color: var(--size-guide-ink-soft);
+    transform: scaleX(0);
+    transition: transform var(--animation-speed) var(--animation-easing);
+  }
+
+  .size-guide-drawer__tab[aria-selected='true']::after {
+    transform: scaleX(1);
+  }
+
+  /* Panels */
+  .size-guide-drawer__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  .size-guide-drawer__panel {
+    padding: 24px var(--size-guide-padding) 32px;
+    font-family: var(--font-body--family);
+  }
+
+  .size-guide-drawer__panel:focus-visible {
+    outline: 1px solid var(--size-guide-ink-soft);
+    outline-offset: -4px;
+  }
+
+  .size-guide-drawer__intro {
+    margin: 0 0 20px;
+    color: #121212b3;
+    font-size: 13px;
+    line-height: normal;
+    letter-spacing: -0.26px;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer__panel--tips .size-guide-drawer__intro {
+    color: var(--size-guide-muted);
+    font-size: 12px;
+    line-height: 18.6px;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer__note {
+    margin: 0;
+    color: var(--size-guide-muted);
+    font-size: 12px;
+    line-height: 18.6px;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer__note {
+    margin: 20px 0 0;
+    font-size: 12px;
+  }
+
+  /* Finder steps */
+  .size-guide-drawer__steps {
+    margin: 0 0 24px;
+  }
+
+  .size-guide-drawer__step {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 14px;
+    border-block-start: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer__step:last-child {
+    border-block-end: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer__step-label {
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.036px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__step-text {
+    margin: 0;
+    color: var(--size-guide-ink-soft);
+    font-size: 13px;
+    line-height: 19.5px;
+    font-weight: 400;
+  }
+
+  /* Finder form */
+  .size-guide-drawer__finder {
+    margin-block-end: 20px;
+  }
+
+  .size-guide-drawer__field-label {
+    display: block;
+    margin-block-end: 8px;
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.036px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__field {
+    display: flex;
+    gap: 6px;
+  }
+
+  .size-guide-drawer .size-guide-drawer__input {
+    flex: 1;
+    min-width: 0;
+    height: auto;
+    padding: 12.5px 13.21px;
+    border: 1px solid var(--size-guide-ink-soft);
+    border-radius: 0;
+    background: #fff;
+    color: var(--size-guide-ink-soft);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    line-height: normal;
+    font-weight: 400;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .size-guide-drawer__input::-webkit-outer-spin-button,
+  .size-guide-drawer__input::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  .size-guide-drawer .size-guide-drawer__input[aria-invalid='true'] {
+    border-color: var(--color-error, #b42318);
+  }
+
+  .size-guide-drawer .size-guide-drawer__submit {
+    flex-shrink: 0;
+    padding: 12.5px 13.21px;
+    border-radius: 0;
+    font-family: var(--font-inter, var(--font-body--family));
+    font-size: 12px;
+    line-height: normal;
+    letter-spacing: 0.06px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity var(--animation-speed) var(--animation-easing);
+  }
+
+  .size-guide-drawer .size-guide-drawer__submit {
+    border: 1px solid var(--size-guide-ink-soft);
+    background: var(--size-guide-ink-soft);
+    color: #fff;
+  }
+
+  .size-guide-drawer .size-guide-drawer__submit:hover {
+    opacity: 0.85;
+  }
+
+  .size-guide-drawer__error {
+    margin: 8px 0 0;
+    color: var(--color-error, #b42318);
+    font-size: 12px;
+    line-height: 150%;
+  }
+
+  /* Finder result */
+  .size-guide-drawer__result {
+    margin-block-end: 20px;
+    padding: 20px;
+    background: var(--size-guide-surface);
+    display: grid;
+    row-gap: 8px;
+  }
+
+  .size-guide-drawer__result[hidden] {
+    display: none;
+  }
+
+  .size-guide-drawer__result-label {
+    margin: 0;
+    color: var(--size-guide-muted);
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: 0.055px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__result-size {
+    margin: 0;
+    color: var(--size-guide-ink-soft);
+    font-family: var(--font-heading--family);
+    font-size: 34px;
+    line-height: normal;
+    letter-spacing: -0.68px;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer__result-text {
+    margin: 0;
+    color: #121212b3;
+    font-size: 12px;
+    line-height: 18.6px;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer .size-guide-drawer__select {
+    width: fit-content;
+    padding: 11px 23px 10px 23px;
+    border: 1px solid var(--size-guide-ink-soft);
+    background: transparent;
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 12px;
+    line-height: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .size-guide-drawer .size-guide-drawer__select:hover {
+    background: var(--size-guide-ink-soft);
+    color: #fff;
+  }
+
+  /* Still deciding */
+  .size-guide-drawer__resources-heading {
+    margin: 0;
+    color: var(--size-guide-muted);
+    font-size: 11px;
+    line-height: normal;
+    letter-spacing: 0.055px;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__resources {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .size-guide-drawer__resource {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 14px;
+    border-block-end: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer__resource[hidden] {
+    display: none;
+  }
+
+  .size-guide-drawer__resource-copy {
+    min-width: 0;
+  }
+
+  .size-guide-drawer__resource-title {
+    margin: 0 0 2px;
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.036px;
+    line-height: normal;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__resource-text {
+    margin: 0;
+    color: var(--size-guide-muted);
+    font-size: 12px;
+    line-height: normal;
+    font-weight: 400;
+  }
+
+  .size-guide-drawer .size-guide-drawer__resource-link {
+    flex-shrink: 0;
+    padding: 0;
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 11px;
+    line-height: normal;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-position: from-font;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* Size chart */
+  .size-guide-drawer__table {
+    width: 100%;
+    border: 1px solid var(--size-guide-rule);
+    border-collapse: collapse;
+    color: var(--size-guide-ink-soft);
+    font-size: 13px;
+    text-align: start;
+  }
+
+  .size-guide-drawer__table th,
+  .size-guide-drawer__table td {
+    padding: 9px 16px;
+    font-weight: 400;
+    text-align: start;
+  }
+
+  .size-guide-drawer__table thead th {
+    background: var(--size-guide-ink-soft);
+    font-family: var(--font-inter, var(--font-body--family));
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__table tbody tr + tr {
+    border-block-start: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer__row[on\:click] {
+    cursor: pointer;
+  }
+
+  .size-guide-drawer__row[on\:click]:hover,
+  .size-guide-drawer__row--selected {
+    background: var(--size-guide-surface);
+  }
+
+  .size-guide-drawer__table .size-guide-drawer__row--selected th,
+  .size-guide-drawer__table .size-guide-drawer__row--selected td {
+    font-weight: 600;
+  }
+
+  .size-guide-drawer .size-guide-drawer__size-button {
+    padding: 0;
+    color: inherit;
+    font: inherit;
+  }
+
+  /* Fit tips */
+  .size-guide-drawer__tips {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .size-guide-drawer__tip {
+    padding-block: 16px;
+    border-block-end: 1px solid var(--size-guide-rule);
+  }
+
+  .size-guide-drawer__tip-title {
+    margin: 0 0 4px;
+    font-family: var(--font-inter, var(--font-body--family));
+    color: var(--size-guide-ink-soft);
+    font-size: 12px;
+    line-height: normal;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .size-guide-drawer__tip-text {
+    margin: 0;
+    color: var(--size-guide-muted);
+    font-size: 12px;
+    line-height: 18.6px;
+    font-weight: 400;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .size-guide-drawer__tab::after {
+      transition: none;
+    }
+
+    .size-guide-drawer__dialog[open],
+    .size-guide-drawer__dialog.dialog-closing,
+    .size-guide-drawer__dialog::backdrop {
+      animation-duration: 1ms;
+    }
+  }
+
+  @media (min-width: 750px) {
+    .size-guide-drawer__dialog {
+      --size-guide-padding: 32px;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,936 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign link_label = section.settings.link_label
+  assign custom_link = section.settings.link
+  assign products_desktop = section.settings.products_desktop
+  assign low_stock_threshold = section.settings.low_stock_threshold
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign background = section.settings.background
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign tab_count = section.blocks.size
+  assign first_collection = section.blocks.first.settings.collection
+  assign tab_prefix = 'BestsellerTab-' | append: section.id
+  assign panel_prefix = 'BestsellerPanel-' | append: section.id
+
+  assign shop_link = custom_link | default: first_collection.url
+  if custom_link == blank
+    assign link_auto = true
+  else
+    assign link_auto = false
+  endif
+
+  # With an automatic link, the text follows the active tab: "<Shop All Tab Name> <tab name>".
+  assign shop_all_label = section.settings.shop_all_label | strip
+  assign first_tab_label = section.blocks.first.settings.label | default: first_collection.title
+  assign link_text = link_label
+  assign link_text_auto = false
+  if link_auto and link_text == blank and shop_all_label != blank and first_tab_label != blank
+    assign link_text = shop_all_label | append: ' ' | append: first_tab_label
+    assign link_text_auto = true
+  endif
+
+  # Mobile: "grid" packs the group into two columns (2x2 for 4 cards); "row" shows the group side by side.
+  assign mobile_layout = section.settings.mobile_layout
+  assign mobile_per_group = section.settings.mobile_cards_per_group
+  if mobile_layout == 'row'
+    if mobile_per_group == 1
+      assign mobile_per_view = 1.1
+    else
+      assign mobile_per_view = mobile_per_group
+    endif
+  elsif mobile_per_group == 1
+    assign mobile_per_view = 1
+  else
+    assign mobile_per_view = 2
+  endif
+  assign mobile_image_vw = 100 | divided_by: mobile_per_view | ceil
+
+  # The single-row mobile slider uses fixed 200px cards.
+  if mobile_layout == 'row'
+    assign mobile_image_size = '200px'
+  else
+    assign mobile_image_size = mobile_image_vw | append: 'vw'
+  endif
+
+  # Desktop shows one card fewer than the setting in full, plus part of the next card peeking in
+  # (3 + a peek for 4). At 990px and below it drops one more full card (at least one).
+  # The script mirrors these counts with Swiper breakpoints.
+  assign products_full = products_desktop | minus: 1 | at_least: 1
+  assign products_small = products_desktop | minus: 2 | at_least: 1
+  assign peek = 0.56
+  assign per_view_full = products_full | plus: peek
+  assign per_view_small = products_small | plus: peek
+
+  capture image_sizes
+    echo '(min-width: 991px) calc(100vw / ' | append: per_view_full | append: '), '
+    echo '(min-width: 769px) calc(100vw / ' | append: per_view_small | append: '), '
+    echo mobile_image_size
+  endcapture
+
+  # On mobile, short tab sets (e.g. "Men's" / "Women's") fit beside the heading. Longer ones get
+  # their own scrolling row below it, with the shop link beside the heading instead.
+  assign tab_label_chars = 0
+  for block in section.blocks
+    assign tab_label = block.settings.label | default: block.settings.collection.title
+    assign tab_label_chars = tab_label_chars | plus: tab_label.size
+  endfor
+  if tab_count > 1 and tab_label_chars > 20
+    assign tabs_stacked = true
+  else
+    assign tabs_stacked = false
+  endif
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+  --bc-mobile-per-view: {{ mobile_per_view }};
+  --bc-per-view-current: {{ per_view_full }};
+  padding-top: {{ mobile_padding_top }}px;
+  padding-bottom: {{ mobile_padding_bottom }}px;
+  {%- if background != blank %}
+    background: {{ background }};
+  {%- endif %}
+}
+
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+  }
+}
+
+/* Desktop cards per view, including the peeking card; one full card fewer at 990px and below.
+   Sizes the slides before Swiper starts. */
+@media (max-width: 990px) {
+  #shopify-section-{{ section.id }} {
+    --bc-per-view-current: {{ per_view_small }};
+  }
+}
+
+.bestseller-collection {
+  overflow: hidden;
+  display: block;
+  color: #2a2a2a;
+}
+
+.bestseller-collection p,
+.bestseller-collection h2,
+.bestseller-collection h3 {
+  margin: 0;
+}
+
+.bestseller-collection__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px 16px;
+}
+
+.bestseller-collection__intro {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 30px;
+  min-width: 0;
+}
+
+.bestseller-collection__heading {
+  flex-shrink: 0;
+}
+
+.bestseller-collection__heading h2 {
+  font-family: var(--font-heading--family);
+  color: #2A2A2A;
+  font-size: 20px;
+  line-height: 23px;
+  letter-spacing: -0.4px;
+  font-weight: 400;
+}
+
+/* Tabs bar: the frame draws the rounded pill and clips to it; the tabs scroll inside it when
+   they outgrow the space, so both rounded ends stay visible at every width. */
+.bestseller-collection__tabs-frame {
+  display: flex;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  padding: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: #EFEAE1;
+}
+
+.bestseller-collection__tabs-scroll {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* Scrolled tabs are clipped to the rounded inner edge, matching the active pill */
+  border-radius: 999px;
+}
+
+.bestseller-collection__tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.bestseller-collection__tabs {
+  display: inline-flex;
+  gap: 4px;
+  vertical-align: top;
+}
+
+.bestseller-collection__tab {
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 12px;
+  line-height: 14.4px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bestseller-collection__tab[aria-selected='true'] {
+  background-color: #ffffff;
+}
+
+.bestseller-collection__tab:focus-visible {
+  outline: 2px solid #2A2A2A;
+  outline-offset: -2px;
+}
+
+/* The reference layout keeps the link and arrows to desktop; mobile is swiped */
+.bestseller-collection__actions {
+  display: none;
+  align-items: center;
+  gap: 32px;
+}
+
+.bestseller-collection__link a {
+  font-family: var(--font-body--family);
+  color: #CFC8BC;
+  font-size: 18px;
+  line-height: 21.6px;
+  letter-spacing: -0.36px;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.bestseller-collection__link a:hover {
+  color: #2A2A2A;
+}
+
+.bestseller-collection__arrows {
+  display: flex;
+  gap: 24px;
+}
+
+.bestseller-collection__arrows[hidden] {
+  display: none;
+}
+
+.bestseller-collection__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.bestseller-collection__arrow:disabled {
+  color: #cfc8bc33;
+  cursor: default;
+}
+
+.bestseller-collection__arrow:focus-visible {
+  outline: 2px solid #2A2A2A;
+  outline-offset: 2px;
+}
+
+.bestseller-collection__arrow svg {
+  width: 32px;
+  height: 14px;
+}
+
+.bestseller-collection__panel {
+  padding-inline: 16px;
+}
+
+/* Cards run past the panel padding on both sides, so scrolled cards reach the screen edge
+   on the start side just as the next card peeks in on the end side. The section clips them. */
+.bestseller-collection__slider {
+  overflow: visible;
+}
+
+.bestseller-collection__track {
+  display: flex;
+  transition-property: transform;
+}
+
+.bestseller-collection__slide {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  min-width: 0;
+  width: calc(100% / var(--bc-mobile-per-view));
+  padding-inline-end: 8px;
+}
+
+/* Stacked mobile header, for tabs too long to sit beside the heading: the heading and link
+   share the first row, and the tabs bar gets a full-width row below, scrolling inside its frame. */
+@media (max-width: 768px) {
+  .bestseller-collection--tabs-stacked .bestseller-collection__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 14px 16px;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__intro {
+    display: contents;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__heading {
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__actions {
+    display: flex;
+    grid-row: 1;
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__arrows {
+    display: none;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__link a {
+    font-size: 14px;
+    line-height: 16.8px;
+    letter-spacing: -0.28px;
+  }
+
+  /* The bar starts in line with the content and runs flush to the screen edge on the end side,
+     where it is cut straight by the edge instead of ending in a rounded cap. */
+  .bestseller-collection--tabs-stacked .bestseller-collection__tabs-frame {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    max-width: none;
+    margin-inline-end: -16px;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    padding-inline-end: 0;
+  }
+
+  .bestseller-collection--tabs-stacked .bestseller-collection__tabs-scroll {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+}
+
+/* Single-row mobile slider: fixed 200px cards with a 4px gap, so the next card peeks in
+   by whatever the screen width leaves (about 155px at 375px wide). */
+@media (max-width: 768px) {
+  .bestseller-collection--mobile-row .bestseller-collection__slide {
+    width: 204px;
+    padding-inline-end: 4px;
+  }
+}
+
+/* Mobile grid groups: Swiper adds .swiper-grid and orders the slides row by row. */
+.bestseller-collection__slider.swiper-grid > .bestseller-collection__track {
+  flex-wrap: wrap;
+}
+
+/* Swiper's grid module sets an inline percentage height on each slide, which assumes a
+   fixed-height container. This slider's height comes from its cards, so let the slides size
+   to their content; !important is the only way to override Swiper's inline style. */
+.bestseller-collection__slider.swiper-grid .bestseller-collection__slide {
+  height: auto !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bestseller-collection__arrow:hover:not(:disabled) {
+    transform: translateX(var(--bc-arrow-shift, 3px));
+  }
+
+  .bestseller-collection__arrow--prev {
+    --bc-arrow-shift: -3px;
+  }
+}
+
+@media (min-width: 769px) {
+  .bestseller-collection__header {
+    justify-content: space-between;
+    gap: 32px;
+    padding: 0 clamp(24px, 4.4vw, 60px) 32px;
+  }
+
+  .bestseller-collection__intro {
+    flex: 0 1 auto;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .bestseller-collection__heading h2 {
+    font-size: 34px;
+    line-height: normal;
+    letter-spacing: -1.02px;
+  }
+
+  .bestseller-collection__tab {
+    padding: 12px 16px;
+    font-size: 16px;
+    line-height: 19.2px;
+    letter-spacing: -0.32px;
+  }
+
+  .bestseller-collection__actions {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .bestseller-collection__panel {
+    padding-inline: clamp(24px, 4.4vw, 60px);
+  }
+
+  .bestseller-collection__slide {
+    width: calc(100% / var(--bc-per-view-current));
+    padding-inline-end: 12px;
+  }
+}
+</style>
+
+<bestseller-collection
+  class="bestseller-collection{% if mobile_layout == 'row' %} bestseller-collection--mobile-row{% endif %}{% if tabs_stacked %} bestseller-collection--tabs-stacked{% endif %}"
+  data-per-view="{{ products_desktop }}"
+  data-mobile-layout="{{ mobile_layout }}"
+  data-mobile-per-group="{{ mobile_per_group }}"
+  data-link-auto="{{ link_auto }}"
+  {% if link_text_auto %}
+    data-shop-all-label="{{ shop_all_label | escape }}"
+  {% endif %}
+>
+  <div class="bestseller-collection__header">
+    <div class="bestseller-collection__intro">
+      {%- if heading != blank -%}
+        <div class="bestseller-collection__heading">
+          <h2>{{ heading | escape }}</h2>
+        </div>
+      {%- endif -%}
+
+      {%- if tab_count > 1 -%}
+        <div class="bestseller-collection__tabs-frame">
+          <div class="bestseller-collection__tabs-scroll">
+            <div class="bestseller-collection__tabs" role="tablist" aria-label="{{ heading | escape }}">
+              {%- for block in section.blocks -%}
+                {%- liquid
+                  assign tab_label = block.settings.label | default: block.settings.collection.title
+                -%}
+                <button
+                  type="button"
+                  class="bestseller-collection__tab"
+                  role="tab"
+                  id="{{ tab_prefix }}-{{ forloop.index0 }}"
+                  aria-controls="{{ panel_prefix }}-{{ forloop.index0 }}"
+                  aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                  tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+                  data-index="{{ forloop.index0 }}"
+                >
+                  {{- tab_label | escape -}}
+                </button>
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="bestseller-collection__actions">
+      {%- if link_text != blank -%}
+        <div class="bestseller-collection__link">
+          <a
+            {% if shop_link != blank %}
+              href="{{ shop_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            {{- link_text | escape -}}
+          </a>
+        </div>
+      {%- endif -%}
+
+      <div class="bestseller-collection__arrows">
+        <button
+          type="button"
+          class="bestseller-collection__arrow bestseller-collection__arrow--prev"
+          aria-label="Previous products"
+          disabled
+        >
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 32 14" fill="none">
+            <path d="M32 7H1.5M7.5 1l-6 6 6 6" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="bestseller-collection__arrow bestseller-collection__arrow--next"
+          aria-label="Next products"
+        >
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 32 14" fill="none">
+            <path d="M0 7h30.5M24.5 1l6 6-6 6" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign collection = block.settings.collection
+      assign panel_index = forloop.index0
+      assign panel_label = block.settings.label | default: collection.title
+    -%}
+    <div
+      class="bestseller-collection__panel"
+      {% if tab_count > 1 %}
+        role="tabpanel"
+        id="{{ panel_prefix }}-{{ panel_index }}"
+        aria-labelledby="{{ tab_prefix }}-{{ panel_index }}"
+      {% endif %}
+      data-index="{{ panel_index }}"
+      data-url="{{ collection.url }}"
+      data-label="{{ panel_label | escape }}"
+      {% unless forloop.first %}
+        hidden
+      {% endunless %}
+      {{ block.shopify_attributes }}
+    >
+      <div class="bestseller-collection__slider">
+        <div class="bestseller-collection__track">
+          {%- if collection != blank and collection.products_count > 0 -%}
+            {%- for product in collection.products -%}
+              {%- liquid
+                if panel_index == 0 and forloop.index <= products_desktop and section.index <= 2
+                  assign loading = 'eager'
+                else
+                  assign loading = 'lazy'
+                endif
+              -%}
+              <div class="bestseller-collection__slide">
+                {% render 'product-item',
+                  product: product,
+                  image_sizes: image_sizes,
+                  loading: loading,
+                  low_stock_threshold: low_stock_threshold
+                %}
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..4) -%}
+              <div class="bestseller-collection__slide">
+                {% render 'product-item' %}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  {%- endfor -%}
+</bestseller-collection>
+
+<script>
+  (() => {
+    if (customElements.get('bestseller-collection')) return;
+
+    // Swiper loads once, globally, from layout/theme.liquid; wait for it if it's still loading.
+    const loadSwiper = () =>
+      new Promise((resolve, reject) => {
+        if (window.Swiper) return resolve();
+
+        const script = document.querySelector('script[src*="swiper-bundle"]');
+        if (!script) return reject(new Error('Swiper script not found'));
+
+        script.addEventListener('load', resolve, { once: true });
+        script.addEventListener('error', reject, { once: true });
+      });
+
+    class BestsellerCollection extends HTMLElement {
+      connectedCallback() {
+        // Once the element is defined, later instances connect as soon as the parser reaches
+        // their opening tag, before their tabs and panels exist. Wait for the markup first.
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => this.init(), { once: true });
+        } else {
+          this.init();
+        }
+      }
+
+      disconnectedCallback() {
+        this.abortController?.abort();
+        this.abortController = null;
+        this.swipers?.forEach((swiper) => swiper.destroy(true, true));
+        this.swipers?.clear();
+      }
+
+      init() {
+        if (!this.isConnected || this.abortController) return;
+
+        this.abortController = new AbortController();
+        const { signal } = this.abortController;
+
+        this.tabs = [...this.querySelectorAll('.bestseller-collection__tab')];
+        this.panels = [...this.querySelectorAll('.bestseller-collection__panel')];
+        this.prevButton = this.querySelector('.bestseller-collection__arrow--prev');
+        this.nextButton = this.querySelector('.bestseller-collection__arrow--next');
+        this.arrows = this.querySelector('.bestseller-collection__arrows');
+        this.link = this.querySelector('.bestseller-collection__link a');
+        this.swipers = new Map();
+        this.activeIndex = 0;
+        this.mobileQuery = window.matchMedia('(max-width: 768px)');
+
+        // Grid and row layouts can't be swapped reliably through Swiper breakpoints,
+        // so rebuild the sliders whenever the viewport crosses the mobile breakpoint.
+        this.mobileQuery.addEventListener('change', () => this.rebuild(), { signal });
+
+        this.tabs.forEach((tab) => {
+          tab.addEventListener(
+            'click',
+            () => {
+              this.select(Number(tab.dataset.index));
+              // Bring a partly scrolled-off tab fully into the tab row.
+              tab.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+            },
+            { signal }
+          );
+          tab.addEventListener('keydown', this.onKeydown, { signal });
+        });
+
+        this.prevButton?.addEventListener('click', () => this.activeSwiper?.slidePrev(), { signal });
+        this.nextButton?.addEventListener('click', () => this.activeSwiper?.slideNext(), { signal });
+        this.addEventListener('shopify:block:select', (event) => this.select(Number(event.target.dataset.index)), { signal });
+
+        loadSwiper()
+          .then(() => {
+            if (!signal.aborted) this.select(this.activeIndex);
+          })
+          .catch(() => {});
+      }
+
+      get activeSwiper() {
+        return this.swipers.get(this.activeIndex);
+      }
+
+      select(index, focus = false) {
+        this.activeIndex = index;
+
+        this.tabs.forEach((tab, i) => {
+          const active = i === index;
+          tab.setAttribute('aria-selected', active);
+          tab.tabIndex = active ? 0 : -1;
+          if (active && focus) tab.focus();
+        });
+
+        this.panels.forEach((panel) => {
+          panel.hidden = Number(panel.dataset.index) !== index;
+        });
+
+        const panel = this.panels[index];
+        if (!panel) return;
+
+        if (this.link && this.dataset.linkAuto === 'true' && panel.dataset.url) {
+          this.link.href = panel.dataset.url;
+        }
+
+        if (this.link && this.dataset.shopAllLabel && panel.dataset.label) {
+          this.link.textContent = `${this.dataset.shopAllLabel} ${panel.dataset.label}`;
+        }
+
+        if (window.Swiper && !this.swipers.has(index)) {
+          this.swipers.set(index, this.createSwiper(panel));
+        }
+
+        this.updateArrows();
+      }
+
+      rebuild() {
+        if (!window.Swiper) return;
+
+        this.swipers.forEach((swiper) => swiper.destroy(true, true));
+        this.swipers.clear();
+        this.select(this.activeIndex);
+      }
+
+      // One navigation step moves a whole group of cards.
+      get layoutOptions() {
+        if (!this.mobileQuery.matches) {
+          const perView = Number(this.dataset.perView) || 4;
+          // `count` full cards plus part of the next one peeking in; the arrows move the full cards.
+          const show = (count) => {
+            const cards = Math.max(1, count);
+            return { slidesPerView: cards + 0.56, slidesPerGroup: cards };
+          };
+
+          // One card fewer than the setting from 991px, two fewer at 990px and below.
+          return {
+            ...show(perView - 2),
+            breakpoints: {
+              991: show(perView - 1),
+            },
+          };
+        }
+
+        const perGroup = Math.max(1, Number(this.dataset.mobilePerGroup) || 1);
+
+        // Single row: slide widths come from the CSS (fixed 200px cards).
+        if (this.dataset.mobileLayout === 'row') {
+          return { slidesPerView: 'auto', slidesPerGroup: perGroup };
+        }
+
+        const columns = perGroup === 1 ? 1 : 2;
+        return {
+          slidesPerView: columns,
+          slidesPerGroup: columns,
+          grid: { rows: Math.ceil(perGroup / columns), fill: 'row' },
+        };
+      }
+
+      createSwiper(panel) {
+        return new Swiper(panel.querySelector('.bestseller-collection__slider'), {
+          wrapperClass: 'bestseller-collection__track',
+          slideClass: 'bestseller-collection__slide',
+          slideActiveClass: 'bestseller-collection__slide--active',
+          ...this.layoutOptions,
+          speed: 500,
+          watchOverflow: true,
+          a11y: {
+            containerRoleDescriptionMessage: 'carousel',
+            slideRole: 'group',
+          },
+          on: {
+            slideChange: () => this.updateArrows(),
+            resize: () => this.updateArrows(),
+            lock: () => this.updateArrows(),
+            unlock: () => this.updateArrows(),
+          },
+        });
+      }
+
+      updateArrows() {
+        const swiper = this.activeSwiper;
+
+        if (this.arrows) this.arrows.hidden = Boolean(swiper && swiper.isLocked);
+        if (this.prevButton) this.prevButton.disabled = !swiper || swiper.isBeginning;
+        if (this.nextButton) this.nextButton.disabled = !swiper || swiper.isEnd;
+      }
+
+      onKeydown = (event) => {
+        const current = this.tabs.indexOf(event.currentTarget);
+        const last = this.tabs.length - 1;
+        const keys = {
+          ArrowRight: current === last ? 0 : current + 1,
+          ArrowLeft: current === 0 ? last : current - 1,
+          Home: 0,
+          End: last,
+        };
+
+        if (!(event.key in keys)) return;
+
+        event.preventDefault();
+        this.select(keys[event.key], true);
+      };
+    }
+
+    customElements.define('bestseller-collection', BestsellerCollection);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Bestseller collection",
+  "tag": "section",
+  "class": "section-bestseller-collection",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Shop Best Sellers"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Leave empty to link to the active tab's collection."
+    },
+    {
+      "type": "text",
+      "id": "shop_all_label",
+      "label": "Shop All Tab Name",
+      "info": "Shown before the active tab's name, e.g. \"Shop All Necklaces\". Used when Link is empty; otherwise Link label is shown.",
+      "default": "Shop All"
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "range",
+      "id": "products_desktop",
+      "label": "Cards per slide group",
+      "info": "Desktop shows one card fewer in full, with part of the next card peeking in (4 shows 3 and a peek); one more card fewer at 990px and below. The arrows move the full cards.",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Layout",
+      "options": [
+        { "value": "grid", "label": "Grid / group slide" },
+        { "value": "row", "label": "Single row slider" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "mobile_cards_per_group",
+      "label": "Cards per group",
+      "info": "Grid uses two columns, so 4 cards show as 2 × 2. Single row shows fixed 200px cards; this sets how many each swipe moves.",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "low_stock_threshold",
+      "label": "Low stock badge threshold",
+      "info": "Shows \"Only X left\" at or below this quantity. Set to 0 to turn off.",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "info": "Leave empty to use the collection title.",
+          "default": "Men's"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bestseller collection",
+      "blocks": [
+        { "type": "tab", "settings": { "label": "Men's" } },
+        { "type": "tab", "settings": { "label": "Women's" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

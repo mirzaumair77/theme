@@ -1,0 +1,114 @@
+{%- doc -%}
+  "Still deciding?" list in the size guide drawer's finder tab: a printable sizer
+  download, a size chart shortcut (its own link when set, otherwise the drawer's size
+  chart tab) and a chat link. The download row shows
+  only with a link. The chat row shows with a link, or without one when the
+  Shopify Inbox chat is on the page (size-guide-drawer.js reveals it and opens it).
+  A link of "#" counts as unset. Styles live in size-guide-drawer.
+
+  @param {string} drawer_id - ID of the parent size guide drawer
+  @param {object} settings - Settings of the size guide block
+
+  @example
+  {% render 'size-guide-drawer-resources', drawer_id: 'size-guide-drawer-abc123', settings: block.settings %}
+{%- enddoc -%}
+
+{%- liquid
+  # A bare "#" is a placeholder, not a destination: hide the download, and fall back to
+  # the built-in actions for the size chart and chat.
+  assign sizer_link = settings.sizer_link
+  if sizer_link == '#'
+    assign sizer_link = ''
+  endif
+  assign fit_link = settings.fit_link
+  if fit_link == '#'
+    assign fit_link = ''
+  endif
+  assign chat_link = settings.chat_link
+  if chat_link == '#'
+    assign chat_link = ''
+  endif
+-%}
+
+{%- if settings.resources_heading != blank -%}
+  <p class="size-guide-drawer__resources-heading">{{ settings.resources_heading | escape }}</p>
+{%- endif -%}
+
+<ul class="size-guide-drawer__resources">
+  {%- if sizer_link != blank -%}
+    <li class="size-guide-drawer__resource">
+      <div class="size-guide-drawer__resource-copy">
+        <p class="size-guide-drawer__resource-title">{{ settings.sizer_title | escape }}</p>
+        {%- if settings.sizer_text != blank -%}
+          <p class="size-guide-drawer__resource-text">{{ settings.sizer_text | escape }}</p>
+        {%- endif -%}
+      </div>
+      <a
+        class="size-guide-drawer__resource-link"
+        href="{{ sizer_link }}"
+        target="_blank"
+        rel="noopener"
+      >
+        {{- settings.sizer_link_label | escape -}}
+      </a>
+    </li>
+  {%- endif -%}
+
+  <li class="size-guide-drawer__resource">
+    <div class="size-guide-drawer__resource-copy">
+      <p class="size-guide-drawer__resource-title">{{ settings.fit_title | escape }}</p>
+      {%- if settings.fit_text != blank -%}
+        <p class="size-guide-drawer__resource-text">{{ settings.fit_text | escape }}</p>
+      {%- endif -%}
+    </div>
+    {%- if fit_link != blank -%}
+      <a
+        class="size-guide-drawer__resource-link"
+        href="{{ fit_link }}"
+      >
+        {{- settings.fit_link_label | escape -}}
+      </a>
+    {%- else -%}
+      <button
+        type="button"
+        class="button-unstyled size-guide-drawer__resource-link"
+        aria-controls="{{ drawer_id }}-panel-chart"
+        data-tab="chart"
+        on:click="/selectTab"
+      >
+        {{- settings.fit_link_label | escape -}}
+      </button>
+    {%- endif -%}
+  </li>
+
+  <li
+    class="size-guide-drawer__resource"
+    {% if chat_link == blank %}
+      ref="chatRow"
+      hidden
+    {% endif %}
+  >
+    <div class="size-guide-drawer__resource-copy">
+      <p class="size-guide-drawer__resource-title">{{ settings.chat_title | escape }}</p>
+      {%- if settings.chat_text != blank -%}
+        <p class="size-guide-drawer__resource-text">{{ settings.chat_text | escape }}</p>
+      {%- endif -%}
+    </div>
+    {%- if chat_link != blank -%}
+      <a
+        class="size-guide-drawer__resource-link"
+        href="{{ chat_link }}"
+      >
+        {{- settings.chat_link_label | escape -}}
+      </a>
+    {%- else -%}
+      <button
+        type="button"
+        class="button-unstyled size-guide-drawer__resource-link"
+        on:click="/startChat"
+      >
+        {{- settings.chat_link_label | escape -}}
+      </button>
+    {%- endif -%}
+  </li>
+</ul>

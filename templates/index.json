@@ -9,2585 +9,644 @@
  */
 {
   "sections": {
-    "hero_BA8Mqy": {
-      "type": "hero",
+    "hero_banner_dCcrGE": {
+      "type": "hero-banner",
       "blocks": {
-        "text_nKbNhq": {
-          "type": "text",
+        "slide_7RNNJh": {
+          "type": "slide",
           "settings": {
-            "text": "<h3>Made to be remembered.</h3>",
-            "width": "100%",
-            "max_width": "narrow",
-            "alignment": "left",
-            "type_preset": "h1",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "media_type": "image",
+            "image": "shopify://shop_images/portrait-fashion-elegant-long-haired-young-man-attractive-handsome-male-model-black-suit-with-mustache-street-night_1_1.png",
+            "mobile_image": "shopify://shop_images/portrait-fashion-elegant-long-haired-young-man-attractive-handsome-male-model-black-suit-with-mustache-street-night_1_2_2.png",
+            "eyebrow_text": "Pocket Squares™ Collection",
+            "heading": "Made To Be Remembered",
+            "description": "<p>Original designs handcrafted in New Orleans.</p>",
+            "button_1_label": "Shop Pocket Squares",
+            "button_1_link": "shopify://collections/all-pocket-squares",
+            "button_2_label": "OUR STORY",
+            "button_2_link": "shopify://collections/all"
+          }
         },
-        "text_N7fXMp": {
-          "type": "text",
+        "slide_eyHFK8": {
+          "type": "slide",
+          "disabled": true,
           "settings": {
-            "text": "<p>Original jewelry, handcrafted in New Orleans.</p>",
-            "width": "fit-content",
-            "max_width": "narrow",
-            "alignment": "left",
-            "type_preset": "paragraph",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 8,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "media_type": "video",
+            "image": "shopify://shop_images/hero-banner__desktop.png",
+            "mobile_image": "shopify://shop_images/hero-banner__mobile.png",
+            "video": "shopify://files/videos/copy_4BB8FDEB-5E5F-450D-A2C1-C937017D4176.mov",
+            "eyebrow_text": "Pocket Squares™ Collection",
+            "heading": "Made To Be Remembered",
+            "description": "<p>Original designs handcrafted in New Orleans.</p>",
+            "button_1_label": "Shop Pocket Squares",
+            "button_1_link": "shopify://collections/all-pocket-squares",
+            "button_2_label": "OUR STORY",
+            "button_2_link": "shopify://collections/all"
+          }
         },
-        "button_kPD4fr": {
-          "type": "button",
-          "name": "t:names.button",
+        "slide_CjdrzC": {
+          "type": "slide",
+          "disabled": true,
           "settings": {
-            "label": "Shop Best Sellers",
-            "link": "https://joseballi.com/collections/best-sellers",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "{{ settings.color_palette.color2 }}",
-            "custom_button_text": "{{ settings.color_palette.foreground }}",
-            "custom_button_border": "{{ settings.color_palette.color2 }}",
-            "link_text_color": "",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "media_type": "image",
+            "image": "shopify://shop_images/JoseBalliJewelry-AlligatorNecklace-BrandedGiftBox.jpg",
+            "mobile_image": "shopify://shop_images/JoseBalliJewelry-AlligatorNecklace-BrandedGiftBox.jpg",
+            "eyebrow_text": "Pocket Squares™ Collection",
+            "heading": "Made To Be Remembered",
+            "description": "<p>Original designs handcrafted in New Orleans.</p>",
+            "button_1_label": "Shop Pocket Squares",
+            "button_1_link": "shopify://collections/all-pocket-squares",
+            "button_2_label": "OUR STORY",
+            "button_2_link": "shopify://collections/all"
+          }
         }
       },
       "block_order": [
-        "text_nKbNhq",
-        "text_N7fXMp",
-        "button_kPD4fr"
+        "slide_7RNNJh",
+        "slide_eyHFK8",
+        "slide_CjdrzC"
       ],
-      "name": "#1. HERO (ATTENTION)",
+      "name": "Hero banner",
       "settings": {
-        "media_type_1": "image",
-        "image_1": "shopify://shop_images/Pelican_Pocket_Square_-_Wedding_-_Groom_-_Cropped_for_Homepage.jpg",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": true,
-        "media_type_1_mobile": "image",
-        "image_1_mobile": "shopify://shop_images/Pelican_Pocket_Square_-_Wedding_-_Groom_-_Cropped_for_Mobile_Homepage.jpg",
-        "media_type_2_mobile": "image",
+        "background": "",
+        "autoplay": true,
+        "autoplay_delay": 5,
+        "transition_effect": "fade",
+        "overlay_enabled": true,
+        "hero_height": "medium",
+        "desktop_height": 820,
+        "mobile_height": 600,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "mobile_padding_top": 0,
+        "mobile_padding_bottom": 0
+      }
+    },
+    "trust_bar_3Qc7LM": {
+      "type": "trust-bar",
+      "blocks": {
+        "item_KRFrwB": {
+          "type": "item",
+          "settings": {
+            "icon": "drop",
+            "title": "Carved by hand"
+          }
+        },
+        "item_9PUDKB": {
+          "type": "item",
+          "settings": {
+            "icon": "basket",
+            "title": "Solid metal, never plated"
+          }
+        },
+        "item_fFKKxi": {
+          "type": "item",
+          "settings": {
+            "icon": "truck",
+            "title": "Free US shipping"
+          }
+        },
+        "item_qNtLja": {
+          "type": "item",
+          "settings": {
+            "icon": "return",
+            "title": "100-day exchanges"
+          }
+        },
+        "item_tCAAWQ": {
+          "type": "item",
+          "settings": {
+            "icon": "shield",
+            "title": "1-year warranty"
+          }
+        }
+      },
+      "block_order": [
+        "item_KRFrwB",
+        "item_9PUDKB",
+        "item_fFKKxi",
+        "item_qNtLja",
+        "item_tCAAWQ"
+      ],
+      "name": "Trust bar",
+      "settings": {
+        "background": "#EEEAE4",
+        "enable_rotation": true,
+        "rotation_speed": 0.7,
+        "padding_top": 32,
+        "padding_bottom": 32,
+        "mobile_padding_top": 16,
+        "mobile_padding_bottom": 16
+      }
+    },
+    "bestseller_collection_Y8hU98": {
+      "type": "bestseller-collection",
+      "blocks": {
+        "tab_zf3xGM": {
+          "type": "tab",
+          "settings": {
+            "label": "Men's",
+            "collection": "mens-best-sellers"
+          }
+        },
+        "tab_YCyKcf": {
+          "type": "tab",
+          "settings": {
+            "label": "Women's",
+            "collection": "best-sellers"
+          }
+        }
+      },
+      "block_order": [
+        "tab_zf3xGM",
+        "tab_YCyKcf"
+      ],
+      "name": "Bestseller collection",
+      "settings": {
+        "background": "#FFF",
+        "heading": "Best Sellers",
+        "link_label": "Shop Best Sellers",
         "link": "",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 16,
-        "section_width": "page-width",
-        "section_height": "custom",
-        "section_height_custom": 80,
-        "background_color": "{{ settings.color_palette.color1 }}",
-        "toggle_overlay": true,
-        "overlay_color": "#00000021",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 0,
-        "padding-block-end": 29
+        "shop_all_label": "Shop All",
+        "products_desktop": 4,
+        "mobile_layout": "row",
+        "mobile_cards_per_group": 1,
+        "low_stock_threshold": 3,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
       }
     },
-    "product_list_yyhnDR": {
-      "type": "product-list",
+    "featured_collections_4eAEhj": {
+      "type": "featured-collections",
       "blocks": {
-        "static-header": {
-          "type": "_product-list-content",
-          "name": "t:names.header",
-          "static": true,
+        "collection_PBLr8R": {
+          "type": "collection",
           "settings": {
-            "content_direction": "row",
-            "vertical_on_mobile": false,
-            "horizontal_alignment": "space-between",
-            "vertical_alignment": "flex-end",
-            "align_baseline": true,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_list_text_w8kr9P": {
-              "type": "_product-list-text",
-              "name": "t:names.collection_title",
-              "settings": {
-                "text": "<h3>{{ closest.collection.title }}</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 5,
-                "padding-block-end": 30,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_list_button_Hx7tnw": {
-              "type": "_product-list-button",
-              "name": "t:names.product_list_button",
-              "settings": {
-                "label": "View all",
-                "open_in_new_tab": false,
-                "style_class": "button-unstyled",
-                "custom_button_background": "{{ settings.color_palette.foreground }}",
-                "custom_button_text": "{{ settings.color_palette.background }}",
-                "custom_button_border": "{{ settings.color_palette.background }}",
-                "link_text_color": "",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_list_text_w8kr9P",
-            "product_list_button_Hx7tnw"
-          ]
+            "collection": "weddings",
+            "custom_image": "shopify://shop_images/Alligator_Pocket_Square_05_Wedding_Lifestyle.jpg",
+            "custom_title": "Weddings",
+            "custom_link": ""
+          }
         },
-        "static-product-card": {
-          "type": "_product-card",
-          "name": "t:names.product_card",
-          "static": true,
+        "collection_eETCwD": {
+          "type": "collection",
           "settings": {
-            "product_card_gap": 4,
-            "background_color": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_card_gallery_zxmnwr": {
-              "type": "_product-card-gallery",
-              "name": "t:names.product_card_media",
-              "settings": {
-                "image_ratio": "portrait",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_iwRHFY": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "custom_liquid_JXtzki": {
-              "type": "custom-liquid",
-              "name": "t:names.custom_liquid",
-              "settings": {
-                "custom_liquid": "{% render 'swatch-styles' %}\n{%- assign second_media_id = closest.product.media[1].id -%}\n{%- for option in closest.product.options_with_values -%}\n  {%- assign swatch_values = option.values | map: 'swatch' | compact -%}\n  {%- if swatch_values.size > 0 -%}\n    <div class=\"ccs-option\" data-second-media-id=\"{{ second_media_id }}\" style=\"display:flex; align-items:center; gap:10px; margin-bottom:4px; padding: 4px 6px;\">\n      <div class=\"ccs-swatches\" style=\"display:flex; gap:8px; align-items:center;\">\n        {%- for value in option.values -%}\n          {%- liquid\n            assign featured_media_id = value.variant.featured_media.id\n            assign ccs_variant_id = value.variant.id\n            if value.variant.available != true\n              assign ccs_option_key = 'option' | append: option.position\n              for ccs_variant in closest.product.variants\n                if ccs_variant.available and ccs_variant[ccs_option_key] == value.name\n                  assign ccs_variant_id = ccs_variant.id\n                  break\n                endif\n              endfor\n            endif\n            if featured_media_id == blank\n              assign option_key = 'option' | append: option.position\n              for v in closest.product.variants\n                if v[option_key] == value.name and v.featured_media\n                  assign featured_media_id = v.featured_media.id\n                  break\n                endif\n              endfor\n            endif\n          -%}\n          <button\n            type=\"button\"\n            class=\"ccs-swatch-btn{% if forloop.first %} is-selected{% endif %}\"\n            data-value-name=\"{{ value.name | escape }}\"\n            data-variant-id=\"{{ ccs_variant_id }}\"\n            data-media-id=\"{{ featured_media_id }}\"\n            aria-label=\"{{ value.name | escape }}\"\n            style=\"background:none; border:none; padding:0; cursor:pointer; line-height:0;\"\n          >\n            {% render 'swatch', swatch: value.swatch %}\n          </button>\n        {%- endfor -%}\n      </div>\n      <span class=\"ccs-selected-title\" style=\"font-size: calc(0.5em + 3pt); display:flex; align-items:center;\">{{ option.values.first.name }}</span>\n    </div>\n    <style>\n      .ccs-swatch-btn.is-selected .swatch {\n        outline: 2px solid rgba(0, 0, 0, 0.8);\n        outline-offset: 2px;\n      }\n    </style>\n    <script>\n      (function () {\n        var script = document.currentScript;\n        var wrapper = script.previousElementSibling.previousElementSibling;\n        if (!wrapper) return;\n        var buttons = wrapper.querySelectorAll('.ccs-swatch-btn');\n        var label = wrapper.querySelector('.ccs-selected-title');\n        var card = wrapper.closest('product-card');\n        var cardGallery = card ? card.querySelector('.card-gallery') : null;\n        var secondMediaId = wrapper.getAttribute('data-second-media-id');\n        var selectedMediaId = null; // stays null (hands-off) until the shopper actually clicks a swatch\n\n        function isGalleryEvent(event) {\n          return cardGallery && (event.target === cardGallery || cardGallery.contains(event.target));\n        }\n\n        // Capture phase runs before Horizon's own listener on card-gallery, regardless of load order,\n        // so we can take over both directions with explicit photo IDs instead of relying on\n        // Horizon's relative next()/previous() slide math, which is what caused the wrap-around bug.\n        if (card && cardGallery) {\n          card.addEventListener('pointerenter', function (event) {\n            if (selectedMediaId && secondMediaId && isGalleryEvent(event)) {\n              event.stopPropagation();\n              if (typeof card.previewVariant === 'function') {\n                card.previewVariant(secondMediaId);\n              }\n            }\n          }, true);\n\n          card.addEventListener('pointerleave', function (event) {\n            if (selectedMediaId && isGalleryEvent(event)) {\n              event.stopPropagation();\n              if (typeof card.previewVariant === 'function') {\n                card.previewVariant(selectedMediaId);\n              }\n            }\n          }, true);\n        }\n\n        // Keeps the card's product links on the chosen swatch's variant so the PDP opens on it.\n        function applySwatchVariant(btn) {\n          var variantId = btn && btn.getAttribute('data-variant-id');\n          if (!card || !variantId) return;\n          var links = card.querySelectorAll('a[ref=\"productCardLink\"], a[ref=\"cardGalleryLink\"], a[ref=\"productTitleLink\"]');\n          links.forEach(function (link) {\n            if (link.closest('product-card') !== card || !link.getAttribute('href')) return;\n            var url = new URL(link.href);\n            url.searchParams.set('variant', variantId);\n            link.href = url.toString();\n          });\n        }\n\n        buttons.forEach(function (btn) {\n          btn.addEventListener('click', function (e) {\n            e.preventDefault();\n            buttons.forEach(function (b) { b.classList.remove('is-selected'); });\n            btn.classList.add('is-selected');\n            if (label) label.textContent = btn.getAttribute('data-value-name');\n            applySwatchVariant(btn);\n\n            var mediaId = btn.getAttribute('data-media-id');\n            if (mediaId) selectedMediaId = mediaId;\n\n            if (card && mediaId && typeof card.previewVariant === 'function') {\n              card.previewVariant(mediaId);\n            }\n          });\n        });\n      })();\n    </script>\n  {%- endif -%}\n{%- endfor -%}\n\n{%- if closest.product.tags contains 'bestseller' -%}\n  <div class=\"jb-bestseller-badge\">Best Seller</div>\n  <style>\n    .jb-bestseller-badge {\n      position: absolute;\n      left: -9999px;\n      top: -9999px;\n    }\n    .jb-bestseller-badge--placed {\n      position: absolute;\n      top: 15px;\n      left: 8px;\n      z-index: 2;\n      background: #ffffff;\n      color: #000000;\n      font-size: 14px;\n      letter-spacing: 0.35px;\n      text-transform: uppercase;\n      font-weight: 600;\n      padding: 5px 12px;\n      border-radius: 4px;\n      pointer-events: none;\n    }\n  </style>\n  <script>\n    (function () {\n      var script = document.currentScript;\n      var badge = script.previousElementSibling.previousElementSibling;\n      if (!badge) return;\n      var card = badge.closest('product-card');\n      var gallery = card ? card.querySelector('.card-gallery') : null;\n      if (gallery) {\n        gallery.appendChild(badge);\n        badge.classList.remove('jb-bestseller-badge');\n        badge.classList.add('jb-bestseller-badge--placed');\n      }\n    })();\n  </script>\n{%- endif -%}"
-              },
-              "blocks": {}
-            },
-            "review_ARKHMH": {
-              "type": "review",
-              "name": "t:names.product_review_stars",
-              "disabled": true,
-              "settings": {
-                "enable_ratings": true,
-                "stars_style": "shaded",
-                "show_number": true,
-                "hide_review_text": false,
-                "hide_separator": false,
-                "text_color": "",
-                "type_preset": "paragraph",
-                "width": "100%",
-                "alignment": "left"
-              },
-              "blocks": {}
-            },
-            "price_meLz78": {
-              "type": "price",
-              "name": "t:names.product_price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h5",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "text_color": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_card_gallery_zxmnwr",
-            "product_title_iwRHFY",
-            "custom_liquid_JXtzki",
-            "review_ARKHMH",
-            "price_meLz78"
-          ]
-        }
-      },
-      "name": "t:names.products_grid",
-      "settings": {
-        "collection": "best-sellers",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
-        "max_products": 4,
-        "columns": 4,
-        "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 5,
-        "rows_gap": 5,
-        "icons_style": "arrow",
-        "icons_shape": "none",
-        "section_width": "page-width",
-        "horizontal_alignment": "flex-start",
-        "gap": 0,
-        "background_color": "",
-        "padding-block-start": 50,
-        "padding-block-end": 0
-      }
-    },
-    "178647208458bf9731": {
-      "type": "_blocks",
-      "blocks": {
-        "ai_gen_block_f2fd218_aq4hJ3": {
-          "type": "ai_gen_block_f2fd218",
-          "settings": {
-            "block_title": "Shop by Category",
-            "title_font_size": 32,
-            "title_color": "#000000",
-            "collection_1": "pocket-squares",
-            "collection_2": "pendants",
-            "collection_3": "necklaces-1",
-            "collection_4": "earrings",
-            "collection_5": "bracelets",
-            "collection_6": "rings",
-            "card_height": 300,
-            "card_gap": 16,
-            "card_title_size": 16,
-            "text_color": "#ffffff",
-            "line_width": 90,
-            "nav_button_width": 30,
-            "nav_button_height": 30,
-            "nav_arrow_color": "#000000",
-            "nav_border_color": "#000000",
-            "nav_border_width": 1,
-            "shop_all_text": "Shop All",
-            "shop_all_url": "",
-            "button_bg_color": "#000000",
-            "button_text_color": "{{ settings.color_palette.foreground }}"
-          },
-          "blocks": {}
+            "collection": "gifts",
+            "custom_image": "shopify://shop_images/JoseBalliJewelry-AlligatorNecklace-BrandedGiftBox.jpg",
+            "custom_title": "Gifts",
+            "custom_link": ""
+          }
         }
       },
       "block_order": [
-        "ai_gen_block_f2fd218_aq4hJ3"
+        "collection_PBLr8R",
+        "collection_eETCwD"
       ],
-      "name": "SHOP (NAVIGATION)",
+      "name": "Featured collections",
       "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 0,
-        "section_width": "full-width",
-        "section_height": "small",
-        "section_height_custom": 50,
-        "background_media": "none",
-        "background_color": "",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_color": "",
-        "border_radius": 5,
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "background": "#FFF",
+        "columns_desktop": 2,
+        "columns_mobile": 1,
+        "padding_top": 40,
+        "padding_bottom": 0,
+        "mobile_padding_top": 0,
+        "mobile_padding_bottom": 0
       }
     },
-    "section_KKEUdF": {
-      "type": "section",
+    "bestseller_collection_aVEedC": {
+      "type": "bestseller-collection",
       "blocks": {
-        "group_e6zjDL": {
-          "type": "group",
+        "tab_xNaaEh": {
+          "type": "tab",
           "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "flex-end",
-            "gap": 0,
-            "width": "fill",
-            "custom_width": 42,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fill",
-            "custom_height": 100,
-            "background_media": "image",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image": "shopify://shop_images/eagle-sapphire-eye-pocket-square-sylvester-stallone-tulsa-king.png",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "hero-apparel-2",
-            "padding-block-start": 0,
-            "padding-block-end": 40,
-            "padding-inline-start": 40,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "spacer_RrzhmP": {
-              "type": "spacer",
-              "settings": {
-                "size": "pixel",
-                "percent_size": 100,
-                "pixel_size": 16,
-                "custom_mobile_size": false,
-                "size_mobile": "percent",
-                "percent_size_mobile": 100,
-                "pixel_size_mobile": 120
-              },
-              "blocks": {}
-            },
-            "text_mci9rp": {
-              "type": "text",
-              "settings": {
-                "text": "<h3>Worn by Sylvester Stallone.</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 5,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_iacwMD": {
-              "type": "text",
-              "name": "t:names.text",
-              "settings": {
-                "text": "<p>As seen in <em>Tulsa King</em></p>",
-                "width": "fit-content",
-                "max_width": "narrow",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 15,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "button_UBNqbW": {
-              "type": "button",
-              "settings": {
-                "label": "Shop the Eagle",
-                "link": "shopify://products/eagle-sapphire-eye-pocket-square™",
-                "open_in_new_tab": false,
-                "style_class": "button-custom",
-                "custom_button_background": "{{ settings.color_palette.background }}",
-                "custom_button_text": "{{ settings.color_palette.foreground }}",
-                "custom_button_border": "{{ settings.color_palette.background }}",
-                "link_text_color": "",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "spacer_RrzhmP",
-            "text_mci9rp",
-            "text_iacwMD",
-            "button_UBNqbW"
-          ]
+            "label": "Pocket Squares™",
+            "collection": "pocket-squares"
+          }
         },
-        "group_WmxUK7": {
-          "type": "group",
+        "tab_Mh8ybe": {
+          "type": "tab",
           "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "space-between",
-            "gap": 32,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fill",
-            "custom_height": 100,
-            "background_media": "image",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image": "shopify://shop_images/Eagle_Sapphire_Eye_Pocket_Square_-_Sterling_Silver_-_Flat_lay_with_insert_-_Expanded_background.png",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "https://joseballi.com/products/eagle-sapphire-eye-pocket-square%E2%84%A2",
-            "open_in_new_tab": false,
-            "placeholder": "hero-apparel-1",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "label": "Necklaces",
+            "collection": "necklaces-1"
+          }
+        },
+        "tab_JmQEcB": {
+          "type": "tab",
+          "settings": {
+            "label": "Earrings",
+            "collection": "earrings"
+          }
+        },
+        "tab_ATFbUH": {
+          "type": "tab",
+          "settings": {
+            "label": "Bracelets",
+            "collection": "bracelets"
+          }
+        },
+        "tab_9jh9p4": {
+          "type": "tab",
+          "settings": {
+            "label": "Rings",
+            "collection": "rings"
+          }
+        },
+        "tab_AYAhKe": {
+          "type": "tab",
+          "settings": {
+            "label": "Pendants",
+            "collection": "pendants"
+          }
         }
       },
       "block_order": [
-        "group_e6zjDL",
-        "group_WmxUK7"
+        "tab_xNaaEh",
+        "tab_Mh8ybe",
+        "tab_JmQEcB",
+        "tab_ATFbUH",
+        "tab_9jh9p4",
+        "tab_AYAhKe"
       ],
-      "name": "SPLIT - TULSA KING/POCKET SQUARE ",
+      "name": "Bestseller collection",
       "settings": {
-        "content_direction": "row",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 0,
-        "section_width": "full-width",
-        "section_height": "custom",
-        "section_height_custom": 90,
-        "background_media": "none",
-        "background_color": "",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_color": "",
-        "border_radius": 0,
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "background": "#FFF",
+        "heading": "Categories",
+        "link_label": "",
+        "link": "",
+        "shop_all_label": "Shop All",
+        "products_desktop": 4,
+        "mobile_layout": "row",
+        "mobile_cards_per_group": 1,
+        "low_stock_threshold": 3,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
       }
     },
-    "hero_tFBXEE": {
-      "type": "hero",
+    "craftsmanship_story_qdbRFV": {
+      "type": "craftsmanship-story",
       "blocks": {
-        "text_ggCLfP": {
-          "type": "text",
+        "tab_KnMaad": {
+          "type": "tab",
           "settings": {
-            "text": "<p>Be the one they remember.</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h4",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 100,
-            "padding-block-end": 22,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "tab_label": "Our Process",
+            "image": "shopify://shop_images/our-process__v2.png",
+            "heading": "<h2>Carved by <em>hand</em>. Made to <em>last</em>.</h2>",
+            "text": "<p>Each design begins as an original carving by Jose Balli, then is cast in solid metal and finished by hand in our New Orleans studio.</p>",
+            "link_label": "How it’s made",
+            "link": "shopify://pages/about-us",
+            "side_media_type": "video",
+            "side_image": "shopify://shop_images/our-process__right-image.png",
+            "side_video": "shopify://files/videos/Jose Pocket Square Pitch - Compliments Guaranteed-1.mp4",
+            "side_video_poster": "shopify://shop_images/our-process__right-image_66110fd6-119e-4c18-b9f0-ac432953317a.png",
+            "side_video_muted": true,
+            "side_video_autoplay": false,
+            "side_video_loop": true
+          }
         },
-        "text_UJUikY": {
-          "type": "text",
+        "tab_qrWKMb": {
+          "type": "tab",
           "settings": {
-            "text": "",
-            "width": "fit-content",
-            "max_width": "narrow",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 5,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "button_hiXeaK": {
-          "type": "button",
-          "name": "t:names.button",
-          "settings": {
-            "label": "Shop Metal Pocket Squares™",
-            "link": "shopify://collections/pocket-squares",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "rgba(0,0,0,0)",
-            "custom_button_text": "{{ settings.color_palette.background }}",
-            "custom_button_border": "{{ settings.color_palette.background }}",
-            "link_text_color": "",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
-          },
-          "blocks": {}
+            "tab_label": "Our Story",
+            "image": "shopify://shop_images/our-story__v2.png",
+            "heading": "<h2><em>One </em>family.<br/><em>One </em>studio.</h2>",
+            "text": "<p>Original jewelry, inspired by Louisiana and handcrafted in New Orleans. A family tradition built on creativity. craftsmanship. and a love for where we come from.</p>",
+            "link_label": "meet the balli family",
+            "link": "shopify://pages/press",
+            "side_media_type": "video",
+            "side_image": "shopify://shop_images/HorsePocketSquare-WhiteBronze-Wornonamodelatthederby.png",
+            "side_video": "shopify://files/videos/copy_63EFD03E-0658-489F-840F-2EF1081002FB2.mov",
+            "side_video_poster": "shopify://shop_images/our-story__right-image.png",
+            "side_video_muted": true,
+            "side_video_autoplay": false,
+            "side_video_loop": true
+          }
         }
       },
       "block_order": [
-        "text_ggCLfP",
-        "text_UJUikY",
-        "button_hiXeaK"
+        "tab_KnMaad",
+        "tab_qrWKMb"
       ],
-      "name": "t:names.hero",
+      "name": "Craftsmanship story",
       "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "image_2": "shopify://shop_images/Alligator_Pocket_Square_03_On_Model.jpg",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "link": "https://joseballi.com/collections/pocket-squares",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 0,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "background_color": "",
-        "toggle_overlay": true,
-        "overlay_color": "#00000026",
-        "overlay_style": "gradient",
-        "gradient_direction": "to top",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 40,
-        "padding-block-end": 40
+        "background": "#ffffff80",
+        "background_image": "shopify://shop_images/craftsmanship-story__desktop_3c67f5fe-843a-4f1b-b273-b25f7e319e77.png",
+        "section_height": "auto",
+        "padding_top": 60,
+        "padding_bottom": 60,
+        "mobile_padding_top": 20,
+        "mobile_padding_bottom": 20
       }
     },
-    "product_list_LMNw7x": {
-      "type": "product-list",
+    "signature_style_m77zCC": {
+      "type": "signature-style",
       "blocks": {
-        "static-header": {
-          "type": "_product-list-content",
-          "name": "t:names.header",
-          "static": true,
+        "product_spotlight_1": {
+          "type": "product",
           "settings": {
-            "content_direction": "row",
-            "vertical_on_mobile": false,
-            "horizontal_alignment": "space-between",
-            "vertical_alignment": "center",
-            "align_baseline": true,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_list_text_nztniC": {
-              "type": "_product-list-text",
-              "name": "t:names.collection_title",
-              "settings": {
-                "text": "<h3>{{ closest.collection.title }}</h3>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_list_button_cmUWYa": {
-              "type": "_product-list-button",
-              "name": "t:names.product_list_button",
-              "settings": {
-                "label": "View all",
-                "open_in_new_tab": false,
-                "style_class": "button-unstyled",
-                "custom_button_background": "{{ settings.color_palette.foreground }}",
-                "custom_button_text": "{{ settings.color_palette.background }}",
-                "custom_button_border": "{{ settings.color_palette.background }}",
-                "link_text_color": "",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_list_text_nztniC",
-            "product_list_button_cmUWYa"
-          ]
-        },
-        "static-product-card": {
-          "type": "_product-card",
-          "name": "t:names.product_card",
-          "static": true,
-          "settings": {
-            "product_card_gap": 4,
-            "background_color": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_card_gallery_AXJEDj": {
-              "type": "_product-card-gallery",
-              "name": "t:names.product_card_media",
-              "settings": {
-                "image_ratio": "square",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_9pbW4P": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "price_cYW9gg": {
-              "type": "price",
-              "name": "t:names.product_price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h5",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "text_color": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "custom_liquid_bsHome1": {
-              "type": "custom-liquid",
-              "name": "t:names.custom_liquid",
-              "settings": {
-                "custom_liquid": "{%- if closest.product.tags contains 'bestseller' -%}\n  <div class=\"jb-bestseller-badge\">Best Seller</div>\n  <style>\n    .jb-bestseller-badge {\n      position: absolute;\n      left: -9999px;\n      top: -9999px;\n    }\n    .jb-bestseller-badge--placed {\n      position: absolute;\n      top: 15px;\n      left: 8px;\n      z-index: 2;\n      background: #ffffff;\n      color: #000000;\n      font-size: 14px;\n      letter-spacing: 0.35px;\n      text-transform: uppercase;\n      font-weight: 600;\n      padding: 5px 12px;\n      border-radius: 4px;\n      pointer-events: none;\n    }\n  </style>\n  <script>\n    (function () {\n      var script = document.currentScript;\n      var badge = script.previousElementSibling.previousElementSibling;\n      if (!badge) return;\n      var card = badge.closest('product-card');\n      var gallery = card ? card.querySelector('.card-gallery') : null;\n      if (gallery) {\n        gallery.appendChild(badge);\n        badge.classList.remove('jb-bestseller-badge');\n        badge.classList.add('jb-bestseller-badge--placed');\n      }\n    })();\n  </script>\n{%- endif -%}"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_card_gallery_AXJEDj",
-            "product_title_9pbW4P",
-            "price_cYW9gg",
-            "custom_liquid_bsHome1"
-          ]
-        }
-      },
-      "name": "New Arrivals Carousel",
-      "settings": {
-        "collection": "new-arrivals",
-        "layout_type": "carousel",
-        "carousel_on_mobile": false,
-        "max_products": 6,
-        "columns": 4,
-        "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 8,
-        "rows_gap": 24,
-        "icons_style": "arrow",
-        "icons_shape": "circle",
-        "section_width": "page-width",
-        "horizontal_alignment": "flex-start",
-        "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 50,
-        "padding-block-end": 50
-      }
-    },
-    "section_yNEEJH": {
-      "type": "section",
-      "blocks": {
-        "image_dP8zgt": {
-          "type": "image",
-          "settings": {
-            "image": "shopify://shop_images/Jose_Balli_at_Bench_Assembling_Jewelry_-_photo_by_Darian_Esser_1.jpg",
-            "link": "",
-            "image_ratio": "square",
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "group_DQkHmU": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "width": "custom",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_aVbDAj": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p>Made in New Orleans.&nbsp;</p><p>From start to finish.</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h3",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.foreground }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "text_jf4Ymd": {
-              "type": "text",
-              "settings": {
-                "text": "<p>Every piece is designed, carved, cast, and finished in our New Orleans studio.</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.foreground }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 45,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "button_UkRMJY": {
-              "type": "button",
-              "disabled": true,
-              "settings": {
-                "label": "Shop now",
-                "link": "shopify://collections/all",
-                "open_in_new_tab": false,
-                "style_class": "button",
-                "custom_button_background": "{{ settings.color_palette.foreground }}",
-                "custom_button_text": "{{ settings.color_palette.background }}",
-                "custom_button_border": "{{ settings.color_palette.background }}",
-                "link_text_color": "",
-                "width": "fit-content",
-                "custom_width": 100,
-                "width_mobile": "fit-content",
-                "custom_width_mobile": 100
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_aVbDAj",
-            "text_jf4Ymd",
-            "button_UkRMJY"
-          ]
+            "product": "eagle-sapphire-eye-pocket-square™",
+            "image_x_desktop": 78,
+            "image_y_desktop": 56,
+            "mark_x_desktop": 62,
+            "mark_y_desktop": 76,
+            "image_x_mobile": 84,
+            "image_y_mobile": 42,
+            "mark_x_mobile": 64,
+            "mark_y_mobile": 53
+          }
         }
       },
       "block_order": [
-        "image_dP8zgt",
-        "group_DQkHmU"
+        "product_spotlight_1"
       ],
-      "name": "CRAFTSMANSHIP (TRUST)",
+      "name": "Signature style",
       "settings": {
-        "content_direction": "row",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 32,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "background_media": "none",
-        "background_color": "",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_color": "",
-        "border_radius": 0,
-        "padding-block-start": 50,
-        "padding-block-end": 50
+        "background": "#FFF",
+        "media_type": "image",
+        "image": "shopify://shop_images/signature-style__desktop-v2.png",
+        "mobile_image": "shopify://shop_images/signature-style__mobile-v2.png",
+        "signature": "shopify://shop_images/signature-style__logo.png",
+        "eyebrow": "As seen in Tulsa King",
+        "heading": "Worn by Sylvester Stallone.",
+        "text": "<p>A custom Eagle Pocket Square™ handcrafted for his character in Tulsa King.</p>",
+        "button_label": "Explore Pocket Squares",
+        "button_link": "shopify://collections/all-pocket-squares",
+        "overlay_enabled": false,
+        "overlay_color": "#000000",
+        "overlay_opacity": 30,
+        "section_height": "large",
+        "desktop_height": 660,
+        "mobile_height": 590,
+        "padding_top": 40,
+        "padding_bottom": 0,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 0
       }
     },
-    "carousel_fiKhfe": {
-      "type": "carousel",
+    "how_work_iinxri": {
+      "type": "how-work",
       "blocks": {
-        "static-header": {
-          "type": "group",
-          "name": "t:names.header",
-          "static": true,
+        "step_LE6amj": {
+          "type": "step",
           "settings": {
-            "content_direction": "row",
-            "vertical_on_mobile": false,
-            "horizontal_alignment": "center",
-            "vertical_alignment": "center",
-            "align_baseline": true,
-            "horizontal_alignment_flex_direction_column": "flex-start",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 0,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fill",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_tgqwDJ": {
-              "type": "text",
-              "name": "t:names.header",
-              "settings": {
-                "text": "<p><em>As Seen on Jose Balli</em></p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h4",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_tgqwDJ"
-          ]
+            "image": "shopify://shop_images/how-it-works__step-1.png",
+            "title": "Snap",
+            "description": "Attach design to the magnetic insert."
+          }
         },
-        "static-carousel-content": {
-          "type": "_carousel-content",
-          "name": "t:names.carousel_content",
-          "static": true,
+        "step_EWBGAd": {
+          "type": "step",
           "settings": {
-            "background_color": "",
-            "height": "fit",
-            "position": "center",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "card_KbrTxB": {
-              "type": "_card",
-              "name": "Lion PS Red Carpet",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/lion-pocket-square™",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_NQdnwB": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/gilded_lion_pocket_square_worn_on_the_red_carpet_2.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_NQdnwB"
-              ]
-            },
-            "card_YRmThF": {
-              "type": "_card",
-              "name": "Tan YZ Tiger",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/tiger-pocket-square",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_Wtcfaj": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/groom_in_tan_suit_wearing_the_gilded_tiger_pocket_square.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_Wtcfaj"
-              ]
-            },
-            "card_fcWVgQ": {
-              "type": "_card",
-              "name": "P239 Stacked",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/dangling-alligator-pendant",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_kdDPKi": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/Dangling_Alligator_Pendant_-_Customer_Tag_-_Layered_Necklaces.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_kdDPKi"
-              ]
-            },
-            "card_VLQatQ": {
-              "type": "_card",
-              "name": "Groom YZ Lion",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/lion-pocket-square™",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_9KWUrY": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/groomsman_at_wedding_wearing_the_gilded_lion_pocket_square.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_9KWUrY"
-              ]
-            },
-            "card_8GqxJk": {
-              "type": "_card",
-              "name": "Streetcar Bean",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/balli-bean-s-is-for-streetcar",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_fPQteg": {
-                  "type": "image",
-                  "name": "Streetcar Bean",
-                  "settings": {
-                    "image": "shopify://shop_images/Streetcar_Red_Bean_Pendant_-_Customer_Tag.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_fPQteg"
-              ]
-            },
-            "card_TPCJch": {
-              "type": "_card",
-              "name": "Groom YZ Tiger",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/tiger-pocket-square",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_Kfxmih": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/groomsman_wearing_the_gilded_tiger_pocket_square_cropped.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_Kfxmih"
-              ]
-            },
-            "card_DVm8nT": {
-              "type": "_card",
-              "name": "Crown of Thorns Rings",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "center",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "center",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 0,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "aspect_ratio": "adapt",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "link": "shopify://products/crown-of-thorns-ring",
-                "open_in_new_tab": false,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "image_GPjiLq": {
-                  "type": "image",
-                  "name": "t:names.image",
-                  "settings": {
-                    "image": "shopify://shop_images/Crown_of_Thorn_Rings_Close_Up_-_Worn_on_Elan_Bibas_-_Love_Island_Wrap_Party_-_Styled_by_Solomon_Sisters.jpg",
-                    "link": "",
-                    "image_ratio": "square",
-                    "width": "fit-content",
-                    "custom_width": 100,
-                    "width_mobile": "fit-content",
-                    "custom_width_mobile": 100,
-                    "height": "fit",
-                    "border": "none",
-                    "border_width": 1,
-                    "border_opacity": 100,
-                    "border_color": "",
-                    "border_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "image_GPjiLq"
-              ]
-            }
-          },
-          "block_order": [
-            "card_KbrTxB",
-            "card_YRmThF",
-            "card_fcWVgQ",
-            "card_VLQatQ",
-            "card_8GqxJk",
-            "card_TPCJch",
-            "card_DVm8nT"
-          ]
-        }
-      },
-      "name": "Social Proof UGC",
-      "settings": {
-        "columns": 5,
-        "mobile_columns": "1",
-        "section_width": "full-width",
-        "columns_gap": 5,
-        "background_color": "",
-        "icons_style": "chevron",
-        "icons_shape": "circle",
-        "padding-block-start": 0,
-        "padding-block-end": 20
-      }
-    },
-    "slideshow_ea7tjy": {
-      "type": "slideshow",
-      "blocks": {
-        "slide_KHDzCh": {
-          "type": "_slide",
-          "name": "Slide 1 - Red Carpet",
-          "settings": {
-            "media_type_1": "image",
-            "image_1": "shopify://shop_images/gilded_lion_pocket_square_worn_on_the_red_carpet.jpg",
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "background_color": "",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_pWGe4x": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p>Worn on the <br/>red carpet.</p>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h2",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_pWGe4x"
-          ]
+            "image": "shopify://shop_images/how-it-works__step-2.png",
+            "title": "Slide",
+            "description": "Place into your pocket and adjust."
+          }
         },
-        "slide_Ay9nK3": {
-          "type": "_slide",
-          "name": "Slide 2 - Groom",
+        "step_zCd3wT": {
+          "type": "step",
           "settings": {
-            "media_type_1": "image",
-            "image_1": "shopify://shop_images/groom_in_tan_suit_wearing_the_gilded_tiger_pocket_square.jpg",
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "background_color": "",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_6gQgdA": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p>Noticed in every room.</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h2",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_6gQgdA"
-          ]
-        },
-        "slide_Vy7MUn": {
-          "type": "_slide",
-          "name": "Slide 3 - Groomsman",
-          "settings": {
-            "media_type_1": "image",
-            "image_1": "shopify://shop_images/groomsman_at_wedding_wearing_the_gilded_lion_pocket_square.jpg",
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "background_color": "",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "text_yELXep": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p>Effortless. Every time.</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h2",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_yELXep"
-          ]
-        },
-        "slide_6Hy3Kf": {
-          "type": "_slide",
-          "name": "Slide 4 - Couple",
-          "settings": {
-            "media_type_1": "image",
-            "image_1": "shopify://shop_images/groomsman_wearing_the_gilded_tiger_pocket_square_cropped.jpg",
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 12,
-            "background_color": "",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "padding-block-start": 48,
-            "padding-block-end": 48,
-            "padding-inline-start": 48,
-            "padding-inline-end": 48
-          },
-          "blocks": {
-            "text_AntVMi": {
-              "type": "text",
-              "name": "t:names.heading",
-              "settings": {
-                "text": "<p>The details they notice.</p>",
-                "width": "fit-content",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "h2",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "{{ settings.color_palette.background }}",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "text_AntVMi"
-          ]
+            "image": "shopify://shop_images/how-it-works__step-3.png",
+            "title": "Stand Out",
+            "description": "Enjoy a finishing touch that gets noticed."
+          }
         }
       },
       "block_order": [
-        "slide_KHDzCh",
-        "slide_Ay9nK3",
-        "slide_Vy7MUn",
-        "slide_6Hy3Kf"
+        "step_LE6amj",
+        "step_EWBGAd",
+        "step_zCd3wT"
+      ],
+      "name": "How It Works",
+      "settings": {
+        "background_color": "#FFFFFF",
+        "subheading": "How it works",
+        "heading": "No pins. No folding. It stays put all night.",
+        "image_ratio": "square",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "product_customization_BYrPJT": {
+      "type": "product-customization",
+      "blocks": {
+        "designs_D9QrBr": {
+          "type": "designs",
+          "settings": {
+            "products": [
+              "alligator-pocket-square",
+              "kraken-pocket-square",
+              "tiger-pocket-square",
+              "lion-pocket-square™",
+              "horse-pocket-square",
+              "eagle-pocket-square™",
+              "pelican-deco-pocket-square",
+              "mermaid-pocket-square",
+              "eagle-sapphire-eye-pocket-square™"
+            ],
+            "design_heading": "Select your favorite:",
+            "finish_heading": "Choose your finish:"
+          }
+        }
+      },
+      "block_order": [
+        "designs_D9QrBr"
+      ],
+      "name": "Product customization",
+      "settings": {
+        "background": "#FFF",
+        "use_product_image": true,
+        "eyebrow": "MAKE IT YOURS",
+        "heading": "Choose your design.",
+        "button_label": "Add to bag",
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "shop_gift_m8JY9W": {
+      "type": "shop-gift",
+      "blocks": {
+        "card_EJm48Q": {
+          "type": "card",
+          "settings": {
+            "collection": "gifts",
+            "custom_image": "shopify://shop_images/shop-gift__image-1.png",
+            "custom_title": "Gifts for Her",
+            "custom_link": "",
+            "button_label": "Shop now"
+          }
+        },
+        "card_KfTq9M": {
+          "type": "card",
+          "settings": {
+            "collection": "anniversary",
+            "custom_image": "shopify://shop_images/shop-gift__image-2.png",
+            "custom_title": "Gifts for Him",
+            "custom_link": "",
+            "button_label": "Shop now"
+          }
+        },
+        "card_We8Edt": {
+          "type": "card",
+          "settings": {
+            "collection": "under-100",
+            "custom_image": "shopify://shop_images/shop-gift__image-3.png",
+            "custom_title": "Gifts Under $100",
+            "custom_link": "",
+            "button_label": "Shop now"
+          }
+        },
+        "card_TX4MBp": {
+          "type": "card",
+          "settings": {
+            "collection": "weddings",
+            "custom_image": "shopify://shop_images/shop-gift__image-4.png",
+            "custom_title": "Gifts for Weddings",
+            "custom_link": "",
+            "button_label": "Shop now"
+          }
+        }
+      },
+      "block_order": [
+        "card_EJm48Q",
+        "card_KfTq9M",
+        "card_We8Edt",
+        "card_TX4MBp"
+      ],
+      "name": "Shop gifts",
+      "settings": {
+        "background": "#FFF",
+        "heading": "A gift for everyone.",
+        "cards_desktop": 4,
+        "padding_top": 64,
+        "padding_bottom": 64,
+        "mobile_padding_top": 40,
+        "mobile_padding_bottom": 40
+      }
+    },
+    "question_answer_f8jz87": {
+      "type": "question-answer",
+      "blocks": {
+        "question_wb3qVD": {
+          "type": "question",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Free ground shipping on all US orders. We do ship internationally to select countries.</p>"
+          }
+        },
+        "question_Jn7NdW": {
+          "type": "question",
+          "settings": {
+            "question": "How long will my order take?",
+            "answer": "<p>Most orders ship within 3–5 business days. Handcrafted and custom pieces may take longer.</p>"
+          }
+        },
+        "question_VzVC7M": {
+          "type": "question",
+          "settings": {
+            "question": "Do you make custom pieces?",
+            "answer": "<p>Yes. Contact us with your idea and we'll walk you through the process.</p>"
+          }
+        },
+        "question_LGMrwN": {
+          "type": "question",
+          "settings": {
+            "question": "What if it doesn't fit?",
+            "answer": "<p>We offer easy exchanges and returns. Reach out and we'll make it right.</p>"
+          }
+        },
+        "question_PzwcBw": {
+          "type": "question",
+          "settings": {
+            "question": "How does the Pocket Square™ stay in place?",
+            "answer": "<p>Each piece is designed with a discreet clip that holds securely inside your pocket.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "question_wb3qVD",
+        "question_Jn7NdW",
+        "question_VzVC7M",
+        "question_LGMrwN",
+        "question_PzwcBw"
+      ],
+      "name": "Questions & answers",
+      "settings": {
+        "background": "#FFF",
+        "heading": "Frequently Asked Questions",
+        "open_first": true,
+        "padding_top": 56,
+        "padding_bottom": 56,
+        "mobile_padding_top": 48,
+        "mobile_padding_bottom": 48
+      }
+    },
+    "guarantee_bar_CqJNCw": {
+      "type": "guarantee-bar",
+      "blocks": {
+        "item_HpFjrB": {
+          "type": "item",
+          "settings": {
+            "title": "Free shipping",
+            "text": "Free shipping on all US orders.",
+            "link_label": "Shipping policy",
+            "link": "shopify://pages/shipping-returns"
+          }
+        },
+        "item_yRzTNH": {
+          "type": "item",
+          "settings": {
+            "title": "100-day exchanges",
+            "text": "Eligible items may be returned or exchanged within 100 days of the original purchase.",
+            "link_label": "Returns & exchanges",
+            "link": "shopify://pages/shipping-returns"
+          }
+        },
+        "item_fJ9QpT": {
+          "type": "item",
+          "settings": {
+            "title": "Contact us",
+            "text": "Shopping for the perfect piece, have a question about an order, or need a repair? We’d love to hear from you.",
+            "link_label": "Contact the studio",
+            "link": "shopify://pages/contact-us"
+          }
+        }
+      },
+      "block_order": [
+        "item_HpFjrB",
+        "item_yRzTNH",
+        "item_fJ9QpT"
       ],
       "disabled": true,
-      "name": "SOCIAL PROOF SLIDESHOW",
+      "name": "Guarantee bar",
       "settings": {
-        "display_mode": "full_frame",
-        "section_width": "full-width",
-        "full_frame_on_mobile": false,
-        "slideshow_gap": 12,
-        "corner_radius": 0,
-        "slide_height": "large",
-        "content_position": "on-media",
-        "background_color": "",
-        "icons_style": "arrows_large",
-        "icons_shape": "none",
-        "slideshow_controls_style": "dots",
-        "autoplay": false,
-        "autoplay_speed": 4,
-        "padding-block-start": 30,
-        "padding-block-end": 30
-      }
-    },
-    "hero_TNktP4": {
-      "type": "hero",
-      "blocks": {
-        "text_6pxdaN": {
-          "type": "text",
-          "settings": {
-            "text": "<h2>A Family Tradition</h2>",
-            "width": "fit-content",
-            "max_width": "narrow",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 100,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_69kKci": {
-          "type": "text",
-          "settings": {
-            "text": "<p>Designed and crafted by the Balli family in New Orleans.</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.background }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "text_6pxdaN",
-        "text_69kKci"
-      ],
-      "name": "FAMILY (EMOTIONAL CLOSE)",
-      "settings": {
-        "media_type_1": "image",
-        "image_1": "shopify://shop_images/The_Balli_Family._From_left_to_right_-_Lucas_Joshua_Lisa_Jose_Sarah_bfb6c081-b8cf-45ba-a611-0a926e91082e.jpg",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "link": "",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 16,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "background_color": "",
-        "toggle_overlay": true,
-        "overlay_color": "#00000026",
-        "overlay_style": "gradient",
-        "gradient_direction": "to top",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 40,
-        "padding-block-end": 40
-      }
-    },
-    "divider_brzKQf": {
-      "type": "divider",
-      "name": "t:names.divider_section",
-      "settings": {
-        "background_color": "",
-        "divider_color": "{{ settings.color_palette.color2 }}",
-        "section_width": "full-width",
-        "thickness": 1,
-        "corner_radius": "square",
-        "width_percent": 100,
-        "alignment_horizontal": "center",
-        "padding-block-start": 16,
-        "padding-block-end": 16
-      }
-    },
-    "section_PHExUb": {
-      "type": "section",
-      "blocks": {
-        "group_9WXRWQ": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 16,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "icon_eNFnPG": {
-              "type": "icon",
-              "settings": {
-                "icon": "truck",
-                "width": 32,
-                "link": "",
-                "open_in_new_tab": false,
-                "icon_color": ""
-              },
-              "blocks": {}
-            },
-            "group_yb4NWU": {
-              "type": "group",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 4,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_9HP7QG": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<h3>Free Shipping</h3>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "center",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_9HP7QG"
-              ]
-            }
-          },
-          "block_order": [
-            "icon_eNFnPG",
-            "group_yb4NWU"
-          ]
-        },
-        "group_4akPz6": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 16,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "icon_V9ViEt": {
-              "type": "icon",
-              "settings": {
-                "icon": "return",
-                "width": 32,
-                "link": "",
-                "open_in_new_tab": false,
-                "icon_color": ""
-              },
-              "blocks": {}
-            },
-            "group_yKVmCE": {
-              "type": "group",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 4,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_fLmc7R": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<h3>100-Day Exchanges</h3>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "center",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_fLmc7R"
-              ]
-            }
-          },
-          "block_order": [
-            "icon_V9ViEt",
-            "group_yKVmCE"
-          ]
-        },
-        "group_dXTeLb": {
-          "type": "group",
-          "settings": {
-            "content_direction": "column",
-            "vertical_on_mobile": true,
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "align_baseline": false,
-            "horizontal_alignment_flex_direction_column": "center",
-            "vertical_alignment_flex_direction_column": "center",
-            "gap": 16,
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "custom_height": 100,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "toggle_overlay": false,
-            "overlay_color": "#00000026",
-            "overlay_style": "solid",
-            "gradient_direction": "to top",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "link": "",
-            "open_in_new_tab": false,
-            "placeholder": "",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "icon_ALTk7h": {
-              "type": "icon",
-              "settings": {
-                "icon": "box",
-                "image_upload": "shopify://shop_images/gift.svg",
-                "width": 32,
-                "link": "",
-                "open_in_new_tab": false,
-                "icon_color": ""
-              },
-              "blocks": {}
-            },
-            "group_CUTHfT": {
-              "type": "group",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 4,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_A3Fcng": {
-                  "type": "text",
-                  "settings": {
-                    "text": "<h3>Complimentary Box</h3>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "center",
-                    "type_preset": "paragraph",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_A3Fcng"
-              ]
-            }
-          },
-          "block_order": [
-            "icon_ALTk7h",
-            "group_CUTHfT"
-          ]
-        }
-      },
-      "block_order": [
-        "group_9WXRWQ",
-        "group_4akPz6",
-        "group_dXTeLb"
-      ],
-      "name": "TRUST ICONS",
-      "settings": {
-        "content_direction": "row",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 60,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "background_media": "none",
-        "background_color": "{{ settings.color_palette.color2 }}",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_color": "",
-        "border_radius": 0,
-        "padding-block-start": 48,
-        "padding-block-end": 48
-      }
-    },
-    "1786481425555fd45d": {
-      "type": "_blocks",
-      "blocks": {
-        "text_z4VimT": {
-          "type": "text",
-          "name": "t:names.heading",
-          "settings": {
-            "text": "<h4>You’ve Got 10% Off</h4>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h3",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.foreground }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_PkA6Ra": {
-          "type": "text",
-          "name": "t:names.heading",
-          "settings": {
-            "text": "<p>Join our email list to unlock 10% off your first order.</p>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "paragraph",
-            "font": "var(--font-body--family)",
-            "font_size": "0.75rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "{{ settings.color_palette.foreground }}",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "ai_gen_block_e952a09_FMLn7P": {
-          "type": "ai_gen_block_e952a09",
-          "settings": {
-            "heading": "",
-            "subtext": "",
-            "placeholder": "Enter your email",
-            "button_text": "Subscribe",
-            "show_icon": true,
-            "klaviyo_site_id": "S7Sng9",
-            "klaviyo_list_id": "VfyRpC",
-            "success_message": "Thanks for subscribing!",
-            "success_button_text": "Subscribed!",
-            "error_message": "Something went wrong. Please try again.",
-            "desktop_width_percent": 100,
-            "form_layout": "horizontal",
-            "text_alignment": "center",
-            "content_max_width": 1000,
-            "padding": 30,
-            "border_radius": 0,
-            "background_color": "{{ settings.color_palette.background }}",
-            "overlay_color": "#f0e7d199",
-            "heading_color": "#000000",
-            "heading_size": 42,
-            "heading_spacing": 0,
-            "text_color": "#000000",
-            "text_size": 16,
-            "form_spacing": 0,
-            "input_background_color": "#ffffff",
-            "input_text_color": "#000000",
-            "input_placeholder_color": "#666666",
-            "input_border_color": "{{ settings.color_palette.foreground }}",
-            "input_focus_color": "#000000",
-            "input_border_width": 1,
-            "input_border_radius": 4,
-            "input_padding": 8,
-            "input_font_size": 16,
-            "input_button_gap": 8,
-            "button_background_color": "#000000",
-            "button_text_color": "#ffffff",
-            "button_hover_color": "#333333",
-            "button_border_radius": 4,
-            "button_padding": 8,
-            "button_font_size": 16,
-            "success_color": "#008060",
-            "error_color": "#d82c0d"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "text_z4VimT",
-        "text_PkA6Ra",
-        "ai_gen_block_e952a09_FMLn7P"
-      ],
-      "disabled": true,
-      "name": "Email Signup",
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "background_media": "none",
-        "background_color": "",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_color": "",
-        "border_radius": 0,
-        "padding-block-start": 50,
-        "padding-block-end": 0
-      }
-    },
-    "divider_kWynnD": {
-      "type": "divider",
-      "name": "t:names.divider_section",
-      "settings": {
-        "background_color": "{{ settings.color_palette.background }}",
-        "divider_color": "#d6d6d6",
-        "section_width": "full-width",
-        "thickness": 1.5,
-        "corner_radius": "square",
-        "width_percent": 100,
-        "alignment_horizontal": "center",
-        "padding-block-start": 16,
-        "padding-block-end": 16
+        "background": "#FEFDFC",
+        "show_border": true,
+        "padding_top": 38,
+        "padding_bottom": 38,
+        "mobile_padding_top": 48,
+        "mobile_padding_bottom": 48
       }
     }
   },
   "order": [
-    "hero_BA8Mqy",
-    "product_list_yyhnDR",
-    "178647208458bf9731",
-    "section_KKEUdF",
-    "hero_tFBXEE",
-    "product_list_LMNw7x",
-    "section_yNEEJH",
-    "carousel_fiKhfe",
-    "slideshow_ea7tjy",
-    "hero_TNktP4",
-    "divider_brzKQf",
-    "section_PHExUb",
-    "1786481425555fd45d",
-    "divider_kWynnD"
+    "hero_banner_dCcrGE",
+    "trust_bar_3Qc7LM",
+    "bestseller_collection_Y8hU98",
+    "featured_collections_4eAEhj",
+    "bestseller_collection_aVEedC",
+    "craftsmanship_story_qdbRFV",
+    "signature_style_m77zCC",
+    "how_work_iinxri",
+    "product_customization_BYrPJT",
+    "shop_gift_m8JY9W",
+    "question_answer_f8jz87",
+    "guarantee_bar_CqJNCw"
   ]
 }

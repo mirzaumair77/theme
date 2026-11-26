@@ -1,0 +1,469 @@
+{%- liquid
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign background = section.settings.background
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign enable_rotation = section.settings.enable_rotation
+  assign rotation_speed = section.settings.rotation_speed
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+  padding-top: {{ mobile_padding_top }}px;
+  padding-bottom: {{ mobile_padding_bottom }}px;
+  {%- if background != blank %}
+    background: {{ background }};
+  {%- endif %}
+}
+
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+  }
+}
+
+.trust-bar {
+  display: flex;
+  gap: 40px;
+  margin: 0;
+  padding: 0 20px;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 20px;
+  scrollbar-width: none;
+}
+
+.trust-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.trust-bar p {
+  margin: 0;
+}
+
+.trust-bar__item {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  scroll-snap-align: start;
+  color: #2a2a2a;
+}
+
+.trust-bar__icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.trust-bar__icon svg,
+.trust-bar__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.trust-bar__title p {
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 12px;
+  line-height: 14.4px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+@media (min-width: 769px) {
+  .trust-bar {
+    justify-content: space-between;
+    gap: 32px;
+    padding: 0 56px;
+    scroll-padding: 0 56px;
+  }
+
+  .trust-bar__title p {
+    font-size: 14px;
+    line-height: 16.8px;
+  }
+}
+
+/* Rotation */
+.trust-bar--rotating {
+  scroll-snap-type: none;
+}
+
+.trust-bar--rotating .trust-bar__item {
+  scroll-snap-align: none;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+</style>
+
+<ul
+  class="trust-bar{% if enable_rotation %} trust-bar--rotating{% endif %}"
+  id="TrustBar-{{ section.id }}"
+  data-speed="{{ rotation_speed }}"
+>
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign icon = block.settings.icon
+      assign custom_icon = block.settings.custom_icon
+      assign title = block.settings.title
+    -%}
+    <li class="trust-bar__item" {{ block.shopify_attributes }}>
+      {%- if custom_icon != blank or icon != 'none' -%}
+        <div class="trust-bar__icon">
+          {%- if custom_icon != blank -%}
+            {{
+              custom_icon
+              | image_url: width: 88
+              | image_tag: widths: '36, 54, 72', sizes: '18px', loading: 'lazy', alt: '', width: 18, height: 18
+            }}
+          {%- else -%}
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+              {%- case icon -%}
+                {%- when 'drop' -%}
+                  <path d="M12 3.5c3.2 4 5.5 7.4 5.5 10.2a5.5 5.5 0 0 1-11 0c0-2.8 2.3-6.2 5.5-10.2Z"/>
+                {%- when 'basket' -%}
+                  <path d="M4 9.5h16l-2 10H6l-2-10Z"/><path d="M8 9.5 12 4l4 5.5"/>
+                {%- when 'truck' -%}
+                  <path d="M2.5 6.5h11v10h-11z"/><path d="M13.5 10h4l3 3.2v3.3h-7"/><circle cx="6.5" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>
+                {%- when 'return' -%}
+                  <path d="M4 4.5v5h5"/><path d="M4.8 14.5A7.8 7.8 0 1 0 6.6 6.4L4 9.5"/>
+                {%- when 'shield' -%}
+                  <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6L12 3Z"/>
+                {%- when 'gift' -%}
+                  <path d="M3.5 8.5h17v4h-17z"/><path d="M5 12.5V20h14v-7.5"/><path d="M12 8.5V20"/><path d="M12 8.5c-1-3-4.5-4.2-5.3-2.3-.7 1.7 2.3 2.3 5.3 2.3Zm0 0c1-3 4.5-4.2 5.3-2.3.7 1.7-2.3 2.3-5.3 2.3Z"/>
+                {%- when 'star' -%}
+                  <path d="m12 3.5 2.6 5.3 5.9.8-4.3 4.2 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.2 5.9-.8L12 3.5Z"/>
+                {%- when 'heart' -%}
+                  <path d="M12 19.5s-7.5-4.4-7.5-9.6A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 2.3c0 5.2-7.5 9.6-7.5 9.6Z"/>
+              {%- endcase -%}
+            </svg>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if title != blank -%}
+        <div class="trust-bar__title">
+          <p>{{ title | escape }}</p>
+        </div>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+</ul>
+
+{%- if enable_rotation -%}
+  <script>
+    (function () {
+      var bar = document.getElementById('TrustBar-{{ section.id }}');
+      if (!bar || bar.dataset.rotationInit) return;
+
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        bar.classList.remove('trust-bar--rotating');
+        return;
+      }
+
+      bar.dataset.rotationInit = 'true';
+
+      var originals = Array.prototype.slice.call(bar.children);
+      if (!originals.length) return;
+
+      var speed = parseFloat(bar.dataset.speed);
+      if (isNaN(speed) || speed <= 0) speed = 0.5;
+
+      var setWidth = 0;
+      var paused = false;
+      var resumeTimer = null;
+      var lastWidth = 0;
+      var animations = [];
+      var duration = 0;
+
+      function wrapPx(px) {
+        if (setWidth <= 0) return 0;
+        px = px % setWidth;
+        return px < 0 ? px + setWidth : px;
+      }
+
+      // Distance travelled so far, in px, read from the running animation.
+      function currentPx() {
+        if (!animations.length || !duration) return 0;
+        var t = animations[0].currentTime || 0;
+        return wrapPx((t % duration) / duration * setWidth);
+      }
+
+      // Run the motion as a native linear animation on the compositor, so it
+      // stays smooth even while other scripts on the page keep the browser busy.
+      // Speed keeps its meaning: px per frame at 60fps.
+      function startAnimations(px) {
+        animations.forEach(function (a) { a.cancel(); });
+        animations = [];
+        if (setWidth <= 0) return;
+
+        duration = (setWidth / speed) * (1000 / 60);
+        var time = (wrapPx(px) / setWidth) * duration;
+        var keyframes = [
+          { transform: 'translate3d(0, 0, 0)' },
+          { transform: 'translate3d(' + (-setWidth) + 'px, 0, 0)' }
+        ];
+
+        Array.prototype.forEach.call(bar.children, function (item) {
+          var animation = item.animate(keyframes, {
+            duration: duration,
+            iterations: Infinity,
+            easing: 'linear'
+          });
+          animation.currentTime = time;
+          if (paused) animation.pause();
+          animations.push(animation);
+        });
+      }
+
+      // Exact (sub-pixel) length of one full set including its trailing gap.
+      function loopWidth() {
+        return bar.children[originals.length].getBoundingClientRect().left - originals[0].getBoundingClientRect().left;
+      }
+
+      function addSet() {
+        originals.forEach(function (item) {
+          var clone = item.cloneNode(true);
+          clone.removeAttribute('data-shopify-editor-block');
+          clone.setAttribute('aria-hidden', 'true');
+          clone.classList.add('trust-bar__item--clone');
+          bar.appendChild(clone);
+        });
+      }
+
+      function removeClones() {
+        Array.prototype.slice.call(bar.querySelectorAll('.trust-bar__item--clone')).forEach(function (clone) {
+          clone.remove();
+        });
+      }
+
+      function measure() {
+        var px = currentPx();
+        removeClones();
+        bar.style.columnGap = '';
+
+        // Read the spacing exactly as the original layout renders it
+        // (24px on mobile, 32px or the space-between spacing on desktop).
+        var spacing;
+        if (originals.length > 1) {
+          spacing = originals[1].getBoundingClientRect().left - originals[0].getBoundingClientRect().right;
+        } else {
+          spacing = parseFloat(window.getComputedStyle(bar).columnGap) || 0;
+        }
+        bar.style.columnGap = spacing + 'px';
+
+        addSet();
+        setWidth = loopWidth();
+        var guard = 0;
+        while (setWidth > 0 && bar.scrollWidth - bar.clientWidth < setWidth && guard < 20) {
+          addSet();
+          guard++;
+        }
+        lastWidth = bar.clientWidth;
+        startAnimations(px);
+      }
+
+      // If the visitor scrolled by hand while paused, fold that into the
+      // rotation position so it carries on from where they left it.
+      function syncPosition() {
+        var scrolled = bar.scrollLeft;
+        if (scrolled && duration) {
+          var time = (wrapPx(currentPx() + scrolled) / setWidth) * duration;
+          animations.forEach(function (a) { a.currentTime = time; });
+          bar.scrollLeft = 0;
+        }
+      }
+
+      function pause() {
+        clearTimeout(resumeTimer);
+        paused = true;
+        var time = animations.length ? animations[0].currentTime : 0;
+        animations.forEach(function (a) {
+          a.pause();
+          a.currentTime = time;
+        });
+      }
+
+      function resume(delay) {
+        clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function () {
+          syncPosition();
+          paused = false;
+          animations.forEach(function (a) { a.play(); });
+        }, delay || 0);
+      }
+
+      bar.addEventListener('mouseenter', pause);
+      bar.addEventListener('mouseleave', function () { resume(0); });
+      bar.addEventListener('focusin', pause);
+      bar.addEventListener('focusout', function () { resume(0); });
+      bar.addEventListener('touchstart', pause, { passive: true });
+      bar.addEventListener('touchend', function () { resume(1500); }, { passive: true });
+
+      document.addEventListener('shopify:block:select', function (event) {
+        if (bar.contains(event.target)) pause();
+      });
+      document.addEventListener('shopify:block:deselect', function (event) {
+        if (bar.contains(event.target)) resume(0);
+      });
+
+      measure();
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(function () {
+          // Only rebuild when the width really changes; rebuilding on every
+          // notification caused visible jumps.
+          if (bar.clientWidth !== lastWidth) measure();
+        }).observe(bar);
+      } else {
+        window.addEventListener('resize', function () {
+          if (bar.clientWidth !== lastWidth) measure();
+        });
+      }
+      window.addEventListener('load', function () {
+        if (bar.clientWidth !== lastWidth || Math.abs(setWidth - loopWidth()) > 0.01) measure();
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Trust bar",
+  "tag": "section",
+  "class": "section-trust-bar",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background",
+      "default": "#EEEAE4"
+    },
+    {
+      "type": "header",
+      "content": "Rotation"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_rotation",
+      "label": "Enable rotation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rotation_speed",
+      "label": "Rotation speed",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "default": 0.5
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Trust item",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "return", "label": "Return" },
+            { "value": "truck", "label": "Truck" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "drop", "label": "Drop" },
+            { "value": "basket", "label": "Basket" },
+            { "value": "star", "label": "Star" }
+          ],
+          "default": "shield"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom icon",
+          "info": "Replaces the selected icon. Recommended: 72 x 72px"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "1-Year Warranty"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust bar",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "shield", "title": "1-Year Warranty" } },
+        { "type": "item", "settings": { "icon": "return", "title": "100-Day Returns" } },
+        { "type": "item", "settings": { "icon": "truck", "title": "Free US Shipping" } },
+        { "type": "item", "settings": { "icon": "gift", "title": "Gift Box Included" } },
+        { "type": "item", "settings": { "icon": "heart", "title": "Made in New Orleans" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

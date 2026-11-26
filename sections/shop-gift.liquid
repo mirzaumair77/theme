@@ -1,0 +1,701 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign cards_desktop = section.settings.cards_desktop
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign background = section.settings.background
+  assign card_count = section.blocks.size
+
+  # Fewer cards than the setting fill the row instead of leaving a gap.
+  assign per_view = cards_desktop
+  if card_count < per_view and card_count > 0
+    assign per_view = card_count
+  endif
+
+  # Size images for the expanded card (1.4x a regular card).
+  assign image_sizes = '(min-width: 769px) calc((100vw - 112px) * 1.4 / ' | append: per_view | append: '.4), 50vw'
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+  --sg-per-view: {{ per_view }};
+  padding-top: {{ mobile_padding_top }}px;
+  padding-bottom: {{ mobile_padding_bottom }}px;
+  {%- if background != blank %}
+    background: {{ background }};
+  {%- endif %}
+}
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+  }
+}
+
+.shop-gift {
+  display: block;
+  color: #2a2a2a;
+}
+
+.shop-gift p,
+.shop-gift h2,
+.shop-gift h3 {
+  margin: 0;
+}
+
+.shop-gift__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+.shop-gift__heading h2 {
+  font-family: var(--font-heading--family);
+  color: #2A2A2A;
+  font-size: 20px;
+  line-height: 23px;
+  letter-spacing: -0.4px;
+  font-weight: 400;
+}
+
+/* The reference keeps the arrows to desktop; mobile is swiped */
+.shop-gift__arrows {
+  display: none;
+  flex-shrink: 0;
+  gap: 18px;
+}
+
+.shop-gift__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.shop-gift__arrow:focus-visible {
+  outline: 2px solid #2a2a2a;
+  outline-offset: 2px;
+}
+
+.shop-gift__arrow svg {
+  width: 32px;
+  height: 14px;
+}
+
+.shop-gift__arrow--disabled {
+  color: #d9d3ca;
+  cursor: default;
+}
+
+.shop-gift__arrow--hidden {
+  display: none;
+}
+
+/* Mobile: equal cards in a native swipe carousel with snap points; the third card peeks in */
+.shop-gift__slider {
+  --sg-gap: 2px;
+  --sg-gutter: 16px;
+
+  margin-top: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--sg-gutter);
+  scrollbar-width: none;
+  container-type: inline-size;
+}
+
+.shop-gift__slider::-webkit-scrollbar {
+  display: none;
+}
+
+.shop-gift__track {
+  display: flex;
+  gap: var(--sg-gap);
+  width: max-content;
+  padding-inline: var(--sg-gutter);
+}
+
+.shop-gift__slide {
+  flex: 0 0 auto;
+  width: calc((100cqi - var(--sg-gutter)) * 0.46);
+  scroll-snap-align: start;
+  color: #ffffff;
+}
+
+.shop-gift__slide a {
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.shop-gift__slide a:focus-visible {
+  outline: 2px solid #2a2a2a;
+  outline-offset: -2px;
+}
+
+.shop-gift__media {
+  position: absolute;
+  inset: 0;
+  background-color: #1a1a1a;
+}
+
+.shop-gift__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+}
+
+.shop-gift__media img,
+.shop-gift__media svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shop-gift__media img {
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.shop-gift__media svg {
+  fill: rgba(255, 255, 255, 0.25);
+}
+
+.shop-gift__card-content {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 12px 24px;
+}
+
+.shop-gift__card-title h3 {
+  font-family: var(--font-heading--family);
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 16.8px;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.shop-gift__card-button span {
+  display: inline-block;
+  padding-block-end: 3px;
+  border-bottom: 2px solid currentColor;
+  font-family: var(--font-body--family);
+  color: #ffffff;
+  font-size: 11px;
+  line-height: 13.2px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shop-gift__slide a:hover .shop-gift__media img {
+    transform: scale(1.05);
+  }
+
+  .shop-gift__arrow:hover:not(.shop-gift__arrow--disabled) {
+    transform: translateX(var(--sg-arrow-shift, 3px));
+  }
+
+  .shop-gift__arrow--prev {
+    --sg-arrow-shift: -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-gift .shop-gift__track,
+  .shop-gift .shop-gift__slide {
+    transition: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .shop-gift__header {
+    padding: 0 clamp(24px, 4.4vw, 60px);
+  }
+
+  .shop-gift__heading h2 {
+    font-size: 34px;
+    line-height: 44.2px;
+    letter-spacing: -0.68px;
+  }
+
+  .shop-gift__arrows {
+    display: flex;
+  }
+
+  /* Desktop: one expanded card (first visible by default, or the hovered/focused card).
+     Cards share one height; the track steps one card at a time when more cards than fit. */
+  .shop-gift__slider {
+    --sg-grow: 1.4;
+    --sg-card: calc((100cqi - var(--sg-gap) * (var(--sg-per-view) - 1)) / (var(--sg-per-view) - 1 + var(--sg-grow)));
+
+    margin: 16px clamp(24px, 4.4vw, 60px) 0;
+    overflow: hidden;
+    scroll-snap-type: none;
+  }
+
+  .shop-gift__track {
+    --sg-direction: -1;
+
+    width: auto;
+    padding-inline: 0;
+    transform: translateX(calc(var(--sg-index, 0) * (var(--sg-card) + var(--sg-gap)) * var(--sg-direction)));
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  [dir='rtl'] .shop-gift__track {
+    --sg-direction: 1;
+  }
+
+  .shop-gift__slide {
+    width: var(--sg-card);
+    height: calc(var(--sg-card) * 1.5);
+    transition: width 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .shop-gift__slide--active {
+    width: calc(var(--sg-card) * var(--sg-grow));
+  }
+
+  .shop-gift__slide a {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .shop-gift__card-content {
+    padding: 0 32px 48px;
+  }
+
+  .shop-gift__card-title h3 {
+    font-size: 24px;
+    line-height: 28.8px;
+  }
+
+  .shop-gift__card-button span {
+    font-size: 14px;
+    line-height: 16.8px;
+  }
+}
+</style>
+
+<shop-gift class="shop-gift" data-per-view="{{ per_view }}">
+  <div class="shop-gift__header">
+    {%- if heading != blank -%}
+      <div class="shop-gift__heading">
+        <h2>{{ heading | escape }}</h2>
+      </div>
+    {%- endif -%}
+
+    {%- if card_count > 1 -%}
+      <div class="shop-gift__arrows">
+        <button type="button" class="shop-gift__arrow shop-gift__arrow--prev" aria-label="Previous slide">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 32 14" fill="none">
+            <path d="M32 7H1.5M7.5 1l-6 6 6 6" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </button>
+        <button type="button" class="shop-gift__arrow shop-gift__arrow--next" aria-label="Next slide">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 32 14" fill="none">
+            <path d="M0 7h30.5M24.5 1l6 6-6 6" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </button>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="shop-gift__slider">
+    <div class="shop-gift__track">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign collection = block.settings.collection
+          assign custom_image = block.settings.custom_image
+          assign custom_title = block.settings.custom_title
+          assign custom_link = block.settings.custom_link
+          assign button_label = block.settings.button_label
+
+          assign image = custom_image | default: collection.featured_image
+          assign title = custom_title | default: collection.title
+          assign link = custom_link | default: collection.url
+
+          if title == blank and request.design_mode
+            assign title = 'Collection title'
+          endif
+
+          assign image_alt = image.alt | default: title | escape
+
+          if forloop.index <= cards_desktop and section.index <= 2
+            assign loading = 'eager'
+          else
+            assign loading = 'lazy'
+          endif
+        -%}
+        <div
+          class="shop-gift__slide{% if forloop.first %} shop-gift__slide--active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          <a
+            {% if link != blank %}
+              href="{{ link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            <div class="shop-gift__media">
+              {%- if image != blank -%}
+                {{
+                  image
+                  | image_url: width: 1500
+                  | image_tag:
+                    widths: '300, 450, 600, 750, 900, 1100, 1500',
+                    sizes: image_sizes,
+                    loading: loading,
+                    alt: image_alt
+                }}
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+
+            <div class="shop-gift__card-content">
+              {%- if title != blank -%}
+                <div class="shop-gift__card-title">
+                  <h3>{{ title | escape }}</h3>
+                </div>
+              {%- endif -%}
+              {%- if button_label != blank -%}
+                <div class="shop-gift__card-button">
+                  <span>{{ button_label | escape }}</span>
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</shop-gift>
+
+<script>
+  (() => {
+    if (customElements.get('shop-gift')) return;
+
+    /**
+     * Desktop: the track shows `perView` cards from `index`. The `selected` card is expanded
+     * (the first by default); arrows and keyboard focus move the selection, and hovering
+     * expands a card temporarily until the pointer leaves the row.
+     * Mobile: native horizontal scrolling with snap points; arrows scroll one card.
+     */
+    class ShopGift extends HTMLElement {
+      connectedCallback() {
+        this.slider = this.querySelector('.shop-gift__slider');
+        this.track = this.querySelector('.shop-gift__track');
+        this.slides = [...this.querySelectorAll('.shop-gift__slide')];
+        this.arrows = [...this.querySelectorAll('.shop-gift__arrow')];
+        if (!this.slider || !this.track || this.slides.length === 0) return;
+
+        this.desktopQuery = window.matchMedia('(min-width: 769px)');
+        this.hoverQuery = window.matchMedia('(hover: hover)');
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.index = 0;
+        this.selected = 0;
+
+        this.abortController = new AbortController();
+        const { signal } = this.abortController;
+
+        this.querySelector('.shop-gift__arrow--prev')?.addEventListener('click', () => this.step(-1), { signal });
+        this.querySelector('.shop-gift__arrow--next')?.addEventListener('click', () => this.step(1), { signal });
+        this.track.addEventListener('pointerover', this.onPointerOver, { signal });
+        this.track.addEventListener('pointerleave', () => this.expand(this.selected), { signal });
+        this.track.addEventListener('focusin', this.onFocusIn, { signal });
+        this.slider.addEventListener('scroll', this.onScroll, { signal, passive: true });
+        this.desktopQuery.addEventListener('change', () => this.goTo(0), { signal });
+        this.addEventListener('shopify:block:select', this.onBlockSelect, { signal });
+
+        this.goTo(0);
+      }
+
+      disconnectedCallback() {
+        this.abortController?.abort();
+        cancelAnimationFrame(this.scrollFrame);
+      }
+
+      /** Mobile scroll fires many times per frame; update the arrows (layout reads) at most once per frame. */
+      onScroll = () => {
+        if (this.scrollFrame) return;
+        this.scrollFrame = requestAnimationFrame(() => {
+          this.scrollFrame = 0;
+          this.updateArrows();
+        });
+      };
+
+      get isDesktop() {
+        return this.desktopQuery.matches;
+      }
+
+      get perView() {
+        return Math.min(Number(this.dataset.perView) || 1, this.slides.length);
+      }
+
+      get maxIndex() {
+        return Math.max(0, this.slides.length - this.perView);
+      }
+
+      /** Shows cards from `index` on desktop and selects `selected` (defaults to the first visible card). */
+      goTo(index, selected) {
+        this.index = Math.min(Math.max(index, 0), this.maxIndex);
+        this.selected = selected ?? this.index;
+        // Desktop moves the track with a transform; keep the clipped container unscrolled.
+        if (this.isDesktop) this.slider.scrollLeft = 0;
+        this.track.style.setProperty('--sg-index', String(this.index));
+        this.expand(this.selected);
+      }
+
+      /** Selects card `i` and shifts the visible window just enough to include it. */
+      select(i) {
+        let index = this.index;
+        if (i < index) index = i;
+        else if (i >= index + this.perView) index = i - this.perView + 1;
+        this.goTo(index, i);
+      }
+
+      expand(active) {
+        this.slides.forEach((slide, i) => slide.classList.toggle('shop-gift__slide--active', i === active));
+        this.updateArrows();
+      }
+
+      step(direction) {
+        if (this.isDesktop) {
+          this.select(Math.min(Math.max(this.selected + direction, 0), this.slides.length - 1));
+          return;
+        }
+
+        const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+        const sign = getComputedStyle(this).direction === 'rtl' ? -1 : 1;
+        this.slider.scrollBy({
+          left: direction * sign * (this.slides[0].offsetWidth + gap),
+          behavior: this.reducedMotion ? 'auto' : 'smooth'
+        });
+      }
+
+      isVisible(i) {
+        return i >= this.index && i < this.index + this.perView;
+      }
+
+      onPointerOver = (event) => {
+        if (!this.isDesktop || !this.hoverQuery.matches || !(event.target instanceof Element)) return;
+
+        const i = this.slides.indexOf(event.target.closest('.shop-gift__slide'));
+        if (i !== -1 && this.isVisible(i) && !this.slides[i].classList.contains('shop-gift__slide--active')) this.expand(i);
+      };
+
+      onFocusIn = (event) => {
+        if (!this.isDesktop || !(event.target instanceof Element)) return;
+
+        const i = this.slides.indexOf(event.target.closest('.shop-gift__slide'));
+        if (i !== -1) this.select(i);
+      };
+
+      onBlockSelect = (event) => {
+        if (!(event.target instanceof Element)) return;
+
+        const i = this.slides.indexOf(event.target.closest('.shop-gift__slide'));
+        if (i === -1) return;
+
+        if (this.isDesktop) this.select(i);
+        else this.slides[i].scrollIntoView({ block: 'nearest', inline: 'start' });
+      };
+
+      updateArrows() {
+        let atStart;
+        let atEnd;
+        let locked;
+
+        if (this.isDesktop) {
+          atStart = this.selected === 0;
+          atEnd = this.selected === this.slides.length - 1;
+          locked = this.slides.length < 2;
+        } else {
+          const max = this.slider.scrollWidth - this.slider.clientWidth;
+          const position = Math.abs(this.slider.scrollLeft);
+          atStart = position <= 1;
+          atEnd = position >= max - 1;
+          locked = max <= 1;
+        }
+
+        for (const arrow of this.arrows) {
+          const disabled = arrow.classList.contains('shop-gift__arrow--prev') ? atStart : atEnd;
+          arrow.classList.toggle('shop-gift__arrow--disabled', disabled);
+          arrow.classList.toggle('shop-gift__arrow--hidden', locked);
+          arrow.setAttribute('aria-disabled', String(disabled));
+        }
+      }
+    }
+
+    customElements.define('shop-gift', ShopGift);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop gifts",
+  "tag": "section",
+  "class": "section-shop-gifts",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A gift for everyone."
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "range",
+      "id": "cards_desktop",
+      "label": "Cards visible on desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Gift card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Uses the collection's title, featured image and link."
+        },
+        {
+          "type": "header",
+          "content": "Overrides"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom image",
+          "info": "Replaces the collection's featured image."
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom title",
+          "info": "Replaces the collection's title."
+        },
+        {
+          "type": "url",
+          "id": "custom_link",
+          "label": "Custom link",
+          "info": "Replaces the collection's link."
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop gifts",
+      "blocks": [
+        { "type": "card", "settings": { "custom_title": "Gifts for Her" } },
+        { "type": "card", "settings": { "custom_title": "Gifts for Him" } },
+        { "type": "card", "settings": { "custom_title": "Gifts Under $100" } },
+        { "type": "card", "settings": { "custom_title": "Gifts for Weddings" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

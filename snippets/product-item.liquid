@@ -1,0 +1,413 @@
+{%- doc -%}
+  Renders a product card: image with a hover image, sold out / low stock badge, title, finish swatches
+  (the product's finish, metal or color option) and price. Renders a placeholder card when no product is passed.
+  Choosing a swatch swaps the card's image, title, price and link to that finish's variant in place.
+
+  @param {product} [product] - The product to show. Omit for a placeholder card.
+  @param {string} [image_sizes] - The sizes attribute for the product images.
+  @param {string} [loading] - Loading strategy for the main image: 'eager' or 'lazy'. Defaults to 'lazy'.
+  @param {number} [low_stock_threshold] - Shows "Only X left" at or below this quantity. 0 turns it off.
+
+  @example
+  {% render 'product-item', product: product, image_sizes: '(min-width: 769px) 25vw, 50vw', loading: 'lazy', low_stock_threshold: 3 %}
+{%- enddoc -%}
+
+{%- liquid
+  assign loading = loading | default: 'lazy'
+  assign low_stock_threshold = low_stock_threshold | default: 0
+  assign image_widths = '300,450,600,750,900,1200' | split: ','
+
+  if product != blank
+    assign variant = product.selected_or_first_available_variant
+    assign first_image = product.featured_media
+    assign second_image = product.media[1]
+    assign image_alt = first_image.alt | default: product.title | escape
+    assign badge = ''
+
+    # Swatches come from the finish/metal/color option, or failing that from an option the merchant set
+    # Shopify swatches on. Other options (size and the like) never show; products without one show none.
+    assign swatch_option = null
+    unless product.has_only_default_variant
+      for option in product.options_with_values
+        assign option_name = option.name | downcase
+        if option_name contains 'finish' or option_name contains 'metal' or option_name contains 'material' or option_name contains 'color' or option_name contains 'colour'
+          assign swatch_option = option
+          break
+        endif
+      endfor
+      if swatch_option == null
+        for option in product.options_with_values
+          assign option_name = option.name | downcase
+          if option_name contains 'size'
+            continue
+          endif
+          if option.values.first.swatch.color != blank or option.values.first.swatch.image != blank
+            assign swatch_option = option
+            break
+          endif
+        endfor
+      endif
+    endunless
+
+    if product.available == false
+      assign badge = 'Sold out'
+    elsif low_stock_threshold > 0 and variant.inventory_management == 'shopify' and variant.inventory_quantity > 0 and variant.inventory_quantity <= low_stock_threshold
+      assign badge = 'Only ' | append: variant.inventory_quantity | append: ' left'
+    endif
+  endif
+-%}
+
+{%- if product != blank -%}
+  <div class="product-item">
+    <div class="product-item__media">
+      {%- if first_image != blank -%}
+        {{
+          first_image
+          | image_url: width: 1200
+          | image_tag:
+            widths: '300, 450, 600, 750, 900, 1200',
+            sizes: image_sizes,
+            loading: loading,
+            alt: image_alt,
+            class: 'product-item__image'
+        }}
+        {%- if second_image != blank and second_image.media_type == 'image' -%}
+          {{
+            second_image
+            | image_url: width: 1200
+            | image_tag:
+              widths: '300, 450, 600, 750, 900, 1200',
+              sizes: image_sizes,
+              loading: 'lazy',
+              alt: '',
+              class: 'product-item__image product-item__image--hover'
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag }}
+      {%- endif -%}
+
+      {%- if badge != blank -%}
+        <div class="product-item__badge">
+          <p>{{ badge }}</p>
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="product-item__info">
+      <div class="product-item__title">
+        <h3>
+          <a class="product-item__link" href="{{ product.url }}">{{ product.title | escape }}</a>
+        </h3>
+      </div>
+
+      {%- if swatch_option != null -%}
+        {%- assign option_index = swatch_option.position | minus: 1 -%}
+        <div class="product-item__swatches" role="group" aria-label="{{ swatch_option.name | escape }}">
+          {%- for value in swatch_option.values limit: 5 -%}
+            {%- liquid
+              # The value's variant can belong to another product when the option comes from a combined listing.
+              assign value_variant = value.variant
+              if value_variant == blank
+                for candidate in product.variants
+                  if candidate.options[option_index] == value.name
+                    assign value_variant = candidate
+                    break
+                  endif
+                endfor
+              endif
+
+              assign value_product = value_variant.product | default: product
+              assign value_media = value_variant.featured_media | default: value_product.featured_media
+              assign value_alt = value_media.alt | default: value_product.title
+
+              capture value_srcset
+                for width in image_widths
+                  echo value_media | image_url: width: width
+                  echo ' ' | append: width | append: 'w'
+                  unless forloop.last
+                    echo ', '
+                  endunless
+                endfor
+              endcapture
+
+              assign value_compare = ''
+              if value_variant.compare_at_price > value_variant.price
+                assign value_compare = value_variant.compare_at_price | money_without_trailing_zeros
+              endif
+            -%}
+            <button
+              type="button"
+              class="product-item__swatch"
+              style="--finish-swatch: {% render 'finish-swatch-background', name: value.name, swatch: value.swatch %};"
+              aria-label="{{ value.name | escape }}"
+              aria-pressed="{% if value.selected %}true{% else %}false{% endif %}"
+              {% if value_variant != blank %}
+                data-url="{{ value_variant.url }}"
+                data-title="{{ value_product.title | escape }}"
+                data-price="{{ value_variant.price | money_without_trailing_zeros | escape }}"
+                data-compare="{{ value_compare | escape }}"
+              {% endif %}
+              {% if value_media != blank %}
+                data-src="{{ value_media | image_url: width: 1200 }}"
+                data-srcset="{{ value_srcset | strip }}"
+                data-alt="{{ value_alt | escape }}"
+              {% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        {%- # Keeps the price level with cards that do have swatches. -%}
+        <div class="product-item__swatches" aria-hidden="true"></div>
+      {%- endif -%}
+
+      <div class="product-item__price">
+        <p>
+          {%- if product.compare_at_price > product.price -%}
+            <s>{{ product.compare_at_price | money_without_trailing_zeros }}</s>
+          {%- endif -%}
+          {%- if product.price_varies -%}From {% endif -%}
+          {{- product.price | money_without_trailing_zeros -}}
+        </p>
+      </div>
+    </div>
+  </div>
+{%- else -%}
+  <div class="product-item">
+    <div class="product-item__media">
+      {{ 'product-1' | placeholder_svg_tag }}
+    </div>
+    <div class="product-item__info">
+      <div class="product-item__title">
+        <h3>Product title</h3>
+      </div>
+      <div class="product-item__swatches" aria-hidden="true"></div>
+      <div class="product-item__price">
+        <p>{{ 9900 | money_without_trailing_zeros }}</p>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% javascript %}
+  // Swatches swap the card to their finish's variant in place instead of following the card link.
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const swatch = event.target.closest('.product-item__swatch');
+    const card = swatch?.closest('.product-item');
+    if (!swatch || !card) return;
+
+    event.preventDefault();
+
+    for (const button of card.querySelectorAll('.product-item__swatch')) {
+      button.setAttribute('aria-pressed', String(button === swatch));
+    }
+
+    const { url, title, price, compare, src, srcset, alt } = swatch.dataset;
+
+    const link = card.querySelector('.product-item__link');
+    if (link instanceof HTMLAnchorElement) {
+      if (url) link.href = url;
+      if (title) link.textContent = title;
+    }
+
+    const priceText = card.querySelector('.product-item__price p');
+    if (priceText && price) {
+      const parts = [];
+      if (compare) {
+        const strike = document.createElement('s');
+        strike.textContent = compare;
+        parts.push(strike);
+      }
+      parts.push(price);
+      priceText.replaceChildren(...parts);
+    }
+
+    const image = card.querySelector('.product-item__image');
+    if (image instanceof HTMLImageElement && src && image.getAttribute('src') !== src) {
+      image.loading = 'eager';
+      image.srcset = srcset || '';
+      image.src = src;
+      image.alt = alt || '';
+      // The product's hover image no longer belongs to the shown finish.
+      card.classList.add('product-item--variant');
+    }
+  });
+{% endjavascript %}
+
+{% stylesheet %}
+  /* The title link stretches over the whole card; the swatches sit above it. */
+  /* Cards in a row share one height; the swatch row and price sit at the bottom, so they line up
+     across cards whatever the title length or whether the product has swatches. */
+  .product-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+  }
+
+  .product-item p,
+  .product-item h3 {
+    margin: 0;
+  }
+
+  .product-item__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .product-item__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .product-item__link:focus-visible {
+    outline: none;
+  }
+
+  .product-item__link:focus-visible::after {
+    outline: 2px solid #2a2a2a;
+    outline-offset: -2px;
+  }
+
+  .product-item__media {
+    position: relative;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1.05;
+    overflow: hidden;
+    background-color: #f4f2ee;
+  }
+
+  .product-item__media img,
+  .product-item__media svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .product-item__media svg {
+    fill: rgba(0, 0, 0, 0.12);
+  }
+
+  .product-item__media img + img {
+    opacity: 0;
+  }
+
+  .product-item__badge {
+    position: absolute;
+    top: 12px;
+    inset-inline-end: 12px;
+    color: #8e1922;
+    font-size: 10px;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .product-item__info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 4px;
+  }
+
+  .product-item__title h3 {
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 14px;
+    line-height: 16.8px;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+
+  /* One fixed-height row (5 swatches at most), present on every card */
+  .product-item__swatches {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    box-sizing: border-box;
+    min-height: 36px;
+    margin-top: auto;
+    padding-block: 4px;
+  }
+
+  @media (min-width: 769px) {
+    .product-item__swatches {
+      gap: 12px;
+    }
+  }
+
+  .product-item__swatch {
+    position: relative;
+    display: block;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--finish-swatch, #d9d9d9);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+  }
+
+  .product-item__swatch::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    transition: border-color 0.3s ease;
+  }
+
+  .product-item__swatch:hover::after {
+    border-color: #cfc8bd;
+  }
+
+  .product-item__swatch[aria-pressed='true']::after {
+    border-color: #2a2a2a;
+  }
+
+  .product-item__swatch:focus-visible {
+    outline: 2px solid #2a2a2a;
+    outline-offset: 6px;
+  }
+
+  .product-item__price {
+    font-family: var(--font-body--family);
+    color: #2A2A2A;
+    font-size: 14px;
+    line-height: 16.8px;
+    font-weight: 400;
+  }
+
+  .product-item__price s {
+    margin-inline-end: 6px;
+    color: #8f8a83;
+  }
+
+  .product-item:hover .product-item__media img + img {
+    opacity: 1;
+  }
+
+  .product-item:hover .product-item__media img:only-child,
+  .product-item--variant:hover .product-item__media img:first-child {
+    transform: scale(1.04);
+  }
+
+  .product-item--variant .product-item__media img + img,
+  .product-item--variant:hover .product-item__media img + img {
+    opacity: 0;
+  }
+{% endstylesheet %}

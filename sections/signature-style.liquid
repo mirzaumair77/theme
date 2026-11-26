@@ -1,0 +1,1109 @@
+{%- liquid
+  assign image = section.settings.image
+  assign mobile_image = section.settings.mobile_image
+  assign signature = section.settings.signature
+  assign eyebrow = section.settings.eyebrow
+  assign heading = section.settings.heading
+  assign text = section.settings.text
+  assign button_label = section.settings.button_label
+  assign button_link = section.settings.button_link
+  assign desktop_height = section.settings.desktop_height
+  assign mobile_height = section.settings.mobile_height
+  assign padding_top = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign mobile_padding_top = section.settings.mobile_padding_top
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom
+  assign background = section.settings.background
+  assign section_height = section.settings.section_height | default: 'large'
+  assign overlay_enabled = section.settings.overlay_enabled
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+
+  assign media_type = section.settings.media_type | default: 'image'
+  assign video = section.settings.video
+  assign mobile_video = section.settings.mobile_video
+
+  if image == blank
+    assign image = mobile_image
+  endif
+
+  if video == blank
+    assign video = mobile_video
+  endif
+
+  # Same height options as the hero banner: large uses the height sliders;
+  # fit screen and auto are sized in CSS.
+  case section_height
+    when 'small'
+      assign mobile_height = 440
+      assign desktop_height = 520
+    when 'medium'
+      assign mobile_height = 520
+      assign desktop_height = 640
+  endcase
+
+  if section_height == 'auto'
+    if media_type == 'video' and video != blank
+      assign ratio_desktop = video.aspect_ratio
+      assign ratio_mobile = mobile_video.aspect_ratio | default: video.aspect_ratio
+    elsif media_type != 'video' and image != blank
+      assign ratio_desktop = image.aspect_ratio
+      assign ratio_mobile = mobile_image.aspect_ratio | default: image.aspect_ratio
+    endif
+  endif
+
+  assign image_alt = image.alt | default: heading | escape
+
+  # Product spotlights sit on a stage sized and centered like the cropped (object-fit: cover)
+  # background, so they stay on the same spot of the image at every screen width.
+  # Block positions are read as they appear at a 1440px desktop / 375px mobile screen and
+  # converted here to percentages of that stage: x_stage = x * kx + bx, likewise for y.
+  if media_type == 'video' and video != blank
+    assign stage_ratio_desktop = video.aspect_ratio
+    assign stage_ratio_mobile = mobile_video.aspect_ratio | default: video.aspect_ratio
+  elsif media_type != 'video' and image != blank
+    assign stage_ratio_desktop = image.aspect_ratio
+    assign stage_ratio_mobile = mobile_image.aspect_ratio | default: image.aspect_ratio
+  endif
+
+  assign stage_d_kx = 1
+  assign stage_d_bx = 0
+  assign stage_d_ky = 1
+  assign stage_d_by = 0
+  assign stage_m_kx = 1
+  assign stage_m_bx = 0
+  assign stage_m_ky = 1
+  assign stage_m_by = 0
+
+  if stage_ratio_desktop != blank and stage_ratio_mobile != blank
+    # Fit screen and auto have no fixed reference height; treat the image as uncropped there.
+    for breakpoint in (1..2)
+      if breakpoint == 1
+        assign ref_w = 1440.0
+        assign ref_ratio = stage_ratio_desktop
+        assign ref_h = desktop_height | times: 1.0
+      else
+        assign ref_w = 375.0
+        assign ref_ratio = stage_ratio_mobile
+        assign ref_h = mobile_height | times: 1.0
+      endif
+      if section_height == 'fit_screen' or section_height == 'auto'
+        assign ref_h = ref_w | divided_by: ref_ratio
+      endif
+
+      assign stage_w = ref_h | times: ref_ratio
+      if stage_w < ref_w
+        assign stage_w = ref_w
+      endif
+      assign stage_h = ref_w | divided_by: ref_ratio
+      if stage_h < ref_h
+        assign stage_h = ref_h
+      endif
+
+      assign kx = ref_w | divided_by: stage_w
+      assign bx = stage_w | minus: ref_w | divided_by: 2 | divided_by: stage_w | times: 100
+      assign ky = ref_h | divided_by: stage_h
+      assign by = stage_h | minus: ref_h | divided_by: 2 | divided_by: stage_h | times: 100
+
+      if breakpoint == 1
+        assign stage_d_kx = kx
+        assign stage_d_bx = bx
+        assign stage_d_ky = ky
+        assign stage_d_by = by
+      else
+        assign stage_m_kx = kx
+        assign stage_m_bx = bx
+        assign stage_m_ky = ky
+        assign stage_m_by = by
+      endif
+    endfor
+    assign stage_anchored = true
+  else
+    assign stage_anchored = false
+  endif
+
+  if section.index <= 2
+    assign loading = 'eager'
+    assign priority = 'high'
+  else
+    assign loading = 'lazy'
+    assign priority = 'auto'
+  endif
+-%}
+
+<style>
+#shopify-section-{{ section.id }} {
+  --ss-height-mobile: {{ mobile_height }}px;
+  --ss-height-desktop: {{ desktop_height }}px;
+  padding-top: {{ mobile_padding_top }}px;
+  padding-bottom: {{ mobile_padding_bottom }}px;
+  {%- if background != blank %}
+    background: {{ background }};
+  {%- endif %}
+}
+@media (min-width: 769px) {
+  #shopify-section-{{ section.id }} {
+    padding-top: {{ padding_top }}px;
+    padding-bottom: {{ padding_bottom }}px;
+  }
+}
+{%- if ratio_desktop != blank %}
+  #shopify-section-{{ section.id }} {
+    --ss-ratio-desktop: {{ ratio_desktop }};
+    --ss-ratio-mobile: {{ ratio_mobile }};
+  }
+{%- endif %}
+{%- if stage_anchored %}
+  #shopify-section-{{ section.id }} {
+    --ss-stage-ratio-desktop: {{ stage_ratio_desktop }};
+    --ss-stage-ratio-mobile: {{ stage_ratio_mobile }};
+  }
+{%- endif %}
+{%- if overlay_enabled %}
+  /* Overlay sits above the image and below the content and product spotlight */
+  #shopify-section-{{ section.id }} .signature-style__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: {{ overlay_color }};
+    opacity: {{ overlay_opacity }};
+    pointer-events: none;
+  }
+{%- endif %}
+
+/* Height options; the doubled class outranks the base height rules at every breakpoint */
+.signature-style.signature-style--fit-screen {
+  height: calc(100svh - var(--header-group-height, 0px));
+}
+
+body:has(#header-component[transparent]) .signature-style.signature-style--fit-screen {
+  height: 100svh;
+}
+
+.signature-style.signature-style--auto {
+  height: auto;
+  min-height: 440px;
+  aspect-ratio: var(--ss-ratio-mobile, 4 / 5);
+}
+
+@media (min-width: 769px) {
+  .signature-style.signature-style--auto {
+    min-height: 0;
+    aspect-ratio: var(--ss-ratio-desktop, 16 / 9);
+  }
+}
+
+.signature-style {
+  position: relative;
+  height: var(--ss-height-mobile);
+  overflow: hidden;
+  /* Lets the spotlight stage size itself from the section box (cqw / cqh) */
+  container-type: size;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.signature-style p,
+.signature-style h2 {
+  margin: 0;
+}
+
+.signature-style__media {
+  position: absolute;
+  inset: 0;
+}
+
+/* Keeps the content legible: shades the bottom on mobile and the start side on desktop */
+.signature-style__media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.65) 100%);
+  pointer-events: none;
+}
+
+/* With separate desktop and mobile images, show the one for the current breakpoint */
+@media (max-width: 768px) {
+  .signature-style__media .signature-style__image--desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .signature-style__media .signature-style__image--mobile {
+    display: none;
+  }
+}
+
+/* With separate desktop and mobile videos, show the one for the current breakpoint */
+@media (max-width: 768px) {
+  .signature-style__media .signature-style__video--desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .signature-style__media .signature-style__video--mobile {
+    display: none;
+  }
+}
+
+.signature-style__media img,
+.signature-style__media svg,
+.signature-style__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.signature-style__video-wrapper {
+  height: 100%;
+}
+
+.signature-style__media svg {
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+/* Spotlight stage: the box the background image actually covers. object-fit: cover scales the
+   image to the larger of the two fits and centers it, so the stage does the same; the section
+   clips whatever falls outside. Without a known media ratio it simply fills the section. */
+.signature-style__stage {
+  --ss-stage-w: 100cqw;
+  --ss-stage-h: 100cqh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: var(--ss-stage-w);
+  height: var(--ss-stage-h);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.signature-style--anchored .signature-style__stage {
+  --ss-stage-w: max(100cqw, 100cqh * var(--ss-stage-ratio-mobile));
+  --ss-stage-h: max(100cqh, 100cqw / var(--ss-stage-ratio-mobile));
+}
+
+@media (min-width: 769px) {
+  .signature-style--anchored .signature-style__stage {
+    --ss-stage-w: max(100cqw, 100cqh * var(--ss-stage-ratio-desktop));
+    --ss-stage-h: max(100cqh, 100cqw / var(--ss-stage-ratio-desktop));
+  }
+}
+
+/* Product spotlight: a zoom circle joined by a line to a mark on the media.
+   Positions are percentages of the stage (--ss-*-x / -y, unitless); the circle is sized from the
+   section width, and its center is clamped so the whole circle stays inside the section with a
+   16px margin. The line is drawn from the mark to the circle's actual (clamped) center. */
+.signature-style__spotlight {
+  --ss-spot-x: var(--ss-spot-x-mobile);
+  --ss-spot-y: var(--ss-spot-y-mobile);
+  --ss-spot-size: 25.6cqw;
+  --ss-mark-x: var(--ss-mark-x-mobile);
+  --ss-mark-y: var(--ss-mark-y-mobile);
+  --ss-edge: 16px;
+
+  /* Centers in stage coordinates. The section spans (stage - 100cq) / 2 to (stage + 100cq) / 2. */
+  --ss-spot-cx: clamp(
+    (var(--ss-stage-w) - 100cqw) / 2 + var(--ss-spot-size) / 2 + var(--ss-edge),
+    var(--ss-spot-x) * var(--ss-stage-w) / 100,
+    (var(--ss-stage-w) + 100cqw) / 2 - var(--ss-spot-size) / 2 - var(--ss-edge)
+  );
+  --ss-spot-cy: clamp(
+    (var(--ss-stage-h) - 100cqh) / 2 + var(--ss-spot-size) / 2 + var(--ss-edge),
+    var(--ss-spot-y) * var(--ss-stage-h) / 100,
+    (var(--ss-stage-h) + 100cqh) / 2 - var(--ss-spot-size) / 2 - var(--ss-edge)
+  );
+  --ss-mark-cx: calc(var(--ss-mark-x) * var(--ss-stage-w) / 100);
+  --ss-mark-cy: calc(var(--ss-mark-y) * var(--ss-stage-h) / 100);
+
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.signature-style__line {
+  --ss-line-dx: calc(var(--ss-spot-cx) - var(--ss-mark-cx));
+  --ss-line-dy: calc(var(--ss-spot-cy) - var(--ss-mark-cy));
+  position: absolute;
+  top: calc(var(--ss-mark-cy) - 0.5px);
+  left: var(--ss-mark-cx);
+  width: hypot(var(--ss-line-dx), var(--ss-line-dy));
+  height: 1px;
+  background-color: #ffffff;
+  transform: rotate(atan2(var(--ss-line-dy), var(--ss-line-dx)));
+  transform-origin: 0 50%;
+}
+
+.signature-style__mark {
+  position: absolute;
+  top: var(--ss-mark-cy);
+  left: var(--ss-mark-cx);
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid #ffffff;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+}
+
+.signature-style__spot {
+  position: absolute;
+  top: var(--ss-spot-cy);
+  left: var(--ss-spot-cx);
+  display: block;
+  box-sizing: border-box;
+  width: var(--ss-spot-size);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background-color: #1a1a1a;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.signature-style__spot img,
+.signature-style__spot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.signature-style__spot svg {
+  fill: rgba(255, 255, 255, 0.3);
+}
+
+.signature-style__spot:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+.signature-style__content {
+  position: absolute;
+  inset-inline: 20px;
+  bottom: 32px;
+  z-index: 3;
+  max-width: 560px;
+}
+
+.signature-style__signature {
+  width: 157px;
+  margin-block-end: 10px;
+}
+
+.signature-style__signature img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.signature-style__eyebrow p {
+  font-family: var(--font-body--family);
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: 1.12px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.signature-style__heading {
+  padding-block-start: 8px;
+}
+
+.signature-style__heading h2 {
+  font-family: var(--font-heading--family);
+  color: #FFF;
+  font-size: 24px;
+  line-height: 33.6px;
+  letter-spacing: -0.48px;
+  font-weight: 400;
+  overflow-wrap: break-word;
+}
+
+.signature-style__text {
+  max-width: 345px;
+  padding-block-start: 20px;
+}
+
+.signature-style__text p {
+  font-family: var(--font-body--family);
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 22.4px;
+  font-weight: 400;
+}
+
+.signature-style__button {
+  padding-block-start: 20px;
+}
+
+.signature-style__button a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  max-width: 273px;
+  padding: 19px 32px;
+  background-color: #ffffff;
+  font-family: var(--font-body--family);
+  color: #2A2A2A;
+  font-size: 12px;
+  line-height: 14.4px;
+  letter-spacing: 1.8px;
+  font-weight: 400;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.signature-style__button a:hover {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.signature-style__button a:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .signature-style__spot img {
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .signature-style__spot:hover img {
+    transform: scale(1.06);
+  }
+}
+
+@media (min-width: 769px) {
+  .signature-style {
+    height: var(--ss-height-desktop);
+  }
+
+  .signature-style__media::before {
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 50%);
+  }
+
+  .signature-style__spotlight {
+    --ss-spot-x: var(--ss-spot-x-desktop);
+    --ss-spot-y: var(--ss-spot-y-desktop);
+    --ss-spot-size: 20.3cqw;
+    --ss-mark-x: var(--ss-mark-x-desktop);
+    --ss-mark-y: var(--ss-mark-y-desktop);
+  }
+
+  .signature-style__mark {
+    width: 8px;
+    height: 8px;
+  }
+
+  .signature-style__spot {
+    border-width: 3px;
+  }
+
+  .signature-style__content {
+    inset-block: 0;
+    inset-inline: clamp(24px, 4.4vw, 60px) auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 480px;
+  }
+
+  .signature-style__signature {
+    width: 223px;
+  }
+
+  .signature-style__eyebrow p {
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: 1.6px;
+  }
+
+  .signature-style__heading h2 {
+    font-size: 34px;
+    line-height: 44.2px;
+    letter-spacing: -0.68px;
+  }
+
+  .signature-style__text {
+    max-width: 345px;
+  }
+
+  .signature-style__text p {
+    font-size: 14px;
+    line-height: 19.6px;
+  }
+
+  .signature-style__button a {
+    min-width: 273px;
+  }
+}
+</style>
+
+<div class="signature-style signature-style--{{ section_height | replace: '_', '-' }}{% if stage_anchored %} signature-style--anchored{% endif %}">
+  <div class="signature-style__media">
+    {%- if media_type == 'video' -%}
+      {%- if video != blank -%}
+        {%- liquid
+          if section.index <= 2
+            assign video_preload = 'metadata'
+          else
+            assign video_preload = 'none'
+          endif
+
+          if mobile_video != blank and mobile_video != video
+            assign video_class = 'signature-style__video signature-style__video--desktop'
+          else
+            assign video_class = 'signature-style__video'
+          endif
+        -%}
+        {%- comment -%} Background video: decorative and muted; the script below plays only the visible one. {%- endcomment -%}
+        <div class="signature-style__video-wrapper" aria-hidden="true">
+          {{
+            video
+            | video_tag:
+              image_size: '1920x',
+              class: video_class,
+              muted: true,
+              loop: true,
+              playsinline: true,
+              controls: false,
+              preload: video_preload
+          }}
+          {%- if mobile_video != blank and mobile_video != video -%}
+            {{
+              mobile_video
+              | video_tag:
+                image_size: '1100x',
+                class: 'signature-style__video signature-style__video--mobile',
+                muted: true,
+                loop: true,
+                playsinline: true,
+                controls: false,
+                preload: video_preload
+            }}
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {%- endif -%}
+    {%- elsif image != blank -%}
+      {%- if mobile_image != blank and mobile_image != image -%}
+        {%- comment -%}
+          Separate desktop and mobile images: each renders at its own breakpoint. The hidden one declares a
+          1px slot there, so the browser fetches only its smallest size instead of a full-width file.
+        {%- endcomment -%}
+        {{
+          image
+          | image_url: width: 3840
+          | image_tag:
+            widths: '375, 750, 1100, 1500, 1920, 2560, 3840',
+            sizes: '(max-width: 768px) 1px, 100vw',
+            loading: loading,
+            fetchpriority: priority,
+            alt: image_alt,
+            class: 'signature-style__image signature-style__image--desktop'
+        }}
+        {{
+          mobile_image
+          | image_url: width: 1100
+          | image_tag:
+            widths: '375, 550, 750, 1100',
+            sizes: '(min-width: 769px) 1px, 100vw',
+            loading: loading,
+            fetchpriority: priority,
+            alt: image_alt,
+            class: 'signature-style__image signature-style__image--mobile'
+        }}
+      {%- else -%}
+        {{
+          image
+          | image_url: width: 3840
+          | image_tag:
+            widths: '750, 1100, 1500, 1920, 2560, 3840',
+            sizes: '100vw',
+            loading: loading,
+            fetchpriority: priority,
+            alt: image_alt,
+            class: 'signature-style__image'
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag }}
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="signature-style__stage">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign spot_product = block.settings.product
+          assign spot_image = block.settings.image | default: spot_product.featured_image
+          assign spot_alt = spot_image.alt | default: spot_product.title | escape
+
+          # Settings as seen at 1440px / 375px, converted to percentages of the stage (unitless).
+          assign spot_x_d = block.settings.image_x_desktop | times: stage_d_kx | plus: stage_d_bx | round: 2
+          assign spot_y_d = block.settings.image_y_desktop | times: stage_d_ky | plus: stage_d_by | round: 2
+          assign mark_x_d = block.settings.mark_x_desktop | times: stage_d_kx | plus: stage_d_bx | round: 2
+          assign mark_y_d = block.settings.mark_y_desktop | times: stage_d_ky | plus: stage_d_by | round: 2
+          assign spot_x_m = block.settings.image_x_mobile | times: stage_m_kx | plus: stage_m_bx | round: 2
+          assign spot_y_m = block.settings.image_y_mobile | times: stage_m_ky | plus: stage_m_by | round: 2
+          assign mark_x_m = block.settings.mark_x_mobile | times: stage_m_kx | plus: stage_m_bx | round: 2
+          assign mark_y_m = block.settings.mark_y_mobile | times: stage_m_ky | plus: stage_m_by | round: 2
+        -%}
+        {%- comment -%}
+          Product spotlight: a zoom circle of the product (custom image first, then the product's featured image)
+          joined by a line to a mark on the media. The CSS sizes the circle, keeps it inside the section and
+          points the line at its center.
+        {%- endcomment -%}
+        <div
+          class="signature-style__spotlight"
+          style="
+            --ss-spot-x-desktop: {{ spot_x_d }};
+            --ss-spot-y-desktop: {{ spot_y_d }};
+            --ss-mark-x-desktop: {{ mark_x_d }};
+            --ss-mark-y-desktop: {{ mark_y_d }};
+            --ss-spot-x-mobile: {{ spot_x_m }};
+            --ss-spot-y-mobile: {{ spot_y_m }};
+            --ss-mark-x-mobile: {{ mark_x_m }};
+            --ss-mark-y-mobile: {{ mark_y_m }};
+          "
+          {{ block.shopify_attributes }}
+        >
+          <span class="signature-style__line" aria-hidden="true"></span>
+          <span class="signature-style__mark" aria-hidden="true"></span>
+
+          <a
+            class="signature-style__spot"
+            {% if spot_product != blank %}
+              href="{{ spot_product.url }}" aria-label="{{ spot_product.title | escape }}"
+            {% else %}
+              role="link" aria-disabled="true" tabindex="-1"
+            {% endif %}
+          >
+            {%- if spot_image != blank -%}
+              {{
+                spot_image
+                | image_url: width: 900
+                | image_tag:
+                  widths: '200, 300, 450, 600, 900',
+                  sizes: '(min-width: 769px) 21vw, 26vw',
+                  loading: 'lazy',
+                  alt: spot_alt
+              }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag }}
+            {%- endif -%}
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <div class="signature-style__content">
+    {%- if signature != blank -%}
+      <div class="signature-style__signature">
+        {{
+          signature
+          | image_url: width: 440
+          | image_tag: widths: '220, 330, 440', sizes: '(min-width: 769px) 190px, 150px', loading: loading, alt: signature.alt
+        }}
+      </div>
+    {%- endif -%}
+
+    {%- if eyebrow != blank -%}
+      <div class="signature-style__eyebrow">
+        <p>{{ eyebrow | escape }}</p>
+      </div>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <div class="signature-style__heading">
+        <h2>{{ heading | escape }}</h2>
+      </div>
+    {%- endif -%}
+
+    {%- if text != blank -%}
+      <div class="signature-style__text">
+        {{ text }}
+      </div>
+    {%- endif -%}
+
+    {%- if button_label != blank -%}
+      <div class="signature-style__button">
+        <a
+          {% if button_link != blank %}
+            href="{{ button_link }}"
+          {% else %}
+            role="link" aria-disabled="true"
+          {% endif %}
+        >
+          {{- button_label | escape -}}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{%- if media_type == 'video' and video != blank -%}
+  <script>
+    (() => {
+      // Plays only the video visible at the current breakpoint, so the hidden one never downloads.
+      // Reduced motion leaves the videos paused on their poster frame.
+      const section = document.getElementById('shopify-section-{{ section.id }}');
+      const videos = section ? [...section.querySelectorAll('.signature-style__video')] : [];
+      if (!videos.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const sync = () => {
+        for (const video of videos) {
+          if (getComputedStyle(video).display === 'none') {
+            video.pause();
+          } else {
+            video.muted = true;
+            video.play().catch(() => {});
+          }
+        }
+      };
+
+      window.matchMedia('(max-width: 768px)').addEventListener('change', sync);
+      sync();
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Signature style",
+  "tag": "section",
+  "class": "section-signature-style",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Media Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop image",
+      "info": "Recommended: 2880 x 1320px",
+      "visible_if": "{{ section.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Optional. Recommended: 1125 x 2240px",
+      "visible_if": "{{ section.settings.media_type == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Desktop video",
+      "info": "Plays muted on a loop. Landscape, 16:9 recommended.",
+      "visible_if": "{{ section.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "video",
+      "id": "mobile_video",
+      "label": "Mobile video",
+      "info": "Optional. Portrait, 9:16 recommended.",
+      "visible_if": "{{ section.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "signature",
+      "label": "Signature",
+      "info": "Use a transparent PNG or SVG. Recommended width: 440px"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "As seen in Tulsa King"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Worn by Sylvester Stallone."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>A custom Eagle Pocket Square™ handcrafted for his character in <em>Tulsa King</em>.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore Pocket Squares"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_enabled",
+      "label": "Enable overlay",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.overlay_enabled }}"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30,
+      "visible_if": "{{ section.settings.overlay_enabled }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "options": [
+        { "value": "fit_screen", "label": "Fit screen" },
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "auto", "label": "Auto (original ratio)" }
+      ],
+      "default": "large",
+      "info": "Large uses the desktop and mobile heights below."
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 400,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 540,
+      "visible_if": "{{ section.settings.section_height == 'large' }}"
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 500,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 740,
+      "visible_if": "{{ section.settings.section_height == 'large' }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding top (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding Bottom (Mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product spotlight",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product",
+          "info": "Shows the product's featured image in the circle and links to the product."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Optional. Replaces the product's featured image."
+        },
+        {
+          "type": "header",
+          "content": "Desktop position"
+        },
+        {
+          "type": "range",
+          "id": "image_x_desktop",
+          "label": "Image horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 78
+        },
+        {
+          "type": "range",
+          "id": "image_y_desktop",
+          "label": "Image vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 56
+        },
+        {
+          "type": "range",
+          "id": "mark_x_desktop",
+          "label": "Mark horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 62
+        },
+        {
+          "type": "range",
+          "id": "mark_y_desktop",
+          "label": "Mark vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 76
+        },
+        {
+          "type": "header",
+          "content": "Mobile position"
+        },
+        {
+          "type": "range",
+          "id": "image_x_mobile",
+          "label": "Image horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 84
+        },
+        {
+          "type": "range",
+          "id": "image_y_mobile",
+          "label": "Image vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 45
+        },
+        {
+          "type": "range",
+          "id": "mark_x_mobile",
+          "label": "Mark horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 64
+        },
+        {
+          "type": "range",
+          "id": "mark_y_mobile",
+          "label": "Mark vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Signature style",
+      "blocks": [
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
