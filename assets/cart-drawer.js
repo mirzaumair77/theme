@@ -7,6 +7,14 @@ import { morphSection, sectionRenderer } from '@theme/section-renderer';
 const SECTION_ID = 'cart-drawer-section';
 
 /**
+ * Protection state from the last cart read (or the page's cart), so opening the drawer can add
+ * the protection line with one request instead of a read, a write and a section render. Cleared
+ * whenever the cart changes. Used by `cart-drawer-checkout`.
+ * @type {{ plan: { variantId: number, feeCents: number } | null, lineCount: number } | null}
+ */
+let knownProtection = null;
+
+/**
  * Posts a cart mutation that also renders the drawer section, then morphs the drawer.
  *
  * @param {string} url - A cart AJAX endpoint.
@@ -14,6 +22,8 @@ const SECTION_ID = 'cart-drawer-section';
  * @returns {Promise<any>} The parsed response.
  */
 async function mutateCart(url, payload) {
+  // Any drawer cart change can shift the protection tier; the next protection sync re-reads it.
+  knownProtection = null;
   sectionRenderer.abortRender(SECTION_ID);
 
   const response = await fetch(
@@ -46,6 +56,13 @@ async function mutateCart(url, payload) {
 class CartDrawerComponent extends Component {
   /** Pinned note + footer may use at most this share of the scroll area before the column scrolls as one. */
   static #PINNED_MAX_RATIO = 0.7;
+
+  /**
+   * From this drawer (window) height up, the header and footer always stay fixed and only the
+   * content area scrolls, however tall the footer grows. Only shorter drawers may fall back to
+   * scrolling as one column, where the footer would leave no usable content area.
+   */
+  static #ALWAYS_PINNED_MIN_HEIGHT = 670;
 
   /** @type {AbortController | undefined} */
   #controller;
@@ -124,8 +141,9 @@ class CartDrawerComponent extends Component {
   };
 
   /**
-   * Keeps the note and footer pinned unless, on a short drawer, they would leave too little room
-   * for the line items; then the whole column scrolls so every part stays reachable.
+   * Keeps the note and footer pinned (only the content area scrolls). On a drawer shorter than
+   * `#ALWAYS_PINNED_MIN_HEIGHT`, if they would leave too little room for the line items, the whole
+   * column scrolls instead so every part stays reachable.
    */
   #updateLayout() {
     const items = this.#items;
@@ -140,7 +158,8 @@ class CartDrawerComponent extends Component {
       const summary = element.querySelector('.cart-drawer__note-summary');
       return total + (summary instanceof HTMLElement ? summary.offsetHeight : element.offsetHeight);
     }, 0);
-    const tooTall = pinnedHeight / available > CartDrawerComponent.#PINNED_MAX_RATIO;
+    const shortDrawer = this.getBoundingClientRect().height < CartDrawerComponent.#ALWAYS_PINNED_MIN_HEIGHT;
+    const tooTall = shortDrawer && pinnedHeight / available > CartDrawerComponent.#PINNED_MAX_RATIO;
     this.toggleAttribute('data-footer-static', tooTall);
     // Pinned content fits exactly; drop any offset left from the scrolling layout.
     if (!tooTall && items) items.scrollTop = 0;
@@ -619,6 +638,17 @@ function toIsoDate(date) {
 }
 
 /**
+ * Days from today to the earliest selectable delivery date. The setting is a gap of full days
+ * left free after today: 3 means an order on Nov 27 skips Nov 28-30 and can be delivered from
+ * Dec 1. 0 means no gap. Mirrors `delivery_lead_days` in snippets/cart-drawer.liquid.
+ * @param {number} minDays - Theme setting "Minimum days before delivery date".
+ * @returns {number}
+ */
+function leadDays(minDays) {
+  return minDays > 0 ? minDays + 1 : 0;
+}
+
+/**
  * @param {string} isoDate - `YYYY-MM-DD`.
  * @returns {Date} Local midnight of that date.
  */
@@ -695,13 +725,14 @@ class CartDeliveryDate extends HTMLElement {
 
   /**
    * Earliest allowed date: the later of the server's date (store timezone) and the shopper's
-   * own date, each plus the minimum gap. Keeps cached markup from allowing a past date.
+   * own date, each after the minimum gap (`leadDays`). Keeps cached markup from allowing a date
+   * inside the gap.
    * @returns {string}
    */
   get #minimum() {
     const days = Number.parseInt(this.dataset.minDays ?? '0', 10) || 0;
     const local = new Date();
-    local.setDate(local.getDate() + days);
+    local.setDate(local.getDate() + leadDays(Math.max(0, days)));
     const localMin = toIsoDate(local);
     const serverMin = this.dataset.minDate ?? '';
     return serverMin > localMin ? serverMin : localMin;
@@ -719,16 +750,22 @@ class CartDeliveryDate extends HTMLElement {
     return new Intl.DateTimeFormat(this.#locale, options).format(date);
   }
 
-  /** A date saved on an earlier visit that is no longer far enough ahead is dropped. */
+  /**
+   * A date saved on an earlier visit (or under an older, shorter gap) that is no longer far enough
+   * ahead is removed from the cart, so it never reaches the order. Liquid already leaves such a
+   * date out of the input, so the saved cart attribute (`data-saved-date`) is checked as well.
+   */
   #clearStaleDate() {
     const { input } = this.#refs;
     if (!input) return;
     const minimum = this.#minimum;
     input.min = minimum;
-    if (input.value && input.value < minimum) {
-      input.value = '';
-      this.#save('');
-    }
+    const saved = this.dataset.savedDate ?? '';
+    const stale = (input.value && input.value < minimum) || (saved && saved < minimum);
+    if (!stale) return;
+    input.value = '';
+    this.dataset.savedDate = '';
+    this.#save('');
   }
 
   #updateTrigger() {
@@ -996,39 +1033,44 @@ if (!customElements.get('cart-delivery-date')) {
 /** Remembers the shopper's package protection choice for the current visit. */
 const PROTECTION_STORAGE_KEY = 'cart-drawer:package-protection';
 
-let checkoutHookRegistered = false;
-
 /**
- * SavedBy checkout hook, used only by the fallback path (no fee tiers available): SavedBy updates
- * the cart over AJAX and clicks the checkout target (`useAjax`, handled in `#handleTargetClick`).
+ * SavedBy's storefront global. The app embed first defines it with its inline config; SavedBy's
+ * script then replaces it with its app instance, which moves `feeTiers` out of `config`.
+ * @returns {any}
  */
-function registerSavedByCheckoutHook() {
-  const savedBy = /** @type {any} */ (window).SavedBy;
-  if (checkoutHookRegistered || typeof savedBy?.onCheckout !== 'function') return;
-  checkoutHookRegistered = true;
-  savedBy.onCheckout(() => ({ useAjax: true }));
+function savedByGlobal() {
+  return /** @type {any} */ (window).SavedBy;
 }
 
-/** @returns {Array<{ max: number, variantId: number | string }>} SavedBy's fee tiers, if exposed. */
+/** SavedBy is installed and switched on for this store. */
+function savedByActive() {
+  return savedByGlobal()?.status === 'ACTIVE';
+}
+
+/**
+ * SavedBy's fee tiers, lowest cart value first.
+ * @returns {Array<{ max: number, price: number, variantId: number }>}
+ */
 function savedByTiers() {
-  const tiers = /** @type {any} */ (window).SavedBy?.config?.feeTiers;
-  return Array.isArray(tiers) ? tiers : [];
+  const savedBy = savedByGlobal();
+  const source = Array.isArray(savedBy?.feeTiers) && savedBy.feeTiers.length ? savedBy.feeTiers : savedBy?.config?.feeTiers;
+  if (!Array.isArray(source)) return [];
+  return source
+    .map((tier) => ({ max: Number(tier?.max), price: Number(tier?.price), variantId: Number(tier?.variantId) }))
+    .filter((tier) => Number.isFinite(tier.max) && Number.isFinite(tier.price) && tier.variantId > 0)
+    .sort((a, b) => a.max - b.max);
 }
 
-/**
- * The SavedBy fee tier variant for a cart total, from SavedBy's own storefront config.
- * @param {number} totalCents - Cart total without protection lines.
- * @returns {number | null}
- */
-function savedByTierVariant(totalCents) {
-  const tiers = savedByTiers();
-  if (!tiers.length) return null;
+/** @returns {Set<string>} Product GIDs that SavedBy never covers. */
+function savedByExcludedProducts() {
+  const config = savedByGlobal()?.config ?? {};
+  return new Set([...(config.excludedProducts ?? []), ...(config.widgetExcludedProducts ?? [])].map(String));
+}
 
-  const total = totalCents / 100;
-  const sorted = [...tiers].sort((a, b) => Number(a.max) - Number(b.max));
-  const tier = sorted.find((candidate) => total <= Number(candidate.max)) ?? sorted[sorted.length - 1];
-  const variantId = Number(tier?.variantId);
-  return Number.isFinite(variantId) && variantId > 0 ? variantId : null;
+/** Presentment currency rate; SavedBy's tier limits are in the shop currency. */
+function currencyRate() {
+  const rate = Number(/** @type {any} */ (window).Shopify?.currency?.rate);
+  return Number.isFinite(rate) && rate > 0 ? rate : 1;
 }
 
 /**
@@ -1037,6 +1079,55 @@ function savedByTierVariant(totalCents) {
  */
 function isProtectionLine(item) {
   return String(item?.vendor ?? '').toLowerCase().includes('savedby');
+}
+
+/**
+ * @typedef {{ variantId: number, feeCents: number }} ProtectionPlan
+ * The SavedBy fee variant for a cart and its fee in the cart's currency.
+ */
+
+/**
+ * Chooses the SavedBy tier for a cart the way SavedBy's own widget does: by the pre-discount value
+ * of shippable, covered lines. SavedBy's widget stops offering protection above its highest tier;
+ * the store keeps offering it there at the highest tier.
+ * @param {{ items?: any[] }} cart
+ * @returns {ProtectionPlan | null} Null when SavedBy is off or nothing in the cart can be protected.
+ */
+function protectionPlan(cart) {
+  if (!savedByActive()) return null;
+  const tiers = savedByTiers();
+  if (!tiers.length) return null;
+
+  const excluded = savedByExcludedProducts();
+  const covered = (cart.items ?? []).filter(
+    (item) =>
+      item.requires_shipping && !isProtectionLine(item) && !excluded.has(`gid://shopify/Product/${item.product_id}`)
+  );
+  // The free gift follows purchased products; on its own it is nothing to protect.
+  if (!covered.some((item) => !item.properties?._free_gift)) return null;
+
+  const valueCents = covered.reduce((sum, item) => sum + Number(item.line_price || 0), 0);
+  if (valueCents <= 0) return null;
+
+  const rate = currencyRate();
+  const tier = tiers.find((candidate) => valueCents / 100 <= candidate.max * rate) ?? tiers[tiers.length - 1];
+  if (!tier) return null;
+  return { variantId: tier.variantId, feeCents: Math.round(tier.price * rate * 100) };
+}
+
+/**
+ * @param {number} cents
+ * @param {string} currency
+ */
+function formatMoney(cents, currency) {
+  try {
+    return new Intl.NumberFormat(document.documentElement.lang || undefined, {
+      style: 'currency',
+      currency: currency || 'USD',
+    }).format(cents / 100);
+  } catch {
+    return (cents / 100).toFixed(2);
+  }
 }
 
 /** @returns {Promise<any>} The live cart. */
@@ -1049,6 +1140,21 @@ async function readCart() {
   return response.json();
 }
 
+/**
+ * Adds one protection line without rendering the drawer section, so the write is as short as
+ * possible; the drawer is re-rendered afterwards.
+ * @param {number} variantId
+ */
+async function addProtectionLine(variantId) {
+  knownProtection = null;
+  const response = await fetch(
+    `${Theme.routes.cart_update_url}.js`,
+    fetchConfig('json', { body: JSON.stringify({ updates: { [variantId]: 1 }, attributes: { '_SavedBy-internal': 1 } }) })
+  );
+  const data = await response.json();
+  if (!response.ok || data.status) throw new Error(data.description || data.message || 'Cart update failed');
+}
+
 /** Resolves once in-flight quantity changes (which address lines by index) have finished. */
 async function waitForQuantityUpdates() {
   const CartItems = /** @type {any} */ (customElements.get('cart-items-component'));
@@ -1056,52 +1162,62 @@ async function waitForQuantityUpdates() {
   if (Array.isArray(pending) && pending.length) await Promise.allSettled(pending);
 }
 
+let checkoutHookRegistered = false;
+
+/**
+ * SavedBy checkout hook, used only by the fallback path (SavedBy active without fee tiers): SavedBy
+ * updates the cart over AJAX and clicks the checkout target (handled in `#handleTargetClick`).
+ */
+function registerSavedByCheckoutHook() {
+  const savedBy = savedByGlobal();
+  if (checkoutHookRegistered || typeof savedBy?.onCheckout !== 'function') return;
+  checkoutHookRegistered = true;
+  savedBy.onCheckout(() => ({ useAjax: true }));
+}
+
 /**
  * @typedef {'synced' | 'unavailable'} ProtectionSyncResult
- * `synced`: the cart matches the switch. `unavailable`: SavedBy is not attached or exposes no
- * fee tiers, so the cart was left untouched.
+ * `synced`: the cart matches the switch. `unavailable`: SavedBy is active but exposes no fee
+ * tiers, so only SavedBy's own checkout control can add protection.
  */
 
 /**
- * Package protection switch and checkout button from the design, backed by the SavedBy app.
+ * Package protection switch and checkout buttons from the design, backed by the SavedBy app.
  *
- * The switch is the source of truth and the cart follows it: turning it on adds exactly one
- * SavedBy line (the fee tier for the current product total, from SavedBy's config), turning it off
- * removes every SavedBy line. Syncs also run when SavedBy attaches and after other cart changes
- * (the tier follows the total; an emptied cart drops protection). All syncs run one at a time and
- * each reads the switch and the live cart when it starts, so rapid toggling settles on the final
- * choice. "Continue to checkout" waits for the queue before leaving, and Shopify's accelerated
- * buttons (Shop Pay) are blocked while a sync runs, so every checkout path sees the chosen state.
+ * The switch row is shown whenever SavedBy is active and the cart holds something to protect; its
+ * fee is SavedBy's tier for the cart. The switch is the source of truth and the cart follows it
+ * while the drawer is open: on adds exactly one SavedBy line of the current tier, off removes every
+ * SavedBy line. Closing the drawer removes the line again, because SavedBy's storefront script
+ * strips a protection line with a redirect on every page load. Both checkout paths leave from the
+ * open drawer, so they see the chosen state: "Continue to checkout" waits for the sync queue, and
+ * a Shop Pay click made while a protection change is being written continues to Shop Pay once the
+ * cart is settled (`#handleWalletClick`).
  *
- * SavedBy attaches to the hidden `button[name='checkout']` target and inserts
- * `<savedby-checkout-plus>` (its Checkout+ button, opt-out link and fee) after it. Those stay
- * visually hidden; this element mirrors SavedBy's fee in the switch row. If SavedBy exposes no fee
- * tiers, checkout falls back to clicking SavedBy's own Checkout+ or opt-out control. Without
- * SavedBy, the switch stays hidden and checkout is a plain GET /checkout.
+ * Syncs run one at a time, and each reads the switch, the drawer state and the live cart when it
+ * starts, so rapid changes settle on the final state.
+ *
+ * SavedBy also attaches to the hidden `button[name='checkout']` target and inserts
+ * `<savedby-checkout-plus>` after it. Those stay visually hidden; its Checkout+ control is only
+ * used as a fallback when SavedBy exposes no fee tiers.
  */
 class CartDrawerCheckout extends HTMLElement {
   /** Shared across instances: a section morph can replace this element mid-sync. */
   static #queue = /** @type {Promise<unknown>} */ (Promise.resolve());
 
-  static #queued = 0;
+  /** Active Shop Pay holds (see `#hold`). */
+  static #holds = 0;
+
+  /** @type {Array<() => void>} Shop Pay clicks waiting for the holds to clear. */
+  static #settledWaiters = [];
 
   /** @type {AbortController | undefined} */
   #controller;
 
   /** @type {MutationObserver | undefined} */
-  #childObserver;
+  #drawerObserver;
 
-  /** @type {MutationObserver | undefined} */
-  #feeObserver;
-
-  /** @type {ShadowRoot | null} */
-  #observedRoot = null;
-
-  /** Whether the switch row was visible at the last check; its first appearance syncs the cart. */
-  #wasAvailable = false;
-
-  /** @type {{ protect: boolean } | null} */
-  #intent = null;
+  /** Fallback checkout in progress (SavedBy's own control is updating the cart). */
+  #intent = false;
 
   /** @type {ReturnType<typeof setTimeout> | undefined} */
   #busyTimer;
@@ -1113,30 +1229,49 @@ class CartDrawerCheckout extends HTMLElement {
     this.addEventListener('click', this.#handleClick, { signal });
     // Capture: runs before the hidden target's native form submission.
     this.addEventListener('click', this.#handleTargetClick, { signal, capture: true });
+    // Capture: stops a Shop Pay click (e.g. from the keyboard) while the cart is being synced.
+    this.addEventListener('click', this.#handleWalletClick, { signal, capture: true });
     this.addEventListener('change', this.#handleChange, { signal });
-    window.addEventListener('SavedBy:ready', this.#sync, { signal });
+    window.addEventListener('SavedBy:ready', this.#refresh, { signal });
     document.addEventListener(StandardEvents.cartLinesUpdate, this.#handleCartLinesUpdate, { signal });
     // Returning from checkout via back/forward cache must not leave the buttons locked.
-    window.addEventListener('pageshow', (event) => event.persisted && this.#setBusy(false), { signal });
+    window.addEventListener(
+      'pageshow',
+      (event) => {
+        if (!event.persisted) return;
+        this.#setBusy(false);
+        this.#refresh();
+      },
+      { signal }
+    );
 
     const toggle = this.#toggle;
     if (toggle) toggle.checked = this.#readPreference();
 
-    // SavedBy inserts its element asynchronously; watch direct children for it.
-    this.#childObserver = new MutationObserver(this.#sync);
-    this.#childObserver.observe(this, { childList: true });
-    this.#feeObserver = new MutationObserver(this.#sync);
+    // Opening the drawer adds the chosen protection; closing it removes the line again.
+    const drawer = this.closest('theme-drawer');
+    if (drawer) {
+      this.#drawerObserver = new MutationObserver(this.#handleDrawerToggle);
+      this.#drawerObserver.observe(drawer, { attributes: true, attributeFilter: ['open'] });
+    }
 
-    this.#wasAvailable = false;
-    this.#sync();
-    if (CartDrawerCheckout.#queued > 0) this.#setSyncing(true);
+    this.#setSyncing(CartDrawerCheckout.#holds > 0);
+
+    // While the drawer is closed, the cart SavedBy embeds in the page is enough to show the row
+    // and lets opening the drawer add protection with a single request.
+    const pageCart = savedByGlobal()?.cart;
+    if (!this.#drawerOpen && pageCart && !(pageCart.items ?? []).some(isProtectionLine)) {
+      const plan = protectionPlan(pageCart);
+      this.#render(plan, pageCart);
+      knownProtection = { plan, lineCount: 0 };
+    } else {
+      this.#refresh();
+    }
   }
 
   disconnectedCallback() {
     this.#controller?.abort();
-    this.#childObserver?.disconnect();
-    this.#feeObserver?.disconnect();
-    this.#observedRoot = null;
+    this.#drawerObserver?.disconnect();
     clearTimeout(this.#busyTimer);
   }
 
@@ -1161,34 +1296,19 @@ class CartDrawerCheckout extends HTMLElement {
     return this.querySelector('.cart-drawer__protection');
   }
 
-  /** The switch is on screen, so the shopper's choice is meaningful. */
-  get #available() {
-    const row = this.#row;
-    return Boolean(row && !row.hidden);
+  get #drawerOpen() {
+    return Boolean(this.closest('theme-drawer')?.hasAttribute('open'));
   }
 
-  #sync = () => {
-    const savedBy = this.#savedBy;
-    const row = this.#row;
-    if (!row) return;
+  /** Background sync: Shop Pay is only held while it actually writes to the cart. */
+  #refresh = () => {
+    this.#queueSync().catch(this.#reportSyncError);
+  };
 
-    const root = savedBy?.shadowRoot ?? null;
-    if (root && root !== this.#observedRoot) {
-      this.#feeObserver?.disconnect();
-      this.#feeObserver?.observe(root, { childList: true, subtree: true, characterData: true });
-      this.#observedRoot = root;
-    }
-
-    const fee = root?.querySelector('[name="fee"]')?.textContent?.trim();
-    row.hidden = !savedBy || !fee;
-
-    const feeTarget = row.querySelector('[data-protection-fee]');
-    if (fee && feeTarget && feeTarget.textContent !== fee) feeTarget.textContent = fee;
-
-    // The switch just appeared (SavedBy attached): make the cart match its saved state.
-    const available = !row.hidden;
-    if (available && !this.#wasAvailable) this.#queueSync().catch(this.#reportSyncError);
-    this.#wasAvailable = available;
+  /** Opening adds the chosen protection (Shop Pay waits for it); closing removes the line. */
+  #handleDrawerToggle = () => {
+    const opened = this.#drawerOpen;
+    this.#queueSync({ block: opened, fast: opened }).catch(this.#reportSyncError);
   };
 
   /** @param {Event} event */
@@ -1199,20 +1319,22 @@ class CartDrawerCheckout extends HTMLElement {
     } catch {
       // Storage can be unavailable (private mode); the switch still works for this page.
     }
-    this.#queueSync().catch(this.#reportSyncError);
+    // Shop Pay waits until the cart matches the new choice.
+    this.#queueSync({ block: true }).catch(this.#reportSyncError);
   };
 
   /**
    * Products were added, changed or removed elsewhere: the fee tier may differ, or the cart may
-   * now hold only protection. Re-sync once that change has settled.
+   * now hold nothing to protect. Re-sync once that change has settled.
    * @param {Event} event
    */
   #handleCartLinesUpdate = (event) => {
+    knownProtection = null;
     const { promise } = /** @type {{ promise?: Promise<unknown> }} */ (event);
     Promise.resolve(promise)
       .catch(() => {})
       .then(() => {
-        if (this.isConnected && this.#available) this.#queueSync().catch(this.#reportSyncError);
+        if (this.isConnected) this.#refresh();
       });
   };
 
@@ -1226,52 +1348,83 @@ class CartDrawerCheckout extends HTMLElement {
   }
 
   /**
-   * Adds a cart sync to the shared queue.
-   * @returns {Promise<ProtectionSyncResult>}
+   * Holds Shop Pay (and keyboard activation of it) while the cart is about to change. Counted
+   * across instances, since a section morph can replace this element mid-sync.
+   * @param {number} delta
    */
-  #queueSync() {
-    CartDrawerCheckout.#queued += 1;
-    this.#setSyncing(true);
-
-    const run = CartDrawerCheckout.#queue.then(() => this.#applyProtection());
-    CartDrawerCheckout.#queue = run.catch(() => {});
-
-    return run.finally(() => {
-      CartDrawerCheckout.#queued -= 1;
-      if (CartDrawerCheckout.#queued === 0) {
-        // The element that queued the sync may have been replaced by a morph.
-        for (const element of document.querySelectorAll('cart-drawer-checkout')) {
-          if (element instanceof CartDrawerCheckout) element.#setSyncing(false);
-        }
-      }
-    });
+  static #hold(delta) {
+    CartDrawerCheckout.#holds = Math.max(0, CartDrawerCheckout.#holds + delta);
+    for (const element of document.querySelectorAll('cart-drawer-checkout')) {
+      if (element instanceof CartDrawerCheckout) element.#setSyncing(CartDrawerCheckout.#holds > 0);
+    }
+    if (CartDrawerCheckout.#holds === 0) {
+      for (const resolve of CartDrawerCheckout.#settledWaiters.splice(0)) resolve();
+    }
   }
 
   /**
-   * Brings the cart in line with the switch: one SavedBy line of the current tier when on, none
-   * when off or when no products remain. Re-reads the cart after writing until nothing is left
-   * to do, so a change that lands meanwhile (another script, a tier shift) is still corrected.
+   * Adds a cart sync to the shared queue.
+   * @param {{ block?: boolean, fast?: boolean, render?: boolean }} [options]
+   *   `block`: hold Shop Pay for the whole sync (the shopper just changed what the cart must hold);
+   *   writes always hold it. `fast`: add protection from the known state with one request.
+   *   `render`: re-render the drawer even if the cart needs no change.
    * @returns {Promise<ProtectionSyncResult>}
    */
-  async #applyProtection() {
+  #queueSync({ block = false, fast = false, render = false } = {}) {
+    if (block) CartDrawerCheckout.#hold(1);
+
+    const run = CartDrawerCheckout.#queue.then(() => this.#applyProtection({ fast, render }));
+    CartDrawerCheckout.#queue = run.catch(() => {});
+
+    return block ? run.finally(() => CartDrawerCheckout.#hold(-1)) : run;
+  }
+
+  /**
+   * Opening the drawer with a known cart: add the protection line with one short request, then
+   * re-render the drawer and double-check the cart in the background without holding Shop Pay.
+   * @returns {Promise<boolean>} Whether the fast path applied.
+   */
+  async #addKnownProtection() {
+    const known = knownProtection;
+    if (!known?.plan || known.lineCount !== 0 || !this.#toggle?.checked || !this.#drawerOpen) return false;
+
+    await waitForQuantityUpdates();
+    if (knownProtection !== known) return false;
+
+    await addProtectionLine(known.plan.variantId);
+    this.#queueSync({ render: true }).catch(this.#reportSyncError);
+    return true;
+  }
+
+  /**
+   * Shows the switch row for the cart and brings the cart in line with the switch: one SavedBy
+   * line of the current tier while the switch is on and the drawer open, none otherwise. Re-reads
+   * the cart after writing until nothing is left to do, so a change that lands meanwhile (another
+   * script, a tier shift) is still corrected.
+   * @param {{ fast?: boolean, render?: boolean }} options
+   * @returns {Promise<ProtectionSyncResult>}
+   */
+  async #applyProtection({ fast = false, render = false }) {
     for (let pass = 0; pass < 3; pass++) {
       // A section morph may have replaced this element; use the live one.
       const host = this.isConnected ? this : document.querySelector('cart-drawer-checkout');
-      if (!(host instanceof CartDrawerCheckout) || !host.#available || !savedByTiers().length) return 'unavailable';
+      if (!(host instanceof CartDrawerCheckout)) return 'synced';
+
+      if (fast && pass === 0 && (await host.#addKnownProtection())) return 'synced';
 
       await waitForQuantityUpdates();
 
-      const protect = Boolean(host.#toggle?.checked);
       const cart = await readCart();
-      /** @type {Array<{ key: string, vendor: string, variant_id: number, quantity: number, final_line_price: number, properties?: Record<string, unknown> | null }>} */
+      /** @type {Array<{ key: string, vendor: string, variant_id: number, quantity: number, final_line_price: number }>} */
       const items = cart.items ?? [];
       const lines = items.filter(isProtectionLine);
-      // The free gift follows purchased products, so it does not count as something to protect.
-      const products = items.filter((item) => !isProtectionLine(item) && !item.properties?._free_gift);
+      const plan = protectionPlan(cart);
+      host.#render(plan, cart);
 
-      const productTotal = products.reduce((sum, item) => sum + item.final_line_price, 0);
-      const wanted = protect && products.length ? savedByTierVariant(productTotal) : null;
-      if (protect && products.length && !wanted) return 'unavailable';
+      if (!plan && savedByActive() && !savedByTiers().length && !lines.length) return 'unavailable';
+
+      const protect = Boolean(plan && host.#toggle?.checked && host.#drawerOpen);
+      const wanted = protect && plan ? plan.variantId : null;
 
       const keep = wanted ? lines.find((line) => Number(line.variant_id) === wanted) : undefined;
       /** @type {Record<string, number>} */
@@ -1282,10 +1435,17 @@ class CartDrawerCheckout extends HTMLElement {
       }
       const needsAdd = Boolean(wanted && !keep);
 
-      if (!Object.keys(updates).length && !needsAdd) return 'synced';
+      if (!Object.keys(updates).length && !needsAdd) {
+        knownProtection = { plan, lineCount: lines.length };
+        if (render) {
+          await sectionRenderer.renderSection(SECTION_ID, { cache: false, mode: 'hydration', injectStylesheet: true });
+        }
+        return 'synced';
+      }
 
       const drawer = host.closest('cart-drawer-component');
       drawer?.toggleAttribute('data-protection-syncing', true);
+      CartDrawerCheckout.#hold(1);
       try {
         // Line keys and variant IDs are sent separately: removals first, then the new tier.
         if (Object.keys(updates).length) {
@@ -1301,10 +1461,32 @@ class CartDrawerCheckout extends HTMLElement {
           });
         }
       } finally {
+        CartDrawerCheckout.#hold(-1);
         drawer?.toggleAttribute('data-protection-syncing', false);
       }
     }
     return 'synced';
+  }
+
+  /**
+   * Shows or hides the switch row and its fee: the protection line's price once it is in the cart
+   * (what the shopper pays), otherwise the tier price.
+   * @param {ProtectionPlan | null} plan
+   * @param {{ items?: any[], currency?: string }} cart
+   */
+  #render(plan, cart) {
+    const row = this.#row;
+    if (!row) return;
+    row.hidden = !plan;
+    if (!plan) return;
+
+    const line = (cart.items ?? []).find(
+      (item) => isProtectionLine(item) && Number(item.variant_id) === plan.variantId
+    );
+    const cents = line ? Math.round(Number(line.final_line_price) / Math.max(1, Number(line.quantity))) : plan.feeCents;
+    const fee = formatMoney(cents, cart.currency ?? '');
+    const target = row.querySelector('[data-protection-fee]');
+    if (target && target.textContent !== fee) target.textContent = fee;
   }
 
   /** @param {boolean} syncing */
@@ -1333,30 +1515,44 @@ class CartDrawerCheckout extends HTMLElement {
     this.#setBusy(true);
 
     /** @type {ProtectionSyncResult | 'failed'} */
-    let result = await this.#queueSync().catch((error) => {
+    const result = await this.#queueSync().catch((error) => {
       this.#reportSyncError(error);
       return /** @type {const} */ ('failed');
     });
 
-    // SavedBy is active on the store but has not attached yet (e.g. a click right after the cart
-    // filled). Wait briefly so the shopper's choice is applied instead of skipped.
-    if (result === 'unavailable' && !this.#available && /** @type {any} */ (window).SavedBy?.status === 'ACTIVE') {
-      if (await this.#waitForSavedBy(4000)) {
-        result = await this.#queueSync().catch(() => /** @type {const} */ ('failed'));
-      }
-    }
+    // SavedBy exposes no fee tiers: let its own control update the cart.
+    if (result === 'unavailable' && this.#startCheckout()) return;
 
-    if (result === 'synced') {
-      window.location.href = '/checkout';
-      return;
-    }
-
-    // No fee tiers (or the sync failed): let SavedBy's own control update the cart.
-    if (this.#startCheckout()) return;
-
-    this.#setBusy(false);
     window.location.href = '/checkout';
   };
+
+  /**
+   * Shopify's Shop Pay button checks out the cart as it is. When the cart already matches the
+   * switch, the click goes to Shopify's button untouched. While a protection change is still being
+   * written (e.g. right after the drawer opens), the click is kept instead of dropped: once the
+   * cart is settled the shopper goes to Shop Pay through Shopify's cart checkout URL
+   * (`/checkout?payment=shop_pay`), so a single click always proceeds. Replaying the click on
+   * Shopify's button is not an option: it ignores clicks that scripts dispatch.
+   * @param {MouseEvent} event
+   */
+  #handleWalletClick = (event) => {
+    if (CartDrawerCheckout.#holds === 0) return;
+    if (!event.composedPath().some((node) => node instanceof Element && node.localName === 'cart-drawer-wallets')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (this.hasAttribute('aria-busy')) return;
+
+    this.#setBusy(true);
+    CartDrawerCheckout.#whenSettled().then(() => {
+      window.location.href = '/checkout?payment=shop_pay';
+    });
+  };
+
+  /** @returns {Promise<void>} Resolves once no protection change is being written. */
+  static #whenSettled() {
+    if (CartDrawerCheckout.#holds === 0) return Promise.resolve();
+    return new Promise((resolve) => CartDrawerCheckout.#settledWaiters.push(resolve));
+  }
 
   /**
    * Fallback: hands checkout to SavedBy's own Checkout+ (protected) or opt-out control.
@@ -1364,52 +1560,29 @@ class CartDrawerCheckout extends HTMLElement {
    */
   #startCheckout() {
     const savedBy = this.#savedBy;
-    if (!savedBy || !this.#available) return false;
+    if (!savedBy) return false;
 
     registerSavedByCheckoutHook();
 
-    const protect = Boolean(this.#toggle?.checked);
-    const control = protect
+    const control = this.#toggle?.checked
       ? savedBy.querySelector('[slot="savedby-checkout-button"]')
       : savedBy.shadowRoot?.querySelector('.sb__non-covered-link');
     if (!(control instanceof HTMLElement)) return false;
 
-    this.#intent = { protect };
-    this.#setBusy(true);
+    this.#intent = true;
     control.click();
     return true;
   }
 
   /**
-   * @param {number} timeout
-   * @returns {Promise<boolean>} Whether SavedBy attached (fee shown) within the timeout.
-   */
-  async #waitForSavedBy(timeout) {
-    const start = performance.now();
-    while (performance.now() - start < timeout) {
-      this.#sync();
-      if (this.#savedBy && this.#available) return true;
-      await new Promise((resolve) => setTimeout(resolve, 150));
-    }
-    return false;
-  }
-
-  /**
    * Fallback path: SavedBy clicks the hidden target once its cart update is done (or failed).
-   * Run a final sync, then continue to checkout.
    * @param {MouseEvent} event
    */
   #handleTargetClick = (event) => {
     if (!this.#intent || event.target !== this.#target) return;
-
     event.preventDefault();
     event.stopPropagation();
-
-    this.#queueSync()
-      .catch((error) => console.warn('[cart-drawer] Package protection check failed:', error))
-      .finally(() => {
-        window.location.href = '/checkout';
-      });
+    window.location.href = '/checkout';
   };
 
   /**
@@ -1420,7 +1593,7 @@ class CartDrawerCheckout extends HTMLElement {
     clearTimeout(this.#busyTimer);
     if (!busy) {
       this.removeAttribute('aria-busy');
-      this.#intent = null;
+      this.#intent = false;
       return;
     }
     this.setAttribute('aria-busy', 'true');

@@ -17,12 +17,12 @@
         "announcement_Mp93PY": {
           "type": "_announcement",
           "settings": {
-            "text": "Get 10% off your first order. <a href=\"/account\" title=\"/account\">Sign Up</a>",
+            "text": "Get 10% Off Your First Order. <a href=\"/account\" title=\"/account\">Sign Up</a>",
             "link": "",
             "font": "var(--font-body--family)",
             "font_size": "0.6875rem",
             "font_size_desktop": "0.875rem",
-            "weight": "600",
+            "weight": "500",
             "letter_spacing": "normal",
             "case": "none",
             "text_color": "#ffffff"
@@ -92,6 +92,7 @@
                 "collection": "",
                 "image": "shopify://shop_images/mega-menu__bestseller-collection.jpg",
                 "heading": "Best Sellers",
+                "heading_color": "",
                 "link_text": "Shop Now",
                 "link": "shopify://collections/best-sellers"
               },
@@ -106,6 +107,7 @@
                 "collection": "",
                 "image": "shopify://shop_images/mega-menu__gemstone-eyes__collection.png",
                 "heading": "Gemstone Eyes",
+                "heading_color": "",
                 "link_text": "Shop Now",
                 "link": "shopify://collections/gemstone-pocket-squares"
               },
@@ -120,6 +122,7 @@
                 "collection": "",
                 "image": "shopify://shop_images/mega-menu__pendants-collection.png",
                 "heading": "Pendants",
+                "heading_color": "",
                 "link_text": "Shop Now",
                 "link": "shopify://collections/pendants"
               },
@@ -134,6 +137,7 @@
                 "collection": "",
                 "image": "shopify://shop_images/mega-menu__most-gifted__collection.png",
                 "heading": "Most Gifted",
+                "heading_color": "",
                 "link_text": "Shop Now",
                 "link": "shopify://products/key-to-my-heart-pendant"
               },

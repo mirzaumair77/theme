@@ -543,11 +543,19 @@
 
                 {%- if show_note -%}
                   {%- liquid
-                    # Earliest selectable delivery date: today (store timezone) plus the minimum gap.
-                    # The script re-checks against the shopper's own date in case this markup is stale.
-                    assign delivery_min_seconds = delivery_min_days | times: 86400
+                    # Earliest selectable delivery date (store timezone): N full days are left free
+                    # after today. With 3 days, an order on Nov 27 skips Nov 28-30 and the first
+                    # selectable date is Dec 1. 0 days means no gap (today onwards).
+                    # Keep in step with `leadDays()` in assets/cart-drawer.js, which re-checks this
+                    # against the shopper's own date in case this markup is stale.
+                    assign delivery_lead_days = 0
+                    if delivery_min_days > 0
+                      assign delivery_lead_days = delivery_min_days | plus: 1
+                    endif
+                    assign delivery_min_seconds = delivery_lead_days | times: 86400
                     assign delivery_min_date = 'now' | date: '%s' | plus: delivery_min_seconds | date: '%Y-%m-%d'
-                    assign delivery_date = cart.attributes['Delivery date']
+                    assign delivery_saved_date = cart.attributes['Delivery date']
+                    assign delivery_date = delivery_saved_date
                     if delivery_date != blank and delivery_date < delivery_min_date
                       assign delivery_date = ''
                     endif
@@ -576,6 +584,7 @@
                           class="cart-drawer__date"
                           data-min-days="{{ delivery_min_days }}"
                           data-min-date="{{ delivery_min_date }}"
+                          data-saved-date="{{ delivery_saved_date | escape }}"
                           data-placeholder="{{ 'cart_drawer.select_date' | t | escape }}"
                           data-error-template="{{ 'cart_drawer.delivery_date_error' | t: date: '[date]' | escape }}"
                           data-save-error="{{ 'cart_drawer.delivery_date_save_error' | t | escape }}"
@@ -824,12 +833,13 @@
                 </dl>
 
                 {%- comment -%}
-                  SavedBy attaches to `button[name='checkout']` (the visually hidden target below): it hides
-                  it and inserts <savedby-checkout-plus> after it with its own Checkout+ and opt-out controls.
-                  Those stay in the DOM but visually hidden; `cart-drawer-checkout` renders the design's
-                  protection switch and keeps the cart in step with it (one SavedBy line of SavedBy's fee
-                  tier when on, none when off), queued and awaited before checkout. SavedBy's own controls
-                  are only a fallback when it exposes no fee tiers.
+                  `cart-drawer-checkout` shows the design's protection switch whenever SavedBy is active and
+                  the cart holds something to protect (fee: SavedBy's tier for the cart, its highest tier
+                  above the top limit), and keeps the cart in step with it while the drawer is open (one
+                  SavedBy line when on, none when off or once the drawer closes), queued and awaited before
+                  checkout. SavedBy also attaches to `button[name='checkout']` (the visually hidden target
+                  below) and inserts <savedby-checkout-plus> after it; those stay hidden and SavedBy's own
+                  controls are only a fallback when it exposes no fee tiers.
                   Skipping morphs keeps the injected nodes and the switch state across re-renders.
                 {%- endcomment -%}
                 <cart-drawer-checkout
@@ -1811,6 +1821,7 @@
     --cart-drawer-date-surface: #ffffff80;
     --cart-drawer-date-border: #D3CEC5;
     --cart-drawer-date-line: #e6e2da;
+    --cart-drawer-date-unavailable: #b4aea5;
     --cart-drawer-date-radius: 4px;
     --cart-drawer-date-row: 44px;
     --cart-drawer-date-dot: 40px;
@@ -2011,8 +2022,13 @@
     font-weight: 600;
   }
 
+  /* Unavailable days (before the earliest delivery date) are muted and struck through, so they
+     read as not selectable at a glance; the strike keeps them distinct without relying on color. */
   .cart-drawer__day:disabled {
-    cursor: default;
+    color: var(--cart-drawer-date-unavailable);
+    text-decoration: line-through;
+    text-decoration-color: var(--cart-drawer-date-unavailable);
+    cursor: not-allowed;
   }
 
   .cart-drawer__date-error {
@@ -2365,11 +2381,10 @@
     transition: background-color var(--animation-speed-fast) var(--animation-easing);
   }
 
-  /* While the protection line is being added or removed, Shop Pay waits so it never checks out a
-     cart that does not match the switch yet (cart-drawer.js). */
-  .cart-drawer__checkout[data-protection-syncing] .cart-drawer__accelerated {
-    pointer-events: none;
-    opacity: 0.6;
+  /* While the protection line is being added or removed, Shop Pay stays clickable: cart-drawer.js
+     keeps a click made in that moment and continues to Shop Pay once the cart is settled. */
+  .cart-drawer__checkout:is([data-protection-syncing], [aria-busy]) .cart-drawer__accelerated {
+    cursor: progress;
   }
 
   /* Quantity changes address lines by position; adding the protection line shifts positions. */
