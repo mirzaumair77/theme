@@ -496,10 +496,7 @@
                 {{ gift_sync }}
 
                 {%- if upsell_count > 0 -%}
-                  <cart-drawer-upsell
-                    class="cart-drawer__upsell"
-                    data-swiper-src="{{ 'swiper-bundle.min.js' | asset_url }}"
-                  >
+                  <cart-drawer-upsell class="cart-drawer__upsell">
                     <div class="cart-drawer__upsell-top">
                       {%- if upsell_heading != blank -%}
                         <div class="cart-drawer__upsell-heading">
@@ -2366,9 +2363,24 @@
     width: 100%;
   }
 
+  /* Shopify lays the wallets out in equal columns, one per enabled wallet (Shop Pay, PayPal,
+     Google Pay), inside its closed shadow root. cart-drawer.js hides the other wallets, but their
+     empty columns remain, so Shop Pay would only be clickable in the first third of the row. Size
+     the Shop Pay element to the full row instead: `cqw` resolves against Shopify's full-width
+     wallet container (`.wallet-button-wrapper`; without one it falls back to the viewport width,
+     which `.cart-drawer__accelerated` clips with `overflow: hidden`), and the z-index keeps it
+     above the empty columns. */
+  .cart-drawer__accelerated shopify-accelerated-checkout-cart > shop-pay-wallet-button {
+    position: relative;
+    z-index: 1;
+    width: 100cqw;
+  }
+
   .cart-drawer__shop-pay-face {
     position: absolute;
     inset: 0;
+    /* Above the full-width Shop Pay element (z-index: 1); clicks still pass through. */
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;

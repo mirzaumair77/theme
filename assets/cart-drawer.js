@@ -367,29 +367,31 @@ if (!customElements.get('cart-free-gift')) {
 let swiperLoader = null;
 
 /**
- * Resolves once the theme's self-hosted Swiper (`swiper-bundle.min.js`) is available. The layout
- * only loads it on some templates, so the drawer injects it on demand everywhere else.
- * @param {string | undefined} src
+ * Resolves once the Swiper that `layout/theme.liquid` loads on every page (`swiper-bundle.min.js`,
+ * deferred) is available. The drawer never loads its own copy: it waits for the global script and
+ * rejects if Swiper never arrives, so the upsell keeps its native-scroll fallback.
  * @returns {Promise<void>}
  */
-function loadSwiper(src) {
-  if (/** @type {any} */ (window).Swiper) return Promise.resolve();
-  if (swiperLoader) return swiperLoader;
+function whenSwiperReady() {
+  swiperLoader ??= new Promise((resolve, reject) => {
+    const hasSwiper = () => Boolean(/** @type {any} */ (window).Swiper);
+    if (hasSwiper()) return resolve();
 
-  swiperLoader = new Promise((resolve, reject) => {
-    let script = /** @type {HTMLScriptElement | null} */ (document.querySelector('script[src*="swiper-bundle"]'));
-    if (!script) {
-      if (!src) return reject(new Error('Swiper source missing'));
-      script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-      document.head.append(script);
+    // Deferred scripts run before DOMContentLoaded, so Swiper is usually ready by then.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => hasSwiper() && resolve(), { once: true });
     }
-    script.addEventListener('load', () => resolve(), { once: true });
-    script.addEventListener('error', () => reject(new Error('Swiper failed to load')), { once: true });
-  }).catch((error) => {
-    swiperLoader = null;
-    throw error;
+
+    if (document.readyState === 'complete') {
+      reject(new Error('Swiper is not available'));
+      return;
+    }
+
+    window.addEventListener(
+      'load',
+      () => (hasSwiper() ? resolve() : reject(new Error('Swiper is not available'))),
+      { once: true }
+    );
   });
 
   return swiperLoader;
@@ -430,7 +432,7 @@ class CartDrawerUpsell extends HTMLElement {
     });
 
     this.#scheduleNavUpdate();
-    loadSwiper(this.dataset.swiperSrc)
+    whenSwiperReady()
       .then(() => {
         if (this.isConnected) this.#init();
       })
@@ -556,13 +558,25 @@ class CartDrawerUpsell extends HTMLElement {
     track.scrollBy({ left: direction * step, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
   };
 
-  /** @param {Event} event */
+  /**
+   * A swatch (variant radio) was picked: show that variant's price and image. The radio is also
+   * the form's `id`, so the add-to-bag request uses the same variant.
+   * @param {Event} event
+   */
   #handleChange = (event) => {
     const input = event.target;
-    if (!(input instanceof HTMLInputElement) || input.name !== 'id' || !input.dataset.price) return;
+    if (!(input instanceof HTMLInputElement) || input.name !== 'id') return;
+    const { price: priceText, imageSrc, imageSrcset } = input.dataset;
 
     const price = input.form?.querySelector('[data-upsell-price]');
-    if (price) price.textContent = input.dataset.price;
+    if (price && priceText) price.textContent = priceText;
+
+    const image = input.form?.querySelector('.cart-drawer__card-image');
+    if (image instanceof HTMLImageElement && imageSrc && image.getAttribute('src') !== imageSrc) {
+      // srcset first: the browser picks the size from it, and `src` stays the fallback.
+      if (imageSrcset) image.srcset = imageSrcset;
+      image.src = imageSrc;
+    }
   };
 
   /** @param {SubmitEvent} event */

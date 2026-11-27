@@ -1,2 +1,20 @@
 {{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{%- liquid
+  # Several font roles can share one font file (e.g. body and accent), so preload each file once.
+  assign preloaded_fonts = ''
+  assign font_roles = 'type_body_font,type_subheading_font,type_heading_font,type_accent_font' | split: ','
+  for role in font_roles
+    assign font = settings[role]
+    if font.system?
+      continue
+    endif
+    assign font_file = font | font_url
+    assign font_key = font_file | prepend: '|' | append: '|'
+    if preloaded_fonts contains font_key
+      continue
+    endif
+    assign preloaded_fonts = preloaded_fonts | append: font_key
+    echo font_file | preload_tag: as: 'font', type: 'font/woff2', fetchpriority: 'low'
+  endfor
+-%}

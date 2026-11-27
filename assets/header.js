@@ -19,6 +19,12 @@ import {
  */
 
 /**
+ * App bars that stick to the top of the viewport above the site header: the Getsitecontrol
+ * countdown bar (GSC Countdown Timer app embed), injected into <body> at runtime.
+ */
+const TOP_BAR_SELECTOR = '.gta-widget.gta-bar';
+
+/**
  * A custom element that manages the site header.
  *
  * @extends {Component<HeaderComponentRefs>}
@@ -67,6 +73,20 @@ class HeaderComponent extends Component {
   #scrollRafId = null;
 
   /**
+   * Height of an app bar stuck to the top of the viewport (see `TOP_BAR_SELECTOR`) that the
+   * sticky header has to sit below. Only non-zero on the mobile layout.
+   */
+  #topOffset = 0;
+
+  /** @type {Element | null} */
+  #topBar = null;
+
+  #topBarResizeObserver = new ResizeObserver(() => this.#updateTopOffset());
+
+  /** The bar is injected (and may be removed when closed) after the header has connected. */
+  #topBarMutationObserver = new MutationObserver(() => this.#watchTopBar());
+
+  /**
    * Keeps the global `--header-height` custom property up to date,
    * which other theme components can then consume
    */
@@ -94,6 +114,9 @@ class HeaderComponent extends Component {
     const config = {
       threshold: alwaysSticky ? 1 : 0,
       root: getIntersectionRoot(),
+      // The header sticks below a top app bar (`--header-sticky-offset`); shrink the root by the
+      // same amount so the 1px it tucks under that edge still marks it as stuck.
+      rootMargin: `${-this.#topOffset}px 0px 0px 0px`,
     };
 
     this.#intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -156,11 +179,52 @@ class HeaderComponent extends Component {
       this.#scrollContainer.addEventListener('scroll', this.#handleWindowScroll);
     }
 
+    // The top bar offset applies to the mobile layout only.
+    this.#updateTopOffset();
+
     // Recreate IntersectionObserver with the new root
     this.#intersectionObserver?.disconnect();
     this.#intersectionObserver = null;
     this.#observeStickyPosition(stickyMode === 'always');
   };
+
+  /** Finds the top app bar (it can appear, be replaced or be removed at any time) and measures it. */
+  #watchTopBar() {
+    const bar = document.querySelector(TOP_BAR_SELECTOR);
+    if (bar !== this.#topBar) {
+      this.#topBarResizeObserver.disconnect();
+      this.#topBar = bar;
+      if (bar) this.#topBarResizeObserver.observe(bar);
+    }
+    this.#updateTopOffset();
+  }
+
+  /**
+   * On the mobile layout the document scrolls, so a bar sticking to the top of the viewport
+   * covers the sticky header. The header then sticks below the bar's actual height
+   * (`--header-sticky-offset`, read by sections/header.liquid). On desktop the header sticks
+   * inside `.page-wrapper`, which already starts below the bar, so the offset stays 0.
+   */
+  #updateTopOffset() {
+    const bar = this.#topBar;
+    let offset = 0;
+    if (bar?.isConnected && !scrollContainerMediaQuery.matches) {
+      const { position } = getComputedStyle(bar);
+      if (position === 'sticky' || position === 'fixed') offset = Math.round(bar.getBoundingClientRect().height);
+    }
+    if (offset === this.#topOffset) return;
+
+    this.#topOffset = offset;
+    document.body.style.setProperty('--header-sticky-offset', `${offset}px`);
+
+    // Re-create the sticky observer so its root margin matches the new offset.
+    const stickyMode = this.getAttribute('sticky');
+    if (stickyMode && this.#intersectionObserver) {
+      this.#intersectionObserver.disconnect();
+      this.#intersectionObserver = null;
+      this.#observeStickyPosition(stickyMode === 'always');
+    }
+  }
 
   #handleWindowScroll = () => {
     if (this.#scrollRafId !== null) return;
@@ -236,6 +300,9 @@ class HeaderComponent extends Component {
       }
 
       scrollContainerMediaQuery.addEventListener('change', this.#handleBreakpointChange);
+
+      this.#topBarMutationObserver.observe(document.body, { childList: true });
+      this.#watchTopBar();
     }
   }
 
@@ -251,6 +318,11 @@ class HeaderComponent extends Component {
       cancelAnimationFrame(this.#scrollRafId);
       this.#scrollRafId = null;
     }
+    this.#topBarMutationObserver.disconnect();
+    this.#topBarResizeObserver.disconnect();
+    this.#topBar = null;
+    this.#topOffset = 0;
+    document.body.style.removeProperty('--header-sticky-offset');
     document.body.style.setProperty('--header-height', '0px');
   }
 }

@@ -676,8 +676,10 @@
   .header-section:has(> #header-component[sticky='scroll-up'][data-sticky-state='active']) {
     position: sticky;
 
-    /* Use -1 instead of 0 so intersection observer can track sticky state */
-    top: -1px;
+    /* Use -1 instead of 0 so intersection observer can track sticky state. On mobile, header.js
+       sets --header-sticky-offset to the height of an app bar stuck above the header
+       (Getsitecontrol countdown bar) so the header sticks below it instead of behind it. */
+    top: calc(var(--header-sticky-offset, 0px) - 1px);
     z-index: var(--layer-menu-drawer);
   }
 
