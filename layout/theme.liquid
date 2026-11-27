@@ -30,13 +30,11 @@
     {% endif %}
 
     {{ content_for_header }}
-    {%- if request.page_type == 'index' or request.page_type == 'product'  -%}
-      {%- comment -%}
-        Swiper 11.2.10, self-hosted on the Shopify CDN (previously jsdelivr) so the sliders don't wait on a
-        third-party connection. Sections find it through the "swiper-bundle" file name.
-      {%- endcomment -%}
-      <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
-    {%- endif -%}
+    {%- comment -%}
+      Swiper 11.2.10, self-hosted on the Shopify CDN (previously jsdelivr) so the sliders don't wait on a
+      third-party connection. Sections find it through the "swiper-bundle" file name.
+    {%- endcomment -%}
+    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer></script>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">

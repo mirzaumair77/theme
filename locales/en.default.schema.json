@@ -1408,7 +1408,7 @@
       "free_gift": "When enabled, the gift product is added once to every bag that contains a purchased product, and removed when it is disabled or the bag is emptied. To charge $0, create an automatic discount (Amount off products, 100%) for the gift product.",
       "gift_image": "Leave empty to use the product image.",
       "gift_title": "Leave empty to use the product title.",
-      "delivery_min_days": "Shoppers can only pick a delivery date at least this many days after they order. The chosen date is saved on the order as the \"Delivery date\" attribute (Orders > order > Additional details).",
+      "delivery_min_days": "Number of full days left free after the order day. With 3, an order on Nov 27 can be delivered from Dec 1. Use 0 to allow any date from today. The chosen date is saved on the order as the \"Delivery date\" attribute (Orders > order > Additional details).",
       "shipping_value": "For example \"Free\". Leave empty to hide the shipping row."
     }
   }

@@ -28,6 +28,9 @@
   else
     assign price = variant.price | money
   endif
+
+  # The card shows the selected variant's image; swatches swap it (cart-drawer-upsell).
+  assign card_image = variant.featured_image | default: product.featured_image
 -%}
 
 <li class="cart-drawer__card">
@@ -51,15 +54,16 @@
     {%- endunless -%}
 
     <div class="cart-drawer__card-media">
-      {%- if product.featured_image -%}
+      {%- if card_image -%}
         {{
-          product.featured_image
+          card_image
           | image_url: width: 360
           | image_tag:
             widths: '120, 240, 360',
             sizes: '(min-width: 769px) 118px, 112px',
             loading: 'lazy',
-            alt: product.title
+            alt: product.title,
+            class: 'cart-drawer__card-image'
         }}
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag }}
@@ -99,6 +103,17 @@
             else
               assign value_price = value_variant.price | money
             endif
+
+            # Same widths as the card image, so the swap keeps responsive loading.
+            assign value_image = value_variant.featured_image | default: product.featured_image
+            assign value_image_srcset = ''
+            if value_image
+              capture value_image_srcset
+                echo value_image | image_url: width: 120 | append: ' 120w, '
+                echo value_image | image_url: width: 240 | append: ' 240w, '
+                echo value_image | image_url: width: 360 | append: ' 360w'
+              endcapture
+            endif
           -%}
           <label
             class="cart-drawer__card-swatch"
@@ -110,6 +125,10 @@
               name="id"
               value="{{ value_variant.id }}"
               data-price="{{ value_price | escape }}"
+              {% if value_image %}
+                data-image-src="{{ value_image | image_url: width: 360 }}"
+                data-image-srcset="{{ value_image_srcset }}"
+              {% endif %}
               aria-label="{{ value.name | escape }}"
               {% if value_variant.id == variant.id %}
                 checked

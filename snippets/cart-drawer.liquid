@@ -127,6 +127,10 @@
     assign gift_action = 'remove'
   endif
 
+  # Displayed count: purchased products plus the free gift, minus package protection.
+  # Matches the header bubble (`snippets/cart-bubble.liquid`, `assets/cart-icon.js`).
+  assign cart_count = purchased_count | plus: gift_quantity
+
   assign gift_display_title = gift_title | default: gift_product.title
   assign gift_display_image = gift_image | default: gift_product.featured_image
 
@@ -273,13 +277,13 @@
               aria-hidden="true"
             >
               {{- 'icon-bell.svg' | inline_asset_content -}}
-              <div class="cart-drawer__icon-count">{{ purchased_count }}</div>
+              <div class="cart-drawer__icon-count">{{ cart_count }}</div>
             </div>
 
             <div class="cart-drawer__title">
               <h2 id="CartDrawer-Title">
                 {{ 'cart_drawer.title' | t }}
-                <span>({{ purchased_count }})</span>
+                <span>({{ cart_count }})</span>
               </h2>
             </div>
 
@@ -492,10 +496,7 @@
                 {{ gift_sync }}
 
                 {%- if upsell_count > 0 -%}
-                  <cart-drawer-upsell
-                    class="cart-drawer__upsell"
-                    data-swiper-src="{{ 'swiper-bundle.min.js' | asset_url }}"
-                  >
+                  <cart-drawer-upsell class="cart-drawer__upsell">
                     <div class="cart-drawer__upsell-top">
                       {%- if upsell_heading != blank -%}
                         <div class="cart-drawer__upsell-heading">
@@ -539,11 +540,19 @@
 
                 {%- if show_note -%}
                   {%- liquid
-                    # Earliest selectable delivery date: today (store timezone) plus the minimum gap.
-                    # The script re-checks against the shopper's own date in case this markup is stale.
-                    assign delivery_min_seconds = delivery_min_days | times: 86400
+                    # Earliest selectable delivery date (store timezone): N full days are left free
+                    # after today. With 3 days, an order on Nov 27 skips Nov 28-30 and the first
+                    # selectable date is Dec 1. 0 days means no gap (today onwards).
+                    # Keep in step with `leadDays()` in assets/cart-drawer.js, which re-checks this
+                    # against the shopper's own date in case this markup is stale.
+                    assign delivery_lead_days = 0
+                    if delivery_min_days > 0
+                      assign delivery_lead_days = delivery_min_days | plus: 1
+                    endif
+                    assign delivery_min_seconds = delivery_lead_days | times: 86400
                     assign delivery_min_date = 'now' | date: '%s' | plus: delivery_min_seconds | date: '%Y-%m-%d'
-                    assign delivery_date = cart.attributes['Delivery date']
+                    assign delivery_saved_date = cart.attributes['Delivery date']
+                    assign delivery_date = delivery_saved_date
                     if delivery_date != blank and delivery_date < delivery_min_date
                       assign delivery_date = ''
                     endif
@@ -572,6 +581,7 @@
                           class="cart-drawer__date"
                           data-min-days="{{ delivery_min_days }}"
                           data-min-date="{{ delivery_min_date }}"
+                          data-saved-date="{{ delivery_saved_date | escape }}"
                           data-placeholder="{{ 'cart_drawer.select_date' | t | escape }}"
                           data-error-template="{{ 'cart_drawer.delivery_date_error' | t: date: '[date]' | escape }}"
                           data-save-error="{{ 'cart_drawer.delivery_date_save_error' | t | escape }}"
@@ -820,12 +830,13 @@
                 </dl>
 
                 {%- comment -%}
-                  SavedBy attaches to `button[name='checkout']` (the visually hidden target below): it hides
-                  it and inserts <savedby-checkout-plus> after it with its own Checkout+ and opt-out controls.
-                  Those stay in the DOM but visually hidden; `cart-drawer-checkout` renders the design's
-                  protection switch and keeps the cart in step with it (one SavedBy line of SavedBy's fee
-                  tier when on, none when off), queued and awaited before checkout. SavedBy's own controls
-                  are only a fallback when it exposes no fee tiers.
+                  `cart-drawer-checkout` shows the design's protection switch whenever SavedBy is active and
+                  the cart holds something to protect (fee: SavedBy's tier for the cart, its highest tier
+                  above the top limit), and keeps the cart in step with it while the drawer is open (one
+                  SavedBy line when on, none when off or once the drawer closes), queued and awaited before
+                  checkout. SavedBy also attaches to `button[name='checkout']` (the visually hidden target
+                  below) and inserts <savedby-checkout-plus> after it; those stay hidden and SavedBy's own
+                  controls are only a fallback when it exposes no fee tiers.
                   Skipping morphs keeps the injected nodes and the switch state across re-renders.
                 {%- endcomment -%}
                 <cart-drawer-checkout
@@ -1807,6 +1818,7 @@
     --cart-drawer-date-surface: #ffffff80;
     --cart-drawer-date-border: #D3CEC5;
     --cart-drawer-date-line: #e6e2da;
+    --cart-drawer-date-unavailable: #b4aea5;
     --cart-drawer-date-radius: 4px;
     --cart-drawer-date-row: 44px;
     --cart-drawer-date-dot: 40px;
@@ -2007,8 +2019,13 @@
     font-weight: 600;
   }
 
+  /* Unavailable days (before the earliest delivery date) are muted and struck through, so they
+     read as not selectable at a glance; the strike keeps them distinct without relying on color. */
   .cart-drawer__day:disabled {
-    cursor: default;
+    color: var(--cart-drawer-date-unavailable);
+    text-decoration: line-through;
+    text-decoration-color: var(--cart-drawer-date-unavailable);
+    cursor: not-allowed;
   }
 
   .cart-drawer__date-error {
@@ -2346,9 +2363,24 @@
     width: 100%;
   }
 
+  /* Shopify lays the wallets out in equal columns, one per enabled wallet (Shop Pay, PayPal,
+     Google Pay), inside its closed shadow root. cart-drawer.js hides the other wallets, but their
+     empty columns remain, so Shop Pay would only be clickable in the first third of the row. Size
+     the Shop Pay element to the full row instead: `cqw` resolves against Shopify's full-width
+     wallet container (`.wallet-button-wrapper`; without one it falls back to the viewport width,
+     which `.cart-drawer__accelerated` clips with `overflow: hidden`), and the z-index keeps it
+     above the empty columns. */
+  .cart-drawer__accelerated shopify-accelerated-checkout-cart > shop-pay-wallet-button {
+    position: relative;
+    z-index: 1;
+    width: 100cqw;
+  }
+
   .cart-drawer__shop-pay-face {
     position: absolute;
     inset: 0;
+    /* Above the full-width Shop Pay element (z-index: 1); clicks still pass through. */
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2361,11 +2393,10 @@
     transition: background-color var(--animation-speed-fast) var(--animation-easing);
   }
 
-  /* While the protection line is being added or removed, Shop Pay waits so it never checks out a
-     cart that does not match the switch yet (cart-drawer.js). */
-  .cart-drawer__checkout[data-protection-syncing] .cart-drawer__accelerated {
-    pointer-events: none;
-    opacity: 0.6;
+  /* While the protection line is being added or removed, Shop Pay stays clickable: cart-drawer.js
+     keeps a click made in that moment and continues to Shop Pay once the cart is settled. */
+  .cart-drawer__checkout:is([data-protection-syncing], [aria-busy]) .cart-drawer__accelerated {
+    cursor: progress;
   }
 
   /* Quantity changes address lines by position; adding the protection line shifts positions. */
